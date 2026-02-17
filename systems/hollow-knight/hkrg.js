@@ -1,22 +1,83 @@
 Hooks.once("init", function () {
   console.log("HKRPG System Initialized for V13");
-  
-  // Регистрация типов документов
+
   CONFIG.HKRPG = {
-    rollFormula: "d6cs>=5", // Успех на 5-6
+    rollFormula: "d6cs>=5",
     characteristics: ["might", "grace", "shell", "insight"]
   };
+
+  // Регистрация листов
+  Actors.registerSheet("hollow-knight", HKRPGActorSheet, {
+    types: ["character"],
+    makeDefault: true,
+    label: "HKRPG Character Sheet"
+  });
+
+  Items.registerSheet("hollow-knight", HKRPGItemSheet, {
+    makeDefault: true,
+    label: "HKRPG Item Sheet"
+  });
 });
 
-// Глобальная функция броска для макросов и листов
+Hooks.once("ready", function () {
+  window.hkrpgRoll = hkrpgRoll;
+});
+
+// --- Классы Листов ---
+class HKRPGActorSheet extends ActorSheet {
+  getData() {
+    const data = super.getData();
+    data.dtypes = ["String", "Number", "Boolean"];
+    return data;
+  }
+
+  activateListeners(html) {
+    super.activateListeners(html);
+    // Бросок характеристики по клику
+    html.find('.characteristic input').click(ev => {
+      const input = ev.currentTarget;
+      const characteristic = input.closest('.characteristic').querySelector('label').innerText;
+      const value = parseInt(input.value) || 0;
+      hkrpgRoll({ characteristic: value, label: `Проверка: ${characteristic}` });
+    });
+  }
+}
+
+class HKRPGItemSheet extends ItemSheet {
+  getData() {
+    const data = super.getData();
+    return data;
+  }
+}
+
+// --- Боевая Логика ---
+
+// Инициатива по Грации (сумма кубиков, стр. 116)
+Hooks.on("createCombatant", (combat, combatant, options) => {
+  if (combatant.actor?.type === "character") {
+    const grace = combatant.actor.system.characteristics.grace.value || 0;
+    // Формула: количество кубиков равно Грации, считаем сумму
+    combatant.update({ initiative: new Roll(`${grace}d6`).evaluate().total });
+  }
+});
+
+// Сброс Выносливости в начале хода (стр. 9)
+Hooks.on("updateCombat", (combat, changed) => {
+  if (changed.turn === 0 && combat.turns[0]?.actor) {
+    const actor = combat.turns[0].actor;
+    if (actor.type === "character") {
+      const maxStamina = actor.system.pools.stamina.max || 3;
+      actor.update({ "system.pools.stamina.value": maxStamina });
+      ui.notifications.notify(`Ход ${actor.name}: Выносливость восстановлена.`);
+    }
+  }
+});
+
+// --- Функция Броска ---
 async function hkrpgRoll(data) {
   const { characteristic, skillRank = 0, rerolls = 0, label = "Проверка" } = data;
-  
-  // Обработка дробных характеристик (0.5 = 1 перекат)
   const baseDice = Math.floor(characteristic);
-  const extraRerolls = characteristic % 1 >= 0.5 ? 1 : 0;
   const totalDice = baseDice + skillRank;
-  const totalRerolls = rerolls + extraRerolls;
 
   if (totalDice <= 0) {
     ui.notifications.warn("Недостаточно кубиков для броска!");
@@ -25,14 +86,7 @@ async function hkrpgRoll(data) {
 
   const roll = new Roll(`${totalDice}${CONFIG.HKRPG.rollFormula}`);
   await roll.evaluate({ async: true });
-
-  // Подсчет успехов
-  const successes = roll.total; // В формуле cs>=5 total уже считает успехи
-  
-  // Логика перекатов (упрощенная для старта)
-  // В Foundry d6cs>=5 возвращает количество успехов сразу. 
-  // Для перекатов нужно кастомное решение или модификатор формулы.
-  // Для V13 используем стандартный ролл пока что.
+  const successes = roll.total;
 
   const chatData = {
     user: game.user.id,
@@ -49,24 +103,4 @@ async function hkrpgRoll(data) {
 
   ChatMessage.create(chatData);
   return roll;
-}
-
-// Хук готовности
-Hooks.once("ready", function () {
-  // Делаем функцию доступной в консоли и макросах
-  window.hkrpgRoll = hkrpgRoll;
-  
-  // Пример регистрации листа (заглушка)
-  Actors.registerSheet("hollow-knight", HKRPGActorSheet, {
-    types: ["character"],
-    makeDefault: true
-  });
-});
-
-// Заглушка класса листа (нужен отдельный файл, но для каркаса тут)
-class HKRPGActorSheet extends ActorSheet {
-  getData() {
-    const data = super.getData();
-    return data;
-  }
 }
