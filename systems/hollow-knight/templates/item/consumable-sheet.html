@@ -1,1 +1,62 @@
+<form class="{{cssClass}} flexcol" autocomplete="off">
+  {{!-- Sheet Header --}}
+  <header class="sheet-header">
+    <img class="profile-img" src="{{img}}" data-edit="img" title="{{name}}"/>
+    <div class="header-fields">
+      <h1 class="charname"><input name="name" type="text" value="{{name}}" placeholder="Название Расходника"/></h1>
+      
+      <div class="grid grid-2col">
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Types.consumable'}}</label>
+          <input type="text" value="{{localize 'HKRPG.Item.Types.consumable'}}" disabled/>
+        </div>
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Consumable.quantity'}}</label>
+          <input type="number" name="system.quantity.value" value="{{system.quantity.value}}" data-dtype="Number"/>
+        </div>
+      </div>
+    </div>
+  </header>
 
+  {{!-- Sheet Tab Navigation --}}
+  <nav class="sheet-tabs tabs" data-group="primary">
+    <a class="item" data-tab="details">{{localize 'HKRPG.Sheet.Tabs.characteristics'}}</a>
+    <a class="item" data-tab="description">{{localize 'HKRPG.Sheet.Tabs.biography'}}</a>
+  </nav>
+
+  {{!-- Sheet Body --}}
+  <section class="sheet-body">
+    
+    {{!-- Details Tab --}}
+    <div class="tab active" data-group="primary" data-tab="details">
+      <div class="grid grid-2col">
+        {{!-- Сытость (для еды) --}}
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Consumable.satiety'}}</label>
+          <input type="number" name="system.satiety.value" value="{{system.satiety.value}}" data-dtype="Number"/>
+        </div>
+
+        {{!-- Вес (опционально, стандартно для предметов) --}}
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Armor.weight'}}</label>
+          <input type="number" name="system.weight.value" value="{{system.weight.value}}" data-dtype="Number"/>
+        </div>
+      </div>
+      
+      {{!-- Краткое Описание Эффекта --}}
+      <div class="resource" style="margin-top: 10px;">
+        <label>{{localize 'HKRPG.Item.Consumable.effect'}}</label>
+        <textarea name="system.effect.value" data-dtype="String">{{system.effect.value}}</textarea>
+      </div>
+    </div>
+
+    {{!-- Description Tab --}}
+    <div class="tab" data-group="primary" data-tab="description">
+      <div class="resource">
+        <label>{{localize 'HKRPG.Sheet.Sections.notes'}}</label>
+        <textarea name="system.description" data-dtype="String" style="height: 300px;">{{system.description}}</textarea>
+      </div>
+    </div>
+
+  </section>
+</form>
