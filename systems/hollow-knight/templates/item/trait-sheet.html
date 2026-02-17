@@ -1,1 +1,55 @@
+<form class="{{cssClass}}" autocomplete="off">
+  <header class="sheet-header">
+    <img class="profile-img" src="{{item.img}}" data-edit="img" alt="{{item.name}}"/>
+    <div class="header-fields">
+      <h1 class="charname"><input name="name" type="text" value="{{item.name}}" placeholder="Название черты"/></h1>
+      
+      <div class="grid grid-2col">
+        <div class="resource">
+          <label class="resource-label">Голод</label>
+          <input type="number" name="system.hunger" value="{{system.hunger}}" placeholder="0" step="0.5"/>
+        </div>
+        <div class="resource">
+          <label class="resource-label">Жуть/Привлекательность</label>
+          <input type="text" name="system.appeal" value="{{system.appeal}}" placeholder="+0.5 Жуть"/>
+        </div>
+      </div>
+    </div>
+  </header>
 
+  <nav class="sheet-tabs tabs" data-group="primary">
+    <a class="item" data-tab="description">Описание</a>
+    <a class="item" data-tab="effects">Эффекты</a>
+    <a class="item" data-tab="subtraits">Подчерты</a>
+  </nav>
+
+  <section class="sheet-body">
+    <div class="tab" data-group="primary" data-tab="description">
+      <div class="editor" data-edit="system.description" data-engine="prosemirror"></div>
+    </div>
+
+    <div class="tab" data-group="primary" data-tab="effects">
+      <div class="effects-list">
+        {{#each system.effects as |effect idx|}}
+        <div class="effect-item flexrow">
+          <input type="text" name="system.effects.{{idx}}.name" value="{{effect.name}}" placeholder="Название эффекта"/>
+          <textarea name="system.effects.{{idx}}.description" placeholder="Описание эффекта">{{effect.description}}</textarea>
+        </div>
+        {{/each}}
+      </div>
+      <button type="button" class="add-effect">Добавить эффект</button>
+    </div>
+
+    <div class="tab" data-group="primary" data-tab="subtraits">
+      <div class="subtraits-list">
+        {{#each system.subtraits as |subtrait idx|}}
+        <div class="subtrait-item flexrow">
+          <input type="text" name="system.subtraits.{{idx}}.name" value="{{subtrait.name}}" placeholder="Название подчерты"/>
+          <input type="number" name="system.subtraits.{{idx}}.hunger" value="{{subtrait.hunger}}" placeholder="Голод"/>
+        </div>
+        {{/each}}
+      </div>
+      <button type="button" class="add-subtrait">Добавить подчерту</button>
+    </div>
+  </section>
+</form>
