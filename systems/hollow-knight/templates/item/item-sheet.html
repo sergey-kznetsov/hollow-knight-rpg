@@ -1,1 +1,40 @@
+<form class="{{cssClass}}" autocomplete="off">
+  <header class="sheet-header">
+    <img class="profile-img" src="{{img}}" data-edit="img" title="{{name}}"/>
+    <div class="header-fields">
+      <h1 class="charname"><input name="name" type="text" value="{{name}}" placeholder="Name"/></h1>
+      <div class="grid grid-2col">
+        <div class="resource">
+          <label>Тип</label>
+          <select name="type">
+            {{#select type}}
+            <option value="weapon">Оружие</option>
+            <option value="armor">Броня</option>
+            <option value="charm">Амулет</option>
+            <option value="spell">Заклинание</option>
+            {{/select}}
+          </select>
+        </div>
+      </div>
+    </div>
+  </header>
 
+  <section class="sheet-body">
+    <div class="resource">
+      <label>Урон</label>
+      <input type="text" name="system.damage.value" value="{{system.damage.value}}" data-dtype="Number"/>
+    </div>
+    <div class="resource">
+      <label>Качество</label>
+      <input type="text" name="system.quality.value" value="{{system.quality.value}}" data-dtype="Number"/>
+    </div>
+    <div class="resource">
+      <label>Вес</label>
+      <input type="text" name="system.weight.value" value="{{system.weight.value}}" data-dtype="Number"/>
+    </div>
+    <div class="resource">
+      <label>Описание</label>
+      <textarea name="system.description" data-dtype="String">{{system.description}}</textarea>
+    </div>
+  </section>
+</form>
