@@ -1,1 +1,162 @@
 
+<div class="hkrpg-roll card">
+  {{!-- Заголовок броска --}}
+  <h3>{{label}}</h3>
+  
+  {{!-- Основная информация --}}
+  <div class="roll-summary">
+    <div class="roll-stat">
+      <span class="stat-label">{{localize 'HKRPG.Chat.Dice'}}:</span>
+      <span class="stat-value">{{totalDice}}</span>
+    </div>
+    <div class="roll-stat">
+      <span class="stat-label">{{localize 'HKRPG.Chat.Successes'}}:</span>
+      <span class="stat-value success">{{successes}}</span>
+    </div>
+    {{#if rerolls}}
+    <div class="roll-stat">
+      <span class="stat-label">Перекаты:</span>
+      <span class="stat-value">{{rerolls}}</span>
+    </div>
+    {{/if}}
+  </div>
+
+  {{!-- Визуализация кубиков --}}
+  <div class="dice-rolls">
+    {{#each diceResults as |die index|}}
+    <div class="die {{die.class}}">
+      {{die.value}}
+    </div>
+    {{/each}}
+  </div>
+
+  {{!-- Детали броска (скрыты по умолчанию, раскрываются в Foundry) --}}
+  <div class="dice-tooltip">
+    <div class="tooltip-header">{{localize 'HKRPG.Chat.Roll'}}: {{formula}}</div>
+    <div class="tooltip-content">
+      {{result}}
+    </div>
+  </div>
+
+  {{!-- Кнопки действий (опционально) --}}
+  {{#if showButtons}}
+  <div class="roll-actions">
+    <button class="reroll-button" data-roll-id="{{rollId}}">
+      <i class="fas fa-redo"></i> {{localize 'HKRPG.UI.Roll'}}
+    </button>
+  </div>
+  {{/if}}
+</div>
+
+<style>
+  .hkrpg-roll.card {
+    background: var(--hk-bg-secondary);
+    border: 1px solid var(--hk-border);
+    border-left: 4px solid var(--hk-accent);
+    border-radius: 4px;
+    padding: 10px;
+    margin: 5px 0;
+  }
+
+  .hkrpg-roll h3 {
+    margin: 0 0 10px 0;
+    color: var(--hk-accent);
+    font-size: 1.2em;
+    border: none;
+  }
+
+  .roll-summary {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 10px;
+    padding: 5px;
+    background: var(--hk-bg-tertiary);
+    border-radius: 3px;
+  }
+
+  .roll-stat {
+    display: flex;
+    gap: 5px;
+  }
+
+  .stat-label {
+    color: var(--hk-text-muted);
+    font-size: 0.9em;
+  }
+
+  .stat-value {
+    color: var(--hk-text-primary);
+    font-weight: bold;
+  }
+
+  .stat-value.success {
+    color: var(--hk-accent);
+  }
+
+  .dice-rolls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+
+  .die {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #111;
+    border: 1px solid var(--hk-border);
+    border-radius: 3px;
+    font-weight: bold;
+    color: var(--hk-text-primary);
+  }
+
+  .die.success {
+    background: var(--hk-accent);
+    color: #000;
+    border-color: var(--hk-accent);
+  }
+
+  .die.failure {
+    background: #222;
+    color: #888;
+  }
+
+  .dice-tooltip {
+    background: #111;
+    padding: 5px;
+    border-radius: 3px;
+    font-size: 0.9em;
+    color: var(--hk-text-muted);
+  }
+
+  .tooltip-header {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: var(--hk-text-primary);
+  }
+
+  .roll-actions {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--hk-border);
+  }
+
+  .roll-actions button {
+    background: var(--hk-bg-secondary);
+    color: var(--hk-text-primary);
+    border: 1px solid var(--hk-border);
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.2s;
+  }
+
+  .roll-actions button:hover {
+    background: var(--hk-accent);
+    color: #000;
+    border-color: var(--hk-accent);
+  }
+</style>
