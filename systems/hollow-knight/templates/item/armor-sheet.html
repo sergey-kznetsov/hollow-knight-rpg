@@ -1,1 +1,78 @@
+<form class="{{cssClass}} flexcol" autocomplete="off">
+  {{!-- Sheet Header --}}
+  <header class="sheet-header">
+    <img class="profile-img" src="{{img}}" data-edit="img" title="{{name}}"/>
+    <div class="header-fields">
+      <h1 class="charname"><input name="name" type="text" value="{{name}}" placeholder="Название Брони"/></h1>
+      
+      <div class="grid grid-2col">
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Types.armor'}}</label>
+          <input type="text" value="{{localize 'HKRPG.Item.Types.armor'}}" disabled/>
+        </div>
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Armor.weight'}}</label>
+          <input type="number" name="system.weight.value" value="{{system.weight.value}}" data-dtype="Number"/>
+        </div>
+      </div>
+    </div>
+  </header>
 
+  {{!-- Sheet Tab Navigation --}}
+  <nav class="sheet-tabs tabs" data-group="primary">
+    <a class="item" data-tab="details">{{localize 'HKRPG.Sheet.Tabs.characteristics'}}</a>
+    <a class="item" data-tab="description">{{localize 'HKRPG.Sheet.Tabs.biography'}}</a>
+  </nav>
+
+  {{!-- Sheet Body --}}
+  <section class="sheet-body">
+    
+    {{!-- Details Tab --}}
+    <div class="tab active" data-group="primary" data-tab="details">
+      <div class="grid grid-2col">
+        {{!-- Защита (Впитывание) --}}
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Armor.protection'}}</label>
+          <input type="number" name="system.protection.value" value="{{system.protection.value}}" data-dtype="Number"/>
+        </div>
+
+        {{!-- Прочность --}}
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Armor.durability'}}</label>
+          <div class="grid grid-2col">
+            <input type="number" name="system.durability.value" value="{{system.durability.value}}" data-dtype="Number"/>
+            <span> / </span>
+            <input type="number" name="system.durability.max" value="{{system.durability.max}}" data-dtype="Number"/>
+          </div>
+        </div>
+
+        {{!-- Понижение Урона (ПУ) --}}
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Armor.pu'}}</label>
+          <input type="number" name="system.pu.value" value="{{system.pu.value}}" data-dtype="Number"/>
+        </div>
+
+        {{!-- Поглощение --}}
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Armor.absorption'}}</label>
+          <input type="number" name="system.absorption.value" value="{{system.absorption.value}}" data-dtype="Number"/>
+        </div>
+      </div>
+      
+      {{!-- Описание Эффектов --}}
+      <div class="resource" style="margin-top: 10px;">
+        <label>{{localize 'HKRPG.Item.Armor.description'}}</label>
+        <textarea name="system.description" data-dtype="String">{{system.description}}</textarea>
+      </div>
+    </div>
+
+    {{!-- Description Tab --}}
+    <div class="tab" data-group="primary" data-tab="description">
+      <div class="resource">
+        <label>{{localize 'HKRPG.Sheet.Sections.notes'}}</label>
+        <textarea name="system.description" data-dtype="String" style="height: 300px;">{{system.description}}</textarea>
+      </div>
+    </div>
+
+  </section>
+</form>
