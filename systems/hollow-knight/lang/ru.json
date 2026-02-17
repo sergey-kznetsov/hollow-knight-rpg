@@ -1,1 +1,287 @@
-
+{
+  "HKRPG": {
+    "Actor": {
+      "Types": {
+        "character": "Персонаж",
+        "npc": "НИП",
+        "creature": "Существо"
+      },
+      "Characteristics": {
+        "might": "Мощь",
+        "grace": "Грация",
+        "shell": "Панцирь",
+        "insight": "Проницательность"
+      },
+      "Pools": {
+        "hearts": "Сердца",
+        "soul": "Души",
+        "stamina": "Выносливость",
+        "satiety": "Сытость"
+      },
+      "Secondary": {
+        "speed": "Скорость",
+        "load": "Нагрузка",
+        "maneuverability": "Манёвренность",
+        "beltSize": "Размер Пояса",
+        "techniqueSlots": "Ячейки Техник",
+        "marks": "Метки",
+        "absorption": "Поглощение",
+        "horror": "Жуть",
+        "charm": "Привлекательность",
+        "hunger": "Голод"
+      },
+      "Combat": {
+        "initiative": "Инициатива",
+        "imbalance": "Дисбаланс",
+        "delayedDmg": "Отложенный урон"
+      },
+      "Paths": {
+        "military": "Военный",
+        "mystic": "Мистический",
+        "nail": "Гвоздь",
+        "needle": "Игла",
+        "fang": "Клык",
+        "hook": "Крюк",
+        "belly": "Чрево",
+        "shell": "Ракушка",
+        "sling": "Праща",
+        "flask": "Склянка",
+        "spire": "Шпиль",
+        "cloak": "Плащ",
+        "dreams": "Грёзы",
+        "nightmares": "Кошмары",
+        "bloom": "Цветение",
+        "thorn": "Шип",
+        "dust": "Пыль"
+      }
+    },
+    "Item": {
+      "Types": {
+        "weapon": "Оружие",
+        "armor": "Броня",
+        "charm": "Амулет",
+        "spell": "Заклинание",
+        "art": "Искусство",
+        "consumable": "Расходник",
+        "trait": "Черта",
+        "path": "Путь"
+      },
+      "Weapon": {
+        "quality": "Качество",
+        "damage": "Урон",
+        "weight": "Вес",
+        "type": "Тип",
+        "range": "Дальность",
+        "properties": "Свойства",
+        "durability": "Износ",
+        "types": {
+          "nail": "Гвоздь",
+          "needle": "Игла",
+          "fang": "Клык",
+          "hook": "Крюк",
+          "sling": "Праща",
+          "natural": "Природное"
+        },
+        "ranges": {
+          "melee": "Ближний",
+          "reach": "Досягаемость",
+          "ranged": "Дальний"
+        }
+      },
+      "Armor": {
+        "protection": "Защита",
+        "durability": "Прочность",
+        "weight": "Вес",
+        "pu": "Понижение Урона",
+        "absorption": "Поглощение"
+      },
+      "Charm": {
+        "slots": "Стоимость Меток",
+        "rarity": "Редкость",
+        "description": "Описание",
+        "rarities": {
+          "common": "Обычный",
+          "uncommon": "Необычный",
+          "rare": "Редкий",
+          "unique": "Уникальный",
+          "legendary": "Легендарный",
+          "cursed": "Проклятый",
+          "fragile": "Хрупкий"
+        }
+      },
+      "Spell": {
+        "cost": "Стоимость Душ",
+        "complexity": "Сложность",
+        "path": "Путь",
+        "range": "Дальность",
+        "damage": "Урон",
+        "duration": "Длительность",
+        "ranges": {
+          "self": "На себя",
+          "touch": "Касание",
+          "close": "Близко",
+          "far": "Далеко",
+          "sense": "Чувство"
+        },
+        "durations": {
+          "concentration": "Концентрация",
+          "brief": "Краткая",
+          "scene": "Сцена",
+          "rest": "Отдых",
+          "life": "Жизнь",
+          "eternity": "Вечность"
+        }
+      },
+      "Art": {
+        "cost": "Стоимость Выносливости",
+        "path": "Путь",
+        "type": "Тип",
+        "description": "Описание",
+        "types": {
+          "standard": "Обычное",
+          "enhancement": "Усиление",
+          "reaction": "Реакция",
+          "unique": "Уникальное"
+        }
+      },
+      "Consumable": {
+        "quantity": "Количество",
+        "effect": "Эффект",
+        "satiety": "Сытость"
+      },
+      "Trait": {
+        "hungerCost": "Стоимость Голода",
+        "description": "Описание",
+        "type": "Тип Черты",
+        "types": {
+          "general": "Общая",
+          "characteristic": "Характеристики",
+          "mind": "Разума",
+          "physiological": "Физиологическая",
+          "sense": "Чувств",
+          "mystic": "Мистическая",
+          "body": "Тела",
+          "movement": "Движения",
+          "defense": "Природной Защиты"
+        }
+      },
+      "Path": {
+        "rank": "Ранг",
+        "type": "Тип Пути",
+        "abilities": "Способности"
+      }
+    },
+    "Sheet": {
+      "Actor": {
+        "Character": "Лист Персонажа",
+        "NPC": "Лист НИП",
+        "Creature": "Лист Существа"
+      },
+      "Item": {
+        "Weapon": "Лист Оружия",
+        "Armor": "Лист Брони",
+        "Charm": "Лист Амулета",
+        "Spell": "Лист Заклинания",
+        "Art": "Лист Искусства",
+        "Consumable": "Лист Расходника",
+        "Trait": "Лист Черты",
+        "Path": "Лист Пути"
+      },
+      "Tabs": {
+        "characteristics": "Характеристики",
+        "inventory": "Инвентарь",
+        "paths": "Пути",
+        "traits": "Черты",
+        "biography": "Биография",
+        "combat": "Бой",
+        "magic": "Магия"
+      },
+      "Sections": {
+        "equipment": "Снаряжение",
+        "techniques": "Техники",
+        "arts": "Искусства",
+        "spells": "Заклинания",
+        "charms": "Амулеты",
+        "notes": "Заметки"
+      }
+    },
+    "Chat": {
+      "Roll": "Бросок",
+      "Success": "Успех",
+      "Successes": "Успехов",
+      "Dice": "Кубов",
+      "Characteristic": "Характеристика",
+      "Check": "Проверка",
+      "Save": "Спасбросок",
+      "Damage": "Урон",
+      "Healing": "Лечение",
+      "Initiative": "Инициатива"
+    },
+    "Combat": {
+      "Actions": {
+        "attack": "Атака",
+        "defend": "Защита",
+        "parry": "Парирование",
+        "dodge": "Уклонение",
+        "focus": "Фокусировка",
+        "move": "Перемещение",
+        "dash": "Рывок",
+        "jump": "Прыжок",
+        "grapple": "Захват",
+        "useItem": "Использовать Предмет",
+        "castSpell": "Применить Заклинание",
+        "useArt": "Применить Искусство"
+      },
+      "States": {
+        "imbalance": "Дисбаланс",
+        "delayedDamage": "Отложенный Урон",
+        "paralyzed": "Парализован",
+        "poisoned": "Отравлен",
+        "burning": "Горит",
+        "bleeding": "Кровотечение",
+        "grabbed": "Схвачен",
+        "asleep": "Спит",
+        "unconscious": "Без сознания",
+        "dead": "Мёртв"
+      }
+    },
+    "UI": {
+      "Edit": "Редактировать",
+      "Delete": "Удалить",
+      "Add": "Добавить",
+      "Save": "Сохранить",
+      "Cancel": "Отмена",
+      "Close": "Закрыть",
+      "Roll": "Бросить",
+      "Config": "Настройки",
+      "Macro": "Макрос",
+      "Create": "Создать",
+      "Import": "Импорт",
+      "Export": "Экспорт"
+    },
+    "Settings": {
+      "Title": "Настройки HKRPG",
+      "Difficulty": "Сложность",
+      "ShowDice": "Показывать Кубики",
+      "AutoDamage": "Авто-Урон",
+      "AutoHealing": "Авто-Лечение",
+      "InitiativeFormula": "Формула Инициативы"
+    },
+    "Errors": {
+      "NoDice": "Недостаточно кубиков для броска",
+      "NoStamina": "Недостаточно выносливости",
+      "NoSoul": "Недостаточно душ",
+      "NoHearts": "Недостаточно сердец",
+      "InvalidTarget": "Неверная цель",
+      "SystemNotReady": "Система ещё не готова"
+    },
+    "Notifications": {
+      "RollMade": "Бросок совершён",
+      "DamageDealt": "Урон нанесён",
+      "HealingApplied": "Лечение применено",
+      "StaminaRestored": "Выносливость восстановлена",
+      "TurnStarted": "Ход начался",
+      "TurnEnded": "Ход завершён"
+    }
+  }
+}
