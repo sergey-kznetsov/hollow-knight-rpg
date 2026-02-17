@@ -1,1 +1,29 @@
-
+{
+  "Actor": {
+    "types": ["character", "npc", "creature"],
+    "character": {
+      "data": {
+        "characteristics": {
+          "might": {"value": 3, "label": "Мощь"},
+          "grace": {"value": 3, "label": "Грация"},
+          "shell": {"value": 3, "label": "Панцирь"},
+          "insight": {"value": 3, "label": "Проницательность"}
+        },
+        "pools": {
+          "hearts": {"value": 6, "max": 6},
+          "soul": {"value": 3, "max": 3},
+          "stamina": {"value": 3, "max": 3}
+        }
+      }
+    }
+  },
+  "Item": {
+    "types": ["weapon", "armor", "charm", "spell"],
+    "weapon": {
+      "data": {
+        "quality": {"value": 1},
+        "damage": {"value": 3}
+      }
+    }
+  }
+}
