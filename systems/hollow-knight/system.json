@@ -42,11 +42,11 @@
       "system": "hollow-knight"
     }
   ],
-  "manifest": "https://raw.githubusercontent.com/USERNAME/REPO/main/systems/hollow-knight/system.json",
-  "download": "https://github.com/USERNAME/REPO/archive/main.zip",
+  "manifest": "https://raw.githubusercontent.com/sergey-kznetsov/hollow-knight-rpg/main/systems/hollow-knight/system.json",
+  "download": "https://github.com/sergey-kznetsov/hollow-knight-rpg/archive/main.zip",
   "license": "LICENSE.txt",
   "readme": "README.md",
-  "bugs": "https://github.com/USERNAME/REPO/issues",
+  "bugs": "https://github.com/sergey-kznetsov/hollow-knight-rpg/issues",
   "changelog": "CHANGELOG.md",
   "background": "assets/background.jpg",
   "grid": {
