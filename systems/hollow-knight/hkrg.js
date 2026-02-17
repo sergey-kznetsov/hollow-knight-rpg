@@ -1,17 +1,3 @@
-Принято. Вот финальный, полностью обновлённый `systems/hollow-knight/hkrg.js`.
-
-Этот код включает:
-1.  **Динамический выбор шаблонов** для всех типов Актеров (Character, NPC, Creature) и Предметов (Weapon, Armor, Charm, Spell, Art, Consumable, Trait, Path).
-2.  **Механику бросков HKRPG** (пул d6, успех 5-6, дробные характеристики).
-3.  **Боевую автоматизацию** (Инициатива по Грации, сброс Выносливости).
-4.  **Расчет урона** (Понижение Урона, Поглощение).
-5.  **Локализацию** через `game.i18n.localize()`.
-6.  **Управление предметами** (создание, редактирование, удаление).
-7.  **Предупреждения о Вратах Смерти**.
-
-Замени всё содержимое файла `systems/hollow-knight/hkrg.js` на этот код:
-
-```javascript
 // systems/hollow-knight/hkrg.js
 
 Hooks.once("init", function () {
@@ -291,39 +277,3 @@ Hooks.on("preUpdateActor", (actor, updateData, options, userId) => {
     }
   }
 });
-```
-
-### Что делает этот код:
-
-| Функция | Описание |
-|---------|----------|
-| `get template()` (Actor) | Выбирает правильный HTML-шаблон (`character-sheet.html`, `npc-sheet.html`, `creature-sheet.html`) в зависимости от типа актера |
-| `get template()` (Item) | Выбирает правильный HTML-шаблон (`weapon-sheet.html`, `armor-sheet.html`, etc.) в зависимости от типа предмета |
-| `hkrpgRoll()` | Бросает пул d6, считает успехи (5-6), учитывает дробные характеристики (.5 = перекат) |
-| `hkrpgInitiative()` | Считает инициативу как сумму `Grace d6` (правило стр. 116) |
-| `createCombatant` | Автоматически рассчитывает инициативу при добавлении в бой |
-| `updateCombat` | Сбрасывает Выносливость на максимум в начале хода |
-| `preUpdateActor` | Предупреждает о Вратах Смерти при падении Сердец до 0 |
-
-### Что делать дальше:
-1. **Замени файл** `hkrg.js` полностью.
-2. **Убедись**, что все шаблоны лежат по путям:
-   - `systems/hollow-knight/templates/actor/character-sheet.html`
-   - `systems/hollow-knight/templates/actor/npc-sheet.html`
-   - `systems/hollow-knight/templates/actor/creature-sheet.html`
-   - `systems/hollow-knight/templates/item/weapon-sheet.html`
-   - `systems/hollow-knight/templates/item/armor-sheet.html`
-   - `systems/hollow-knight/templates/item/charm-sheet.html`
-   - `systems/hollow-knight/templates/item/spell-sheet.html`
-   - `systems/hollow-knight/templates/item/art-sheet.html`
-   - `systems/hollow-knight/templates/item/consumable-sheet.html`
-   - `systems/hollow-knight/templates/item/trait-sheet.html`
-   - `systems/hollow-knight/templates/item/path-sheet.html`
-3. **Перезагрузи мир** в Foundry (или переустанови систему по манифесту).
-4. **Тест:**
-   - Создай Актера типа "Character" → открой лист → кликни по Мощи → бросок в чат.
-   - Создай Комбат → добавь актера → инициатива = сумма Грации d6.
-   - Переключи ход → Выносливость восстановилась.
-   - Создай Предмет типа "Weapon" → открой лист → должен открыться лист оружия.
-
-Если всё работает — система готова к наполнению контентом (компендиумы с предметами, монстрами из Бестиария).
