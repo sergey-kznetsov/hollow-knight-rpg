@@ -1,40 +1,303 @@
-<form class="{{cssClass}}" autocomplete="off">
+<form class="{{cssClass}} flexcol" autocomplete="off">
+  {{!-- Sheet Header --}}
   <header class="sheet-header">
     <img class="profile-img" src="{{img}}" data-edit="img" title="{{name}}"/>
     <div class="header-fields">
-      <h1 class="charname"><input name="name" type="text" value="{{name}}" placeholder="Name"/></h1>
+      <h1 class="charname"><input name="name" type="text" value="{{name}}" placeholder="Название Предмета"/></h1>
+      
       <div class="grid grid-2col">
         <div class="resource">
-          <label>Тип</label>
+          <label>{{localize 'HKRPG.Item.Types.'}}{{type}}</label>
           <select name="type">
             {{#select type}}
-            <option value="weapon">Оружие</option>
-            <option value="armor">Броня</option>
-            <option value="charm">Амулет</option>
-            <option value="spell">Заклинание</option>
+            <option value="weapon">{{localize 'HKRPG.Item.Types.weapon'}}</option>
+            <option value="armor">{{localize 'HKRPG.Item.Types.armor'}}</option>
+            <option value="charm">{{localize 'HKRPG.Item.Types.charm'}}</option>
+            <option value="spell">{{localize 'HKRPG.Item.Types.spell'}}</option>
+            <option value="art">{{localize 'HKRPG.Item.Types.art'}}</option>
+            <option value="consumable">{{localize 'HKRPG.Item.Types.consumable'}}</option>
+            <option value="trait">{{localize 'HKRPG.Item.Types.trait'}}</option>
+            <option value="path">{{localize 'HKRPG.Item.Types.path'}}</option>
             {{/select}}
           </select>
+        </div>
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Armor.weight'}}</label>
+          <input type="number" name="system.weight.value" value="{{system.weight.value}}" data-dtype="Number"/>
         </div>
       </div>
     </div>
   </header>
 
+  {{!-- Sheet Tab Navigation --}}
+  <nav class="sheet-tabs tabs" data-group="primary">
+    <a class="item" data-tab="details">{{localize 'HKRPG.Sheet.Tabs.characteristics'}}</a>
+    <a class="item" data-tab="description">{{localize 'HKRPG.Sheet.Tabs.biography'}}</a>
+  </nav>
+
+  {{!-- Sheet Body --}}
   <section class="sheet-body">
-    <div class="resource">
-      <label>Урон</label>
-      <input type="text" name="system.damage.value" value="{{system.damage.value}}" data-dtype="Number"/>
+    
+    {{!-- Details Tab --}}
+    <div class="tab active" data-group="primary" data-tab="details">
+      
+      {{!-- Оружие --}}
+      {{#if (eq type "weapon")}}
+      <div class="grid grid-2col">
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Weapon.quality'}}</label>
+          <input type="number" name="system.quality.value" value="{{system.quality.value}}" data-dtype="Number"/>
+        </div>
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Weapon.damage'}}</label>
+          <input type="number" name="system.damage.value" value="{{system.damage.value}}" data-dtype="Number"/>
+        </div>
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Weapon.type'}}</label>
+          <select name="system.type.value">
+            {{#select system.type.value}}
+            <option value="nail">{{localize 'HKRPG.Item.Weapon.types.nail'}}</option>
+            <option value="needle">{{localize 'HKRPG.Item.Weapon.types.needle'}}</option>
+            <option value="fang">{{localize 'HKRPG.Item.Weapon.types.fang'}}</option>
+            <option value="hook">{{localize 'HKRPG.Item.Weapon.types.hook'}}</option>
+            <option value="sling">{{localize 'HKRPG.Item.Weapon.types.sling'}}</option>
+            <option value="natural">{{localize 'HKRPG.Item.Weapon.types.natural'}}</option>
+            {{/select}}
+          </select>
+        </div>
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Weapon.range'}}</label>
+          <select name="system.range.value">
+            {{#select system.range.value}}
+            <option value="melee">{{localize 'HKRPG.Item.Weapon.ranges.melee'}}</option>
+            <option value="reach">{{localize 'HKRPG.Item.Weapon.ranges.reach'}}</option>
+            <option value="ranged">{{localize 'HKRPG.Item.Weapon.ranges.ranged'}}</option>
+            {{/select}}
+          </select>
+        </div>
+      </div>
+      <div class="resource" style="margin-top: 10px;">
+        <label>{{localize 'HKRPG.Item.Weapon.properties'}}</label>
+        <textarea name="system.properties.value" data-dtype="String">{{system.properties.value}}</textarea>
+      </div>
+      {{/if}}
+
+      {{!-- Броня --}}
+      {{#if (eq type "armor")}}
+      <div class="grid grid-2col">
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Armor.protection'}}</label>
+          <input type="number" name="system.protection.value" value="{{system.protection.value}}" data-dtype="Number"/>
+        </div>
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Armor.pu'}}</label>
+          <input type="number" name="system.pu.value" value="{{system.pu.value}}" data-dtype="Number"/>
+        </div>
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Armor.absorption'}}</label>
+          <input type="number" name="system.absorption.value" value="{{system.absorption.value}}" data-dtype="Number"/>
+        </div>
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Armor.durability'}}</label>
+          <div class="grid grid-2col">
+            <input type="number" name="system.durability.value" value="{{system.durability.value}}" data-dtype="Number"/>
+            <span> / </span>
+            <input type="number" name="system.durability.max" value="{{system.durability.max}}" data-dtype="Number"/>
+          </div>
+        </div>
+      </div>
+      {{/if}}
+
+      {{!-- Амулет --}}
+      {{#if (eq type "charm")}}
+      <div class="grid grid-2col">
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Charm.slots'}}</label>
+          <input type="number" name="system.slots.value" value="{{system.slots.value}}" data-dtype="Number"/>
+        </div>
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Charm.rarity'}}</label>
+          <select name="system.rarity.value">
+            {{#select system.rarity.value}}
+            <option value="common">{{localize 'HKRPG.Item.Charm.rarities.common'}}</option>
+            <option value="uncommon">{{localize 'HKRPG.Item.Charm.rarities.uncommon'}}</option>
+            <option value="rare">{{localize 'HKRPG.Item.Charm.rarities.rare'}}</option>
+            <option value="unique">{{localize 'HKRPG.Item.Charm.rarities.unique'}}</option>
+            <option value="legendary">{{localize 'HKRPG.Item.Charm.rarities.legendary'}}</option>
+            <option value="cursed">{{localize 'HKRPG.Item.Charm.rarities.cursed'}}</option>
+            <option value="fragile">{{localize 'HKRPG.Item.Charm.rarities.fragile'}}</option>
+            {{/select}}
+          </select>
+        </div>
+      </div>
+      <div class="resource" style="margin-top: 10px;">
+        <label>{{localize 'HKRPG.Item.Charm.description'}}</label>
+        <textarea name="system.description.value" data-dtype="String">{{system.description.value}}</textarea>
+      </div>
+      {{/if}}
+
+      {{!-- Заклинание --}}
+      {{#if (eq type "spell")}}
+      <div class="grid grid-2col">
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Spell.cost'}}</label>
+          <input type="number" name="system.cost.value" value="{{system.cost.value}}" data-dtype="Number"/>
+        </div>
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Spell.complexity'}}</label>
+          <input type="number" name="system.complexity.value" value="{{system.complexity.value}}" data-dtype="Number"/>
+        </div>
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Spell.path'}}</label>
+          <select name="system.path.value">
+            {{#select system.path.value}}
+            <option value="spire">{{localize 'HKRPG.Actor.Paths.spire'}}</option>
+            <option value="cloak">{{localize 'HKRPG.Actor.Paths.cloak'}}</option>
+            <option value="dreams">{{localize 'HKRPG.Actor.Paths.dreams'}}</option>
+            <option value="nightmares">{{localize 'HKRPG.Actor.Paths.nightmares'}}</option>
+            <option value="bloom">{{localize 'HKRPG.Actor.Paths.bloom'}}</option>
+            <option value="thorn">{{localize 'HKRPG.Actor.Paths.thorn'}}</option>
+            <option value="dust">{{localize 'HKRPG.Actor.Paths.dust'}}</option>
+            {{/select}}
+          </select>
+        </div>
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Spell.range'}}</label>
+          <select name="system.range.value">
+            {{#select system.range.value}}
+            <option value="self">{{localize 'HKRPG.Item.Spell.ranges.self'}}</option>
+            <option value="touch">{{localize 'HKRPG.Item.Spell.ranges.touch'}}</option>
+            <option value="close">{{localize 'HKRPG.Item.Spell.ranges.close'}}</option>
+            <option value="far">{{localize 'HKRPG.Item.Spell.ranges.far'}}</option>
+            <option value="sense">{{localize 'HKRPG.Item.Spell.ranges.sense'}}</option>
+            {{/select}}
+          </select>
+        </div>
+      </div>
+      <div class="resource" style="margin-top: 10px;">
+        <label>{{localize 'HKRPG.Item.Spell.damage'}}</label>
+        <input type="number" name="system.damage.value" value="{{system.damage.value}}" data-dtype="Number"/>
+      </div>
+      {{/if}}
+
+      {{!-- Искусство --}}
+      {{#if (eq type "art")}}
+      <div class="grid grid-2col">
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Art.cost'}}</label>
+          <input type="number" name="system.cost.value" value="{{system.cost.value}}" data-dtype="Number"/>
+        </div>
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Art.path'}}</label>
+          <select name="system.path.value">
+            {{#select system.path.value}}
+            <option value="nail">{{localize 'HKRPG.Actor.Paths.nail'}}</option>
+            <option value="needle">{{localize 'HKRPG.Actor.Paths.needle'}}</option>
+            <option value="fang">{{localize 'HKRPG.Actor.Paths.fang'}}</option>
+            <option value="hook">{{localize 'HKRPG.Actor.Paths.hook'}}</option>
+            <option value="natural">{{localize 'HKRPG.Item.Weapon.types.natural'}}</option>
+            {{/select}}
+          </select>
+        </div>
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Art.type'}}</label>
+          <select name="system.type.value">
+            {{#select system.type.value}}
+            <option value="standard">{{localize 'HKRPG.Item.Art.types.standard'}}</option>
+            <option value="enhancement">{{localize 'HKRPG.Item.Art.types.enhancement'}}</option>
+            <option value="reaction">{{localize 'HKRPG.Item.Art.types.reaction'}}</option>
+            <option value="unique">{{localize 'HKRPG.Item.Art.types.unique'}}</option>
+            {{/select}}
+          </select>
+        </div>
+      </div>
+      <div class="resource" style="margin-top: 10px;">
+        <label>{{localize 'HKRPG.Item.Art.description'}}</label>
+        <textarea name="system.description" data-dtype="String">{{system.description}}</textarea>
+      </div>
+      {{/if}}
+
+      {{!-- Расходник --}}
+      {{#if (eq type "consumable")}}
+      <div class="grid grid-2col">
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Consumable.quantity'}}</label>
+          <input type="number" name="system.quantity.value" value="{{system.quantity.value}}" data-dtype="Number"/>
+        </div>
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Consumable.satiety'}}</label>
+          <input type="number" name="system.satiety.value" value="{{system.satiety.value}}" data-dtype="Number"/>
+        </div>
+      </div>
+      <div class="resource" style="margin-top: 10px;">
+        <label>{{localize 'HKRPG.Item.Consumable.effect'}}</label>
+        <textarea name="system.effect.value" data-dtype="String">{{system.effect.value}}</textarea>
+      </div>
+      {{/if}}
+
+      {{!-- Черта --}}
+      {{#if (eq type "trait")}}
+      <div class="grid grid-2col">
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Trait.hungerCost'}}</label>
+          <input type="number" name="system.hungerCost.value" value="{{system.hungerCost.value}}" data-dtype="Number"/>
+        </div>
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Trait.type'}}</label>
+          <select name="system.type.value">
+            {{#select system.type.value}}
+            <option value="general">{{localize 'HKRPG.Item.Trait.types.general'}}</option>
+            <option value="characteristic">{{localize 'HKRPG.Item.Trait.types.characteristic'}}</option>
+            <option value="mind">{{localize 'HKRPG.Item.Trait.types.mind'}}</option>
+            <option value="physiological">{{localize 'HKRPG.Item.Trait.types.physiological'}}</option>
+            <option value="sense">{{localize 'HKRPG.Item.Trait.types.sense'}}</option>
+            <option value="mystic">{{localize 'HKRPG.Item.Trait.types.mystic'}}</option>
+            <option value="body">{{localize 'HKRPG.Item.Trait.types.body'}}</option>
+            <option value="movement">{{localize 'HKRPG.Item.Trait.types.movement'}}</option>
+            <option value="defense">{{localize 'HKRPG.Item.Trait.types.defense'}}</option>
+            {{/select}}
+          </select>
+        </div>
+      </div>
+      <div class="resource" style="margin-top: 10px;">
+        <label>{{localize 'HKRPG.Item.Trait.description'}}</label>
+        <textarea name="system.description" data-dtype="String">{{system.description}}</textarea>
+      </div>
+      {{/if}}
+
+      {{!-- Путь --}}
+      {{#if (eq type "path")}}
+      <div class="grid grid-2col">
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Path.rank'}}</label>
+          <input type="number" name="system.rank.value" value="{{system.rank.value}}" data-dtype="Number"/>
+        </div>
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Path.type'}}</label>
+          <select name="system.type.value">
+            {{#select system.type.value}}
+            <option value="military">{{localize 'HKRPG.Actor.Paths.military'}}</option>
+            <option value="mystic">{{localize 'HKRPG.Actor.Paths.mystic'}}</option>
+            {{/select}}
+          </select>
+        </div>
+      </div>
+      {{/if}}
+
+      {{!-- Описание для всех типов --}}
+      <div class="resource" style="margin-top: 10px;">
+        <label>{{localize 'HKRPG.Sheet.Sections.notes'}}</label>
+        <textarea name="system.description" data-dtype="String" style="height: 150px;">{{system.description}}</textarea>
+      </div>
     </div>
-    <div class="resource">
-      <label>Качество</label>
-      <input type="text" name="system.quality.value" value="{{system.quality.value}}" data-dtype="Number"/>
+
+    {{!-- Description Tab --}}
+    <div class="tab" data-group="primary" data-tab="description">
+      <div class="resource">
+        <label>{{localize 'HKRPG.Sheet.Sections.notes'}}</label>
+        <textarea name="system.description" data-dtype="String" style="height: 400px;">{{system.description}}</textarea>
+      </div>
     </div>
-    <div class="resource">
-      <label>Вес</label>
-      <input type="text" name="system.weight.value" value="{{system.weight.value}}" data-dtype="Number"/>
-    </div>
-    <div class="resource">
-      <label>Описание</label>
-      <textarea name="system.description" data-dtype="String">{{system.description}}</textarea>
-    </div>
+
   </section>
 </form>
