@@ -1,1 +1,85 @@
 
+<form class="{{cssClass}} flexcol" autocomplete="off">
+  {{!-- Header --}}
+  <header class="sheet-header">
+    <img class="profile-img" src="{{img}}" data-edit="img" title="{{name}}"/>
+    <div class="header-fields">
+      <h1 class="charname"><input name="name" type="text" value="{{name}}" placeholder="Name"/></h1>
+      <div class="grid grid-2col">
+        <div class="resource">
+          <label class="resource-label">Сердца</label>
+          <input type="text" name="system.pools.hearts.value" value="{{system.pools.hearts.value}}" data-dtype="Number"/>
+          <span> / </span>
+          <input type="text" name="system.pools.hearts.max" value="{{system.pools.hearts.max}}" data-dtype="Number"/>
+        </div>
+        <div class="resource">
+          <label class="resource-label">Души</label>
+          <input type="text" name="system.pools.soul.value" value="{{system.pools.soul.value}}" data-dtype="Number"/>
+          <span> / </span>
+          <input type="text" name="system.pools.soul.max" value="{{system.pools.soul.max}}" data-dtype="Number"/>
+        </div>
+        <div class="resource">
+          <label class="resource-label">Выносливость</label>
+          <input type="text" name="system.pools.stamina.value" value="{{system.pools.stamina.value}}" data-dtype="Number"/>
+          <span> / </span>
+          <input type="text" name="system.pools.stamina.max" value="{{system.pools.stamina.max}}" data-dtype="Number"/>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  {{!-- Sheet Tab Navigation --}}
+  <nav class="sheet-tabs tabs" data-group="primary">
+    <a class="item" data-tab="characteristics">Характеристики</a>
+    <a class="item" data-tab="inventory">Инвентарь</a>
+    <a class="item" data-tab="traits">Черты и Пути</a>
+  </nav>
+
+  {{!-- Sheet Body --}}
+  <section class="sheet-body">
+    {{!-- Characteristics Tab --}}
+    <div class="tab" data-group="primary" data-tab="characteristics">
+      <div class="grid grid-4col">
+        {{#each system.characteristics as |char key|}}
+        <div class="characteristic">
+          <label>{{char.label}}</label>
+          <input type="text" name="system.characteristics.{{key}}.value" value="{{char.value}}" data-dtype="Number"/>
+        </div>
+        {{/each}}
+      </div>
+      <div class="grid grid-2col">
+        <div>
+          <label>Скорость</label>
+          <input type="text" name="system.secondary.speed.value" value="{{system.secondary.speed.value}}" data-dtype="Number"/>
+        </div>
+        <div>
+          <label>Голод</label>
+          <input type="text" name="system.secondary.hunger.value" value="{{system.secondary.hunger.value}}" data-dtype="Number"/>
+        </div>
+      </div>
+    </div>
+
+    {{!-- Inventory Tab --}}
+    <div class="tab" data-group="primary" data-tab="inventory">
+      <ol class="items-list">
+        {{#each items as |item id|}}
+        <li class="item flexrow" data-item-id="{{item._id}}">
+          <div class="item-name">
+            <img src="{{item.img}}" width="24" height="24"/>
+            {{item.name}}
+          </div>
+          <div class="item-controls">
+            <a class="item-control item-edit" title="Edit"><i class="fas fa-edit"></i></a>
+            <a class="item-control item-delete" title="Delete"><i class="fas fa-trash"></i></a>
+          </div>
+        </li>
+        {{/each}}
+      </ol>
+    </div>
+
+    {{!-- Traits Tab --}}
+    <div class="tab" data-group="primary" data-tab="traits">
+      <textarea name="system.traits.notes" data-dtype="String">{{system.traits.notes}}</textarea>
+    </div>
+  </section>
+</form>
