@@ -3,32 +3,92 @@
 :root {
   --hk-bg-primary: #1a1a1a;
   --hk-bg-secondary: #2b2b2b;
+  --hk-bg-tertiary: #333333;
   --hk-text-primary: #e0e0e0;
-  --hk-accent: #f0a500; /* Янтарный цвет Души */
-  --hk-heart: #c93838;
-  --hk-stamina: #6b8c42;
-  --hk-border: #444;
-  --font-primary: 'Signika', sans-serif; /* Стандартный шрифт Foundry */
+  --hk-text-muted: #aaaaaa;
+  --hk-accent: #f0a500; /* Янтарь (Душа) */
+  --hk-heart: #c93838;  /* Сердца */
+  --hk-stamina: #6b8c42; /* Выносливость */
+  --hk-border: #444444;
+  --hk-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --font-primary: 'Signika', sans-serif;
 }
 
-/* --- Общие стили окна --- */
+/* --- Общие стили окна системы --- */
 .sheet.hollow-knight {
   background: var(--hk-bg-primary);
   color: var(--hk-text-primary);
   font-family: var(--font-primary);
+  min-width: 450px;
+  min-height: 500px;
 }
 
 .sheet.hollow-knight .window-content {
   background: var(--hk-bg-primary);
   padding: 10px;
+  overflow-y: auto;
 }
 
 .sheet.hollow-knight h1, 
 .sheet.hollow-knight h2, 
-.sheet.hollow-knight h3 {
+.sheet.hollow-knight h3, 
+.sheet.hollow-knight h4 {
   color: var(--hk-accent);
   border-bottom: 1px solid var(--hk-border);
+  margin-top: 0;
   margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* --- Header (Изображение и Имя) --- */
+.sheet-header {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background: var(--hk-bg-secondary);
+  border: 1px solid var(--hk-border);
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.profile-img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border: 2px solid var(--hk-accent);
+  border-radius: 4px;
+  margin-right: 15px;
+  background: #000;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.profile-img:hover {
+  border-color: #fff;
+}
+
+.header-fields {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.charname input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--hk-border);
+  color: #fff;
+  font-size: 1.5em;
+  font-weight: bold;
+  padding: 5px;
+}
+
+.charname input:focus {
+  outline: none;
+  border-bottom-color: var(--hk-accent);
 }
 
 /* --- Характеристики (Мощь, Грация, Панцирь, Проницательность) --- */
@@ -48,22 +108,33 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
+  background: var(--hk-bg-tertiary);
+  padding: 5px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.hk-characteristic:hover {
+  background: #444;
 }
 
 .hk-characteristic label {
-  font-size: 0.9em;
-  color: #aaa;
+  font-size: 0.8em;
+  color: var(--hk-text-muted);
   margin-bottom: 5px;
+  text-transform: uppercase;
 }
 
 .hk-characteristic input {
-  width: 50px;
+  width: 40px;
   text-align: center;
   background: #111;
   color: var(--hk-accent);
   border: 1px solid var(--hk-border);
   border-radius: 3px;
   font-weight: bold;
+  font-size: 1.1em;
 }
 
 /* --- Запасы (Сердца, Души, Выносливость) --- */
@@ -81,105 +152,182 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 5px;
 }
 
 .hk-pool label {
-  font-size: 0.8em;
+  font-size: 0.75em;
   text-transform: uppercase;
   letter-spacing: 1px;
-  margin-bottom: 5px;
+  color: var(--hk-text-muted);
 }
 
 .hk-pool input {
-  width: 60px;
+  width: 50px;
   text-align: center;
   background: #111;
   border: 1px solid var(--hk-border);
   border-radius: 3px;
   font-weight: bold;
+  font-size: 1.1em;
 }
 
 .hk-pool.hearts input { color: var(--hk-heart); }
 .hk-pool.soul input { color: #fff; }
 .hk-pool.stamina input { color: var(--hk-stamina); }
 
-/* --- Вкладки и навигация --- */
-.sheet.hollow-knight .tabs {
+/* --- Вкладки (Tabs) --- */
+.sheet-tabs {
   display: flex;
   justify-content: flex-start;
-  border-bottom: 1px solid var(--hk-border);
+  border-bottom: 2px solid var(--hk-border);
   margin-bottom: 15px;
-}
-
-.sheet.hollow-knight .item {
-  background: var(--hk-bg-secondary);
-  border: 1px solid var(--hk-border);
-  padding: 5px 10px;
-  margin-right: 5px;
-  cursor: pointer;
-  border-radius: 3px 3px 0 0;
-}
-
-.sheet.hollow-knight .item.active {
-  background: var(--hk-accent);
-  color: #000;
-  font-weight: bold;
-}
-
-/* --- Список предметов/черт --- */
-.hk-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.hk-list li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 5px;
-  border-bottom: 1px solid #333;
-}
-
-.hk-list li:hover {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.hk-list .item-name {
-  flex-grow: 1;
-  font-weight: bold;
-}
-
-.hk-list .item-controls {
-  display: flex;
   gap: 5px;
 }
 
-.hk-list .item-controls a {
-  color: #888;
-  font-size: 0.8em;
+.sheet-tabs .item {
+  background: var(--hk-bg-secondary);
+  border: 1px solid var(--hk-border);
+  padding: 8px 15px;
+  cursor: pointer;
+  border-radius: 4px 4px 0 0;
+  color: var(--hk-text-muted);
+  font-weight: bold;
+  transition: all 0.2s;
 }
 
-.hk-list .item-controls a:hover {
+.sheet-tabs .item:hover {
+  background: #333;
+  color: #fff;
+}
+
+.sheet-tabs .item.active {
+  background: var(--hk-accent);
+  color: #000;
+  border-color: var(--hk-accent);
+}
+
+.tab {
+  display: none;
+}
+
+.tab.active {
+  display: block;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* --- Списки предметов (Inventory) --- */
+.hk-list, .items-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.hk-list li, .items-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background: var(--hk-bg-secondary);
+  border: 1px solid var(--hk-border);
+  border-radius: 3px;
+  transition: background 0.2s;
+}
+
+.hk-list li:hover, .items-list li:hover {
+  background: var(--hk-bg-tertiary);
+  border-color: var(--hk-accent);
+}
+
+.item-name {
+  flex-grow: 1;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.item-name img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  background: #000;
+  border-radius: 3px;
+}
+
+.item-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.item-controls a {
+  color: var(--hk-text-muted);
+  font-size: 0.9em;
+  transition: color 0.2s;
+}
+
+.item-controls a:hover {
   color: var(--hk-accent);
+}
+
+/* --- Вторичные статы (Скорость, Нагрузка и т.д.) --- */
+.hk-secondary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+  background: var(--hk-bg-secondary);
+  padding: 10px;
+  border: 1px solid var(--hk-border);
+  border-radius: 4px;
+}
+
+.hk-secondary .resource {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.hk-secondary label {
+  font-size: 0.75em;
+  color: var(--hk-text-muted);
+}
+
+.hk-secondary input {
+  background: #111;
+  border: 1px solid var(--hk-border);
+  color: #fff;
+  padding: 3px;
+  border-radius: 3px;
+  text-align: center;
 }
 
 /* --- Чат карточки (Броски) --- */
 .chat-message.hollow-knight {
   background: var(--hk-bg-secondary);
   border: 1px solid var(--hk-border);
+  border-left: 4px solid var(--hk-accent);
   color: var(--hk-text-primary);
+  padding: 10px;
+  border-radius: 4px;
 }
 
 .chat-message.hollow-knight .hkrpg-roll {
-  padding: 10px;
   text-align: center;
 }
 
-.chat-message.hollow-knight .hkrpg-roll h3 {
+.chat-message.hollow-knight h3 {
   margin: 0 0 10px 0;
-  color: var(--hk-accent);
   font-size: 1.2em;
+  border: none;
 }
 
 .chat-message.hollow-knight .dice-results {
@@ -187,65 +335,64 @@
   font-size: 1.1em;
   color: #fff;
   margin-top: 5px;
+  background: #111;
+  padding: 5px;
+  border-radius: 3px;
 }
 
-/* --- Кнопки --- */
+/* --- Кнопки и Инпуты (Global Overrides) --- */
 button {
   background: var(--hk-bg-secondary);
   color: var(--hk-text-primary);
-  border: 1px solid var(--hk-accent);
+  border: 1px solid var(--hk-border);
   padding: 5px 10px;
   cursor: pointer;
+  border-radius: 3px;
   transition: all 0.2s;
+  font-family: var(--font-primary);
 }
 
 button:hover {
   background: var(--hk-accent);
   color: #000;
+  border-color: var(--hk-accent);
 }
 
-/* 
-   Примечание для ленивых: 
-   Если хочешь изменить цвета, правь :root в начале файла. 
-   Не трогай Foundry классы .window-app, если не знаешь, что делаешь.
-*/
-/* --- Sheet Layout --- */
-.sheet-header {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  border-bottom: 2px solid var(--hk-border);
-}
-.profile-img {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  border: 1px solid var(--hk-accent);
-  margin-right: 15px;
-}
-.header-fields {
-  flex: 1;
-}
-.grid-2col { grid-template-columns: repeat(2, 1fr); }
-.grid-4col { grid-template-columns: repeat(4, 1fr); }
-.resource {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 5px;
-}
-.resource input {
+input[type="text"], 
+input[type="number"], 
+textarea, 
+select {
   background: #111;
   border: 1px solid var(--hk-border);
-  color: var(--hk-text-primary);
-  text-align: center;
-}
-.items-list {
-  list-style: none;
-  padding: 0;
-}
-.items-list li {
+  color: #fff;
   padding: 5px;
-  border-bottom: 1px solid #333;
-  display: flex;
-  justify-content: space-between;
+  border-radius: 3px;
+  font-family: var(--font-primary);
+}
+
+input:focus, 
+textarea:focus, 
+select:focus {
+  outline: none;
+  border-color: var(--hk-accent);
+}
+
+/* --- Утилиты (Grid) --- */
+.grid-2col { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.grid-3col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.grid-4col { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+
+/* --- Адаптивность --- */
+@media (max-width: 600px) {
+  .hk-characteristics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .sheet-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  .profile-img {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
 }
