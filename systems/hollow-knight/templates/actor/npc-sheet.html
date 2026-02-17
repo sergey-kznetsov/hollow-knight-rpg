@@ -1,1 +1,126 @@
+<form class="{{cssClass}} flexcol" autocomplete="off">
+  {{!-- Sheet Header --}}
+  <header class="sheet-header">
+    <img class="profile-img" src="{{img}}" data-edit="img" title="{{name}}"/>
+    <div class="header-fields">
+      <h1 class="charname"><input name="name" type="text" value="{{name}}" placeholder="Имя НИП"/></h1>
+      
+      {{!-- Цитата / Особенности (Используем biography.description как блок для цитаты и фич) --}}
+      <div class="resource" style="margin-bottom: 10px;">
+        <label>{{localize 'HKRPG.Sheet.Sections.notes'}}</label>
+        <textarea name="system.biography.description" data-dtype="String" style="height: 60px; font-style: italic;">{{system.biography.description}}</textarea>
+      </div>
 
+      {{!-- Основные Запасы --}}
+      <div class="hk-pools grid grid-3col">
+        <div class="pool hearts">
+          <label>{{localize 'HKRPG.Actor.Pools.hearts'}}</label>
+          <input type="number" name="system.pools.hearts.value" value="{{system.pools.hearts.value}}" data-dtype="Number"/>
+          <span> / </span>
+          <input type="number" name="system.pools.hearts.max" value="{{system.pools.hearts.max}}" data-dtype="Number"/>
+        </div>
+        <div class="pool soul">
+          <label>{{localize 'HKRPG.Actor.Pools.soul'}}</label>
+          <input type="number" name="system.pools.soul.value" value="{{system.pools.soul.value}}" data-dtype="Number"/>
+          <span> / </span>
+          <input type="number" name="system.pools.soul.max" value="{{system.pools.soul.max}}" data-dtype="Number"/>
+        </div>
+        <div class="pool stamina">
+          <label>{{localize 'HKRPG.Actor.Pools.stamina'}}</label>
+          <input type="number" name="system.pools.stamina.value" value="{{system.pools.stamina.value}}" data-dtype="Number"/>
+          <span> / </span>
+          <input type="number" name="system.pools.stamina.max" value="{{system.pools.stamina.max}}" data-dtype="Number"/>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  {{!-- Sheet Tab Navigation --}}
+  <nav class="sheet-tabs tabs" data-group="primary">
+    <a class="item" data-tab="characteristics">{{localize 'HKRPG.Sheet.Tabs.characteristics'}}</a>
+    <a class="item" data-tab="inventory">{{localize 'HKRPG.Sheet.Tabs.inventory'}}</a>
+    <a class="item" data-tab="notes">{{localize 'HKRPG.Sheet.Tabs.biography'}}</a>
+  </nav>
+
+  {{!-- Sheet Body --}}
+  <section class="sheet-body">
+    
+    {{!-- Characteristics Tab --}}
+    <div class="tab active" data-group="primary" data-tab="characteristics">
+      {{!-- Главные Характеристики --}}
+      <div class="hk-characteristics">
+        <div class="characteristic">
+          <label>{{localize 'HKRPG.Actor.Characteristics.might'}}</label>
+          <input type="number" name="system.characteristics.might.value" value="{{system.characteristics.might.value}}" data-dtype="Number"/>
+        </div>
+        <div class="characteristic">
+          <label>{{localize 'HKRPG.Actor.Characteristics.grace'}}</label>
+          <input type="number" name="system.characteristics.grace.value" value="{{system.characteristics.grace.value}}" data-dtype="Number"/>
+        </div>
+        <div class="characteristic">
+          <label>{{localize 'HKRPG.Actor.Characteristics.shell'}}</label>
+          <input type="number" name="system.characteristics.shell.value" value="{{system.characteristics.shell.value}}" data-dtype="Number"/>
+        </div>
+        <div class="characteristic">
+          <label>{{localize 'HKRPG.Actor.Characteristics.insight'}}</label>
+          <input type="number" name="system.characteristics.insight.value" value="{{system.characteristics.insight.value}}" data-dtype="Number"/>
+        </div>
+      </div>
+
+      {{!-- Вторичные Характеристики (Для НИПов) --}}
+      <div class="hk-secondary">
+        <div class="resource">
+          <label>{{localize 'HKRPG.Actor.Secondary.speed'}}</label>
+          <input type="number" name="system.secondary.speed.value" value="{{system.secondary.speed.value}}" data-dtype="Number"/>
+        </div>
+        <div class="resource">
+          <label>{{localize 'HKRPG.Actor.Secondary.horror'}}</label>
+          <input type="number" name="system.secondary.horror.value" value="{{system.secondary.horror.value}}" data-dtype="Number"/>
+        </div>
+        <div class="resource">
+          <label>{{localize 'HKRPG.Actor.Secondary.charm'}}</label>
+          <input type="number" name="system.secondary.charm.value" value="{{system.secondary.charm.value}}" data-dtype="Number"/>
+        </div>
+        <div class="resource">
+          <label>{{localize 'HKRPG.Actor.Secondary.hunger'}}</label>
+          <input type="number" name="system.secondary.hunger.value" value="{{system.secondary.hunger.value}}" data-dtype="Number"/>
+        </div>
+      </div>
+    </div>
+
+    {{!-- Inventory Tab --}}
+    <div class="tab" data-group="primary" data-tab="inventory">
+      <div class="inventory-header flexrow">
+        <h3>{{localize 'HKRPG.Sheet.Sections.equipment'}}</h3>
+        <div class="item-controls">
+          <a class="item-control item-create" title="Создать предмет" data-type="weapon"><i class="fas fa-plus"></i> Оружие</a>
+          <a class="item-control item-create" title="Создать предмет" data-type="armor"><i class="fas fa-plus"></i> Броня</a>
+          <a class="item-control item-create" title="Создать предмет" data-type="consumable"><i class="fas fa-plus"></i> Расходник</a>
+        </div>
+      </div>
+      <ol class="items-list">
+        {{#each items as |item id|}}
+        <li class="item flexrow" data-item-id="{{item._id}}">
+          <div class="item-name">
+            <img src="{{item.img}}" width="24" height="24"/>
+            {{item.name}}
+          </div>
+          <div class="item-controls">
+            <a class="item-control item-edit" title="Редактировать"><i class="fas fa-edit"></i></a>
+            <a class="item-control item-delete" title="Удалить"><i class="fas fa-trash"></i></a>
+          </div>
+        </li>
+        {{/each}}
+      </ol>
+    </div>
+
+    {{!-- Notes Tab --}}
+    <div class="tab" data-group="primary" data-tab="notes">
+      <div class="resource">
+        <label>Заметки ГМ / Лор</label>
+        <textarea name="system.biography.notes" data-dtype="String" style="height: 200px;">{{system.biography.notes}}</textarea>
+      </div>
+    </div>
+
+  </section>
+</form>
