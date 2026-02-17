@@ -4,25 +4,68 @@
     "character": {
       "data": {
         "characteristics": {
-          "might": {"value": 3, "label": "Мощь"},
-          "grace": {"value": 3, "label": "Грация"},
-          "shell": {"value": 3, "label": "Панцирь"},
-          "insight": {"value": 3, "label": "Проницательность"}
+          "might": { "value": 3, "label": "Мощь" },
+          "grace": { "value": 3, "label": "Грация" },
+          "shell": { "value": 3, "label": "Панцирь" },
+          "insight": { "value": 3, "label": "Проницательность" }
         },
         "pools": {
-          "hearts": {"value": 6, "max": 6},
-          "soul": {"value": 3, "max": 3},
-          "stamina": {"value": 3, "max": 3}
+          "hearts": { "value": 6, "max": 6, "label": "Сердца" },
+          "soul": { "value": 3, "max": 3, "label": "Души" },
+          "stamina": { "value": 3, "max": 3, "label": "Выносливость" }
+        },
+        "secondary": {
+          "hunger": { "value": 10, "label": "Голод" },
+          "speed": { "value": 6, "label": "Скорость" },
+          "horror": { "value": 0, "label": "Жуть" },
+          "charm": { "value": 0, "label": "Привлекательность" },
+          "initiative": { "bonus": 0, "value": 0 }
+        },
+        "combat": {
+          "disbalance": { "value": 0, "max": 3 },
+          "absorption": { "value": 0 },
+          "load": { "value": 0, "max": 0 }
         }
       }
-    }
+    },
+    "npc": { "data": {} },
+    "creature": { "data": {} }
   },
   "Item": {
-    "types": ["weapon", "armor", "charm", "spell"],
+    "types": ["weapon", "armor", "charm", "spell", "consumable"],
     "weapon": {
       "data": {
-        "quality": {"value": 1},
-        "damage": {"value": 3}
+        "quality": { "value": 1 },
+        "damage": { "value": 3 },
+        "weight": { "value": 1 },
+        "type": { "value": "nail" },
+        "range": { "value": "melee" }
+      }
+    },
+    "armor": {
+      "data": {
+        "protection": { "value": 0 },
+        "durability": { "value": 5, "max": 5 },
+        "weight": { "value": 1 }
+      }
+    },
+    "charm": {
+      "data": {
+        "slots": { "value": 1 },
+        "rarity": { "value": "common" }
+      }
+    },
+    "spell": {
+      "data": {
+        "cost": { "value": 1 },
+        "complexity": { "value": 1 },
+        "path": { "value": "spire" }
+      }
+    },
+    "consumable": {
+      "data": {
+        "quantity": { "value": 1 },
+        "effect": { "value": "" }
       }
     }
   }
