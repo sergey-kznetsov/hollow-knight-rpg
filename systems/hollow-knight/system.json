@@ -1,1 +1,15 @@
-
+{
+  "id": "hollow-knight",
+  "title": "Hollow Knight RPG",
+  "description": "Unofficial HKRPG System",
+  "version": "0.1.0",
+  "compatibility": {
+    "minimum": "11",
+    "verified": "11",
+    "maximum": "12"
+  },
+  "esmodules": ["hkrg.js"],
+  "styles": ["style.css"],
+  "languages": [{"lang": "ru", "name": "Russian", "path": "lang/ru.json"}],
+  "socket": true
+}
