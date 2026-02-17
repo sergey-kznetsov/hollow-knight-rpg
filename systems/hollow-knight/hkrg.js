@@ -6,16 +6,16 @@ Hooks.once("init", function () {
   // --- Конфигурация системы ---
   CONFIG.HKRPG = {
     rollFormula: "d6cs>=5", // Формула успеха: 5 и 6
-    initiativeFormula: "d6", // Формула инициативы (бросается количество кубов равное Грации)
     characteristics: ["might", "grace", "shell", "insight"],
     pools: ["hearts", "soul", "stamina"]
   };
 
   // --- Регистрация листов Актеров ---
+  // Один класс для всех типов, шаблон выбирается динамически
   Actors.registerSheet("hollow-knight", HKRPGActorSheet, {
     types: ["character", "npc", "creature"],
     makeDefault: true,
-    label: "HKRPG Character Sheet"
+    label: "HKRPG Sheet"
   });
 
   // --- Регистрация листов Предметов ---
@@ -23,11 +23,6 @@ Hooks.once("init", function () {
     makeDefault: true,
     label: "HKRPG Item Sheet"
   });
-
-  // --- Настройка инициативы для компедиумов (если нужно) ---
-  // CONFIG.Combat.initiative = {
-  //   formula: "1d6 + @characteristics.grace.value", // Пример, но мы переопределим в хуке
-  // };
 });
 
 Hooks.once("ready", function () {
@@ -39,14 +34,25 @@ Hooks.once("ready", function () {
   console.log("HKRPG System Ready");
 });
 
-// --- Классы Листов ---
+// ============================================
+// КЛАССЫ ЛИСТОВ
+// ============================================
 
 class HKRPGActorSheet extends ActorSheet {
+  /**
+   * КЛЮЧЕВОЙ МОМЕНТ: Динамический выбор шаблона
+   * Возвращает путь к HTML файлу в зависимости от типа актера
+   */
+  get template() {
+    const type = this.actor.type;
+    return `systems/hollow-knight/templates/actor/${type}-sheet.html`;
+  }
+
   getData() {
     const data = super.getData();
     data.dtypes = ["String", "Number", "Boolean"];
     
-    // Пример вычисляемых данных (можно расширить)
+    // Вычисляемые данные
     // Ячейки Техник = Проницательность (округленная вниз)
     const insight = data.data.system.characteristics.insight.value || 0;
     data.data.system.techniques.slots.max = Math.floor(insight);
@@ -57,44 +63,65 @@ class HKRPGActorSheet extends ActorSheet {
   activateListeners(html) {
     super.activateListeners(html);
 
-    // Бросок Характеристики по клику на поле ввода
+    // --- Бросок Характеристики по клику на поле ввода ---
     html.find('.characteristic input').click(ev => {
       ev.preventDefault();
       const input = ev.currentTarget;
-      const key = input.name.split('.')[3]; // Извлекаем ключ (might, grace...)
+      // Путь: system.characteristics.might.value -> split('.') -> [3] is 'might'
+      const key = input.name.split('.')[3]; 
       const value = parseFloat(input.value) || 0;
+      
+      // Получаем локализованное название (из lang/ru.json)
       const label = game.i18n.localize(`HKRPG.Actor.Characteristics.${key}`);
+      
       hkrpgRoll({ characteristic: value, label: `Проверка: ${label}` });
     });
 
-    // Бросок Запаса (Сердца, Души, Выносливость)
+    // --- Бросок Запаса (Сердца, Души, Выносливость) ---
     html.find('.pool input').click(ev => {
       ev.preventDefault();
       const input = ev.currentTarget;
-      // Логика для запасов может отличаться, пока заглушка
-      ui.notifications.info("Настройте бросок для запасов в макросах");
+      const key = input.name.split('.')[3];
+      const value = parseInt(input.value) || 0;
+      const label = game.i18n.localize(`HKRPG.Actor.Pools.${key}`);
+      
+      ui.notifications.info(`${label}: ${value}`);
+      // Здесь можно добавить логику броска запасов, если нужно
     });
 
-    // Создание предмета
+    // --- Создание предмета ---
     html.find('.item-create').click(ev => {
       ev.preventDefault();
       const type = ev.currentTarget.dataset.type;
-      this.actor.createEmbeddedDocuments("Item", [{ type: type, name: `Новый ${type}` }]);
+      const name = `Новый ${type}`;
+      this.actor.createEmbeddedDocuments("Item", [{ type: type, name: name }]);
     });
 
-    // Редактирование предмета
+    // --- Редактирование предмета ---
     html.find('.item-edit').click(ev => {
       ev.preventDefault();
       const li = ev.currentTarget.closest('.item');
       const item = this.actor.items.get(li.dataset.itemId);
-      item.sheet.render(true);
+      if (item) item.sheet.render(true);
     });
 
-    // Удаление предмета
+    // --- Удаление предмета ---
     html.find('.item-delete').click(ev => {
       ev.preventDefault();
       const li = ev.currentTarget.closest('.item');
       this.actor.deleteEmbeddedDocuments("Item", [li.dataset.itemId]);
+    });
+
+    // --- Изменение значения ресурса (колесико мыши) ---
+    html.find('input[type="number"]').wheel(ev => {
+      ev.preventDefault();
+      const input = ev.currentTarget;
+      const step = ev.deltaY > 0 ? -1 : 1;
+      const min = parseFloat(input.min) || -Infinity;
+      const max = parseFloat(input.max) || Infinity;
+      const newValue = Math.min(Math.max(parseFloat(input.value) + step, min), max);
+      input.value = newValue;
+      input.dispatchEvent(new Event('change'));
     });
   }
 }
@@ -111,10 +138,12 @@ class HKRPGItemSheet extends ItemSheet {
   }
 }
 
-// --- Механика Бросков ---
+// ============================================
+// МЕХАНИКА БРОСКОВ
+// ============================================
 
 /**
- * Основной функция броска проверки Характеристики
+ * Основная функция броска проверки Характеристики
  * @param {Object} data - { characteristic: number, skillRank: number, rerolls: number, label: string }
  */
 async function hkrpgRoll(data) {
@@ -192,11 +221,13 @@ async function hkrpgDamage(data) {
   return finalDmg;
 }
 
-// --- Боевая Логика ---
+// ============================================
+// БОЕВАЯ ЛОГИКА
+// ============================================
 
 // 1. Инициатива при создании комбатанта
 Hooks.on("createCombatant", (combat, combatant, options) => {
-  if (combatant.actor?.type === "character" || combatant.actor?.type === "npc") {
+  if (["character", "npc", "creature"].includes(combatant.actor?.type)) {
     // Используем нашу функцию инициативы
     hkrpgInitiative(combatant).then(initValue => {
       combatant.update({ initiative: initValue });
@@ -207,16 +238,15 @@ Hooks.on("createCombatant", (combat, combatant, options) => {
 // 2. Сброс Выносливости в начале хода
 Hooks.on("updateCombat", (combat, changed) => {
   // Если изменился ход и это новый ход (turn === 0 означает начало нового раунда или первый ход)
-  // В Foundry turn === 0 срабатывает при переходе к первому участнику в раунде
   if (changed.turn === 0 && combat.turns[0]?.actor) {
     const actor = combat.turns[0].actor;
     
-    // Сброс Выносливости для персонажей и НИПов
-    if (actor.type === "character" || actor.type === "npc") {
+    // Сброс Выносливости для всех типов актеров
+    if (["character", "npc", "creature"].includes(actor.type)) {
       const maxStamina = actor.system.pools.stamina.max || 3;
       actor.update({ "system.pools.stamina.value": maxStamina });
       
-      // Сброс Дисбаланса (опционально, по правилам часто сбрасывается 1 за ход, но полный сброс в начале хода тоже вариант)
+      // Опционально: Сброс Дисбаланса (по правилам часто сбрасывается 1 за ход, но полный сброс в начале хода тоже вариант)
       // actor.update({ "system.combat.imbalance.value": 0 }); 
       
       ui.notifications.notify(`${actor.name}: ${game.i18n.localize("HKRPG.Notifications.StaminaRestored")}`);
@@ -224,7 +254,7 @@ Hooks.on("updateCombat", (combat, changed) => {
   }
 });
 
-// 3. Обработка смерти (Врата Смерти)
+// 3. Обработка смерти (Врата Смерти) - базовая проверка
 Hooks.on("preUpdateActor", (actor, updateData, options, userId) => {
   if (userId !== game.user.id) return;
   
@@ -232,9 +262,8 @@ Hooks.on("preUpdateActor", (actor, updateData, options, userId) => {
   if (updateData["system.pools.hearts.value"] !== undefined) {
     const newHearts = updateData["system.pools.hearts.value"];
     if (newHearts <= 0 && actor.type === "character") {
-      // Здесь можно добавить диалог "Врата Смерти?"
-      // Пока просто уведомление
       ui.notifications.warn(`${actor.name} достиг Врат Смерти!`);
+      // Здесь можно добавить диалог или автоматический перевод в режим Врат Смерти
     }
   }
 });
