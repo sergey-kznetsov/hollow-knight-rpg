@@ -12,60 +12,154 @@
         "pools": {
           "hearts": { "value": 6, "max": 6, "label": "Сердца" },
           "soul": { "value": 3, "max": 3, "label": "Души" },
-          "stamina": { "value": 3, "max": 3, "label": "Выносливость" }
+          "stamina": { "value": 3, "max": 3, "label": "Выносливость" },
+          "satiety": { "value": 10, "max": 10, "label": "Сытость" }
         },
         "secondary": {
-          "hunger": { "value": 10, "label": "Голод" },
           "speed": { "value": 6, "label": "Скорость" },
+          "load": { "value": 3, "max": 3, "label": "Нагрузка" },
+          "maneuverability": { "value": 2, "label": "Манёвренность" },
+          "beltSize": { "value": 3, "label": "Размер Пояса" },
+          "techniqueSlots": { "value": 3, "max": 3, "label": "Ячейки Техник" },
+          "marks": { "value": 3, "max": 3, "label": "Метки" },
+          "absorption": { "value": 0, "label": "Поглощение" },
           "horror": { "value": 0, "label": "Жуть" },
           "charm": { "value": 0, "label": "Привлекательность" },
-          "initiative": { "bonus": 0, "value": 0 }
+          "hunger": { "value": 10, "label": "Голод" }
         },
         "combat": {
-          "disbalance": { "value": 0, "max": 3 },
-          "absorption": { "value": 0 },
-          "load": { "value": 0, "max": 0 }
+          "initiative": { "bonus": 0, "value": 0 },
+          "imbalance": { "value": 0, "max": 3, "label": "Дисбаланс" },
+          "delayedDmg": { "value": 0, "label": "Отложенный урон" }
+        },
+        "paths": {
+          "military": { "rank": 0, "name": "" },
+          "mystic": { "rank": 0, "name": "" }
+        },
+        "biography": {
+          "description": "",
+          "appearance": "",
+          "notes": ""
         }
       }
     },
-    "npc": { "data": {} },
-    "creature": { "data": {} }
+    "npc": {
+      "data": {
+        "characteristics": {
+          "might": { "value": 3, "label": "Мощь" },
+          "grace": { "value": 3, "label": "Грация" },
+          "shell": { "value": 3, "label": "Панцирь" },
+          "insight": { "value": 3, "label": "Проницательность" }
+        },
+        "pools": {
+          "hearts": { "value": 6, "max": 6 },
+          "soul": { "value": 3, "max": 3 },
+          "stamina": { "value": 3, "max": 3 }
+        },
+        "secondary": {
+          "speed": { "value": 6 },
+          "horror": { "value": 0 },
+          "charm": { "value": 0 },
+          "hunger": { "value": 10 }
+        },
+        "biography": {
+          "description": ""
+        }
+      }
+    },
+    "creature": {
+      "data": {
+        "characteristics": {
+          "might": { "value": 3, "label": "Мощь" },
+          "grace": { "value": 3, "label": "Грация" },
+          "shell": { "value": 3, "label": "Панцирь" },
+          "insight": { "value": 3, "label": "Проницательность" }
+        },
+        "pools": {
+          "hearts": { "value": 6, "max": 6 },
+          "stamina": { "value": 3, "max": 3 }
+        },
+        "secondary": {
+          "speed": { "value": 6 },
+          "horror": { "value": 0 },
+          "hunger": { "value": 10 }
+        },
+        "traits": {
+          "list": []
+        },
+        "biography": {
+          "description": "",
+          "quote": ""
+        }
+      }
+    }
   },
   "Item": {
-    "types": ["weapon", "armor", "charm", "spell", "consumable"],
+    "types": ["weapon", "armor", "charm", "spell", "art", "consumable", "trait", "path"],
     "weapon": {
       "data": {
-        "quality": { "value": 1 },
-        "damage": { "value": 3 },
-        "weight": { "value": 1 },
-        "type": { "value": "nail" },
-        "range": { "value": "melee" }
+        "quality": { "value": 1, "label": "Качество" },
+        "damage": { "value": 3, "label": "Урон" },
+        "weight": { "value": 1, "label": "Вес" },
+        "type": { "value": "nail", "label": "Тип" },
+        "range": { "value": "melee", "label": "Дальность" },
+        "properties": { "value": "", "label": "Свойства" },
+        "durability": { "value": 0, "max": 0, "label": "Износ" }
       }
     },
     "armor": {
       "data": {
-        "protection": { "value": 0 },
-        "durability": { "value": 5, "max": 5 },
-        "weight": { "value": 1 }
+        "protection": { "value": 0, "label": "Защита" },
+        "durability": { "value": 5, "max": 5, "label": "Прочность" },
+        "weight": { "value": 1, "label": "Вес" },
+        "pu": { "value": 0, "label": "Понижение Урона" },
+        "absorption": { "value": 0, "label": "Поглощение" }
       }
     },
     "charm": {
       "data": {
-        "slots": { "value": 1 },
-        "rarity": { "value": "common" }
+        "slots": { "value": 1, "label": "Стоимость Меток" },
+        "rarity": { "value": "common", "label": "Редкость" },
+        "description": { "value": "", "label": "Описание" }
       }
     },
     "spell": {
       "data": {
-        "cost": { "value": 1 },
-        "complexity": { "value": 1 },
-        "path": { "value": "spire" }
+        "cost": { "value": 1, "label": "Стоимость Душ" },
+        "complexity": { "value": 1, "label": "Сложность" },
+        "path": { "value": "spire", "label": "Путь" },
+        "range": { "value": "close", "label": "Дальность" },
+        "damage": { "value": 0, "label": "Урон" },
+        "duration": { "value": "instant", "label": "Длительность" }
+      }
+    },
+    "art": {
+      "data": {
+        "cost": { "value": 1, "label": "Стоимость Выносливости" },
+        "path": { "value": "nail", "label": "Путь" },
+        "type": { "value": "standard", "label": "Тип" },
+        "description": { "value": "", "label": "Описание" }
       }
     },
     "consumable": {
       "data": {
-        "quantity": { "value": 1 },
-        "effect": { "value": "" }
+        "quantity": { "value": 1, "label": "Количество" },
+        "effect": { "value": "", "label": "Эффект" },
+        "satiety": { "value": 0, "label": "Сытость" }
+      }
+    },
+    "trait": {
+      "data": {
+        "hungerCost": { "value": 0, "label": "Стоимость Голода" },
+        "description": { "value": "", "label": "Описание" },
+        "type": { "value": "general", "label": "Тип Черты" }
+      }
+    },
+    "path": {
+      "data": {
+        "rank": { "value": 1, "label": "Ранг" },
+        "type": { "value": "military", "label": "Тип Пути" },
+        "abilities": { "value": [], "label": "Способности" }
       }
     }
   }
