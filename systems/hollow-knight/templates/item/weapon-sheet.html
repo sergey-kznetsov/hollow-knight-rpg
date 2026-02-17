@@ -1,1 +1,101 @@
+<form class="{{cssClass}} flexcol" autocomplete="off">
+  {{!-- Sheet Header --}}
+  <header class="sheet-header">
+    <img class="profile-img" src="{{img}}" data-edit="img" title="{{name}}"/>
+    <div class="header-fields">
+      <h1 class="charname"><input name="name" type="text" value="{{name}}" placeholder="Название Оружия"/></h1>
+      
+      <div class="grid grid-2col">
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Types.weapon'}}</label>
+          <input type="text" value="{{localize 'HKRPG.Item.Types.weapon'}}" disabled/>
+        </div>
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Weapon.damage'}}</label>
+          <input type="number" name="system.damage.value" value="{{system.damage.value}}" data-dtype="Number"/>
+        </div>
+      </div>
+    </div>
+  </header>
 
+  {{!-- Sheet Tab Navigation --}}
+  <nav class="sheet-tabs tabs" data-group="primary">
+    <a class="item" data-tab="details">{{localize 'HKRPG.Sheet.Tabs.characteristics'}}</a>
+    <a class="item" data-tab="description">{{localize 'HKRPG.Sheet.Tabs.biography'}}</a>
+  </nav>
+
+  {{!-- Sheet Body --}}
+  <section class="sheet-body">
+    
+    {{!-- Details Tab --}}
+    <div class="tab active" data-group="primary" data-tab="details">
+      <div class="grid grid-2col">
+        {{!-- Качество --}}
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Weapon.quality'}}</label>
+          <input type="number" name="system.quality.value" value="{{system.quality.value}}" data-dtype="Number"/>
+        </div>
+
+        {{!-- Вес --}}
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Weapon.weight'}}</label>
+          <input type="number" name="system.weight.value" value="{{system.weight.value}}" data-dtype="Number"/>
+        </div>
+
+        {{!-- Тип Оружия (Гвоздь, Игла...) --}}
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Weapon.type'}}</label>
+          <select name="system.type.value">
+            {{#select system.type.value}}
+            <option value="nail">{{localize 'HKRPG.Item.Weapon.types.nail'}}</option>
+            <option value="needle">{{localize 'HKRPG.Item.Weapon.types.needle'}}</option>
+            <option value="fang">{{localize 'HKRPG.Item.Weapon.types.fang'}}</option>
+            <option value="hook">{{localize 'HKRPG.Item.Weapon.types.hook'}}</option>
+            <option value="sling">{{localize 'HKRPG.Item.Weapon.types.sling'}}</option>
+            <option value="natural">{{localize 'HKRPG.Item.Weapon.types.natural'}}</option>
+            {{/select}}
+          </select>
+        </div>
+
+        {{!-- Дальность --}}
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Weapon.range'}}</label>
+          <select name="system.range.value">
+            {{#select system.range.value}}
+            <option value="melee">{{localize 'HKRPG.Item.Weapon.ranges.melee'}}</option>
+            <option value="reach">{{localize 'HKRPG.Item.Weapon.ranges.reach'}}</option>
+            <option value="ranged">{{localize 'HKRPG.Item.Weapon.ranges.ranged'}}</option>
+            {{/select}}
+          </select>
+        </div>
+      </div>
+
+      {{!-- Износ (Прочность) --}}
+      <div class="grid grid-2col" style="margin-top: 10px;">
+        <div class="resource">
+          <label>{{localize 'HKRPG.Item.Weapon.durability'}}</label>
+          <div class="grid grid-2col">
+            <input type="number" name="system.durability.value" value="{{system.durability.value}}" data-dtype="Number"/>
+            <span> / </span>
+            <input type="number" name="system.durability.max" value="{{system.durability.max}}" data-dtype="Number"/>
+          </div>
+        </div>
+      </div>
+      
+      {{!-- Свойства Оружия --}}
+      <div class="resource" style="margin-top: 10px;">
+        <label>{{localize 'HKRPG.Item.Weapon.properties'}}</label>
+        <textarea name="system.properties.value" data-dtype="String">{{system.properties.value}}</textarea>
+      </div>
+    </div>
+
+    {{!-- Description Tab --}}
+    <div class="tab" data-group="primary" data-tab="description">
+      <div class="resource">
+        <label>{{localize 'HKRPG.Sheet.Sections.notes'}}</label>
+        <textarea name="system.description" data-dtype="String" style="height: 300px;">{{system.description}}</textarea>
+      </div>
+    </div>
+
+  </section>
+</form>
