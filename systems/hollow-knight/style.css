@@ -209,3 +209,43 @@ button:hover {
    Если хочешь изменить цвета, правь :root в начале файла. 
    Не трогай Foundry классы .window-app, если не знаешь, что делаешь.
 */
+/* --- Sheet Layout --- */
+.sheet-header {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 2px solid var(--hk-border);
+}
+.profile-img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border: 1px solid var(--hk-accent);
+  margin-right: 15px;
+}
+.header-fields {
+  flex: 1;
+}
+.grid-2col { grid-template-columns: repeat(2, 1fr); }
+.grid-4col { grid-template-columns: repeat(4, 1fr); }
+.resource {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 5px;
+}
+.resource input {
+  background: #111;
+  border: 1px solid var(--hk-border);
+  color: var(--hk-text-primary);
+  text-align: center;
+}
+.items-list {
+  list-style: none;
+  padding: 0;
+}
+.items-list li {
+  padding: 5px;
+  border-bottom: 1px solid #333;
+  display: flex;
+  justify-content: space-between;
+}
