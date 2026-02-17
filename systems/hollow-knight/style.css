@@ -1,1 +1,211 @@
+/* systems/hollow-knight/style.css */
 
+:root {
+  --hk-bg-primary: #1a1a1a;
+  --hk-bg-secondary: #2b2b2b;
+  --hk-text-primary: #e0e0e0;
+  --hk-accent: #f0a500; /* Янтарный цвет Души */
+  --hk-heart: #c93838;
+  --hk-stamina: #6b8c42;
+  --hk-border: #444;
+  --font-primary: 'Signika', sans-serif; /* Стандартный шрифт Foundry */
+}
+
+/* --- Общие стили окна --- */
+.sheet.hollow-knight {
+  background: var(--hk-bg-primary);
+  color: var(--hk-text-primary);
+  font-family: var(--font-primary);
+}
+
+.sheet.hollow-knight .window-content {
+  background: var(--hk-bg-primary);
+  padding: 10px;
+}
+
+.sheet.hollow-knight h1, 
+.sheet.hollow-knight h2, 
+.sheet.hollow-knight h3 {
+  color: var(--hk-accent);
+  border-bottom: 1px solid var(--hk-border);
+  margin-bottom: 10px;
+}
+
+/* --- Характеристики (Мощь, Грация, Панцирь, Проницательность) --- */
+.hk-characteristics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+  background: var(--hk-bg-secondary);
+  padding: 10px;
+  border: 1px solid var(--hk-border);
+  border-radius: 4px;
+}
+
+.hk-characteristic {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.hk-characteristic label {
+  font-size: 0.9em;
+  color: #aaa;
+  margin-bottom: 5px;
+}
+
+.hk-characteristic input {
+  width: 50px;
+  text-align: center;
+  background: #111;
+  color: var(--hk-accent);
+  border: 1px solid var(--hk-border);
+  border-radius: 3px;
+  font-weight: bold;
+}
+
+/* --- Запасы (Сердца, Души, Выносливость) --- */
+.hk-pools {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+  background: var(--hk-bg-secondary);
+  padding: 10px;
+  border: 1px solid var(--hk-border);
+  border-radius: 4px;
+}
+
+.hk-pool {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hk-pool label {
+  font-size: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 5px;
+}
+
+.hk-pool input {
+  width: 60px;
+  text-align: center;
+  background: #111;
+  border: 1px solid var(--hk-border);
+  border-radius: 3px;
+  font-weight: bold;
+}
+
+.hk-pool.hearts input { color: var(--hk-heart); }
+.hk-pool.soul input { color: #fff; }
+.hk-pool.stamina input { color: var(--hk-stamina); }
+
+/* --- Вкладки и навигация --- */
+.sheet.hollow-knight .tabs {
+  display: flex;
+  justify-content: flex-start;
+  border-bottom: 1px solid var(--hk-border);
+  margin-bottom: 15px;
+}
+
+.sheet.hollow-knight .item {
+  background: var(--hk-bg-secondary);
+  border: 1px solid var(--hk-border);
+  padding: 5px 10px;
+  margin-right: 5px;
+  cursor: pointer;
+  border-radius: 3px 3px 0 0;
+}
+
+.sheet.hollow-knight .item.active {
+  background: var(--hk-accent);
+  color: #000;
+  font-weight: bold;
+}
+
+/* --- Список предметов/черт --- */
+.hk-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.hk-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px;
+  border-bottom: 1px solid #333;
+}
+
+.hk-list li:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.hk-list .item-name {
+  flex-grow: 1;
+  font-weight: bold;
+}
+
+.hk-list .item-controls {
+  display: flex;
+  gap: 5px;
+}
+
+.hk-list .item-controls a {
+  color: #888;
+  font-size: 0.8em;
+}
+
+.hk-list .item-controls a:hover {
+  color: var(--hk-accent);
+}
+
+/* --- Чат карточки (Броски) --- */
+.chat-message.hollow-knight {
+  background: var(--hk-bg-secondary);
+  border: 1px solid var(--hk-border);
+  color: var(--hk-text-primary);
+}
+
+.chat-message.hollow-knight .hkrpg-roll {
+  padding: 10px;
+  text-align: center;
+}
+
+.chat-message.hollow-knight .hkrpg-roll h3 {
+  margin: 0 0 10px 0;
+  color: var(--hk-accent);
+  font-size: 1.2em;
+}
+
+.chat-message.hollow-knight .dice-results {
+  font-family: 'Signika', sans-serif;
+  font-size: 1.1em;
+  color: #fff;
+  margin-top: 5px;
+}
+
+/* --- Кнопки --- */
+button {
+  background: var(--hk-bg-secondary);
+  color: var(--hk-text-primary);
+  border: 1px solid var(--hk-accent);
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+button:hover {
+  background: var(--hk-accent);
+  color: #000;
+}
+
+/* 
+   Примечание для ленивых: 
+   Если хочешь изменить цвета, правь :root в начале файла. 
+   Не трогай Foundry классы .window-app, если не знаешь, что делаешь.
+*/
