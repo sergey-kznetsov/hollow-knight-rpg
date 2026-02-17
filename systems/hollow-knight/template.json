@@ -25,7 +25,8 @@
           "absorption": { "value": 0, "label": "Поглощение" },
           "horror": { "value": 0, "label": "Жуть" },
           "charm": { "value": 0, "label": "Привлекательность" },
-          "hunger": { "value": 10, "label": "Голод" }
+          "hunger": { "value": 10, "label": "Голод" },
+          "size": { "value": "Средний", "label": "Размер" }
         },
         "combat": {
           "initiative": { "bonus": 0, "value": 0 },
@@ -60,7 +61,8 @@
           "speed": { "value": 6 },
           "horror": { "value": 0 },
           "charm": { "value": 0 },
-          "hunger": { "value": 10 }
+          "hunger": { "value": 10 },
+          "size": { "value": "Средний", "label": "Размер" }
         },
         "biography": {
           "description": ""
@@ -82,7 +84,8 @@
         "secondary": {
           "speed": { "value": 6 },
           "horror": { "value": 0 },
-          "hunger": { "value": 10 }
+          "hunger": { "value": 10 },
+          "size": { "value": "Средний", "label": "Размер" }
         },
         "traits": {
           "list": []
