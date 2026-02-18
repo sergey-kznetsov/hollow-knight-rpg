@@ -50,4 +50,321 @@ async function spendResource(actor, path, amount, errKey) {
 
 async function rollSuccessPool({ actor, label, dice, rerolls = 0, flavor = "" }) {
   dice = Math.max(0, Number(dice ?? 0));
-  rero
+  rerolls = Math.max(0, Number(rerolls ?? 0));
+
+  if (dice <= 0) {
+    await postMisuse(actor, "HKRPG.Errors.NoDice");
+    return null;
+  }
+
+  // d6 successes on 5-6
+  const roll = await new Roll(`${dice}d6cs>=5`).evaluate({ async: true });
+
+  // Minimal reroll implementation: reroll failures up to rerolls count
+  let remaining = rerolls;
+  if (remaining > 0) {
+    const results = roll.dice[0]?.results ?? [];
+    const failuresIdx = results
+      .map((r, idx) => ({ r, idx }))
+      .filter(x => !x.r.success);
+
+    for (let i = 0; i < Math.min(remaining, failuresIdx.length); i++) {
+      const idx = failuresIdx[i].idx;
+      const newRoll = await new Roll(`1d6cs>=5`).evaluate({ async: true });
+      results[idx] = newRoll.dice[0].results[0];
+    }
+    roll._total = results.filter(r => r.success).length;
+  }
+
+  const html = await renderTemplate("systems/hollow-knight/chat/roll-card.html", {
+    title: label,
+    dice,
+    successes: roll.total,
+    rerolls,
+    flavor
+  });
+
+  await ChatMessage.create({
+    speaker: ChatMessage.getSpeaker({ actor }),
+    content: html,
+    roll,
+    type: CONST.CHAT_MESSAGE_TYPES.ROLL
+  });
+
+  return roll;
+}
+
+async function rollInitiative(actor) {
+  const grace = Number(actor.system?.characteristics?.grace?.value ?? 0);
+  const bonus = getMaxWeaponInitiativeBonus(actor) + Number(actor.system?.combat?.initiativeBonus?.value ?? 0);
+
+  // Initiative = SUM of dice, not successes :contentReference[oaicite:3]{index=3}
+  const dice = Math.max(0, Math.floor(grace + bonus));
+  if (dice <= 0) {
+    await postMisuse(actor, "HKRPG.Errors.NoDice");
+    return null;
+  }
+
+  const roll = await new Roll(`${dice}d6`).evaluate({ async: true });
+  const html = await renderTemplate("systems/hollow-knight/chat/roll-card.html", {
+    title: t("HKRPG.Chat.Initiative"),
+    dice,
+    successes: roll.total,
+    rerolls: 0,
+    flavor: t("HKRPG.Chat.InitiativeFlavor", { grace, bonus })
+  });
+
+  await ChatMessage.create({
+    speaker: ChatMessage.getSpeaker({ actor }),
+    content: html,
+    roll,
+    type: CONST.CHAT_MESSAGE_TYPES.ROLL
+  });
+
+  await actor.update({ "system.combat.initiative.value": roll.total });
+  return roll;
+}
+
+// --- Attack rules (core):
+// - вложить минимум 1 выносливости :contentReference[oaicite:4]{index=4}
+// - налог выносливости +1 за каждую уже совершённую атаку в этот ход :contentReference[oaicite:5]{index=5}
+// - восстановление выносливости в начале хода :contentReference[oaicite:6]{index=6}
+async function attackWithWeapon(actor, weapon, investStamina) {
+  if (game.combat && !isMyTurn(actor)) {
+    await postMisuse(actor, "HKRPG.Errors.NotYourTurn");
+    return null;
+  }
+
+  investStamina = Math.max(1, Math.floor(Number(investStamina ?? 1)));
+
+  const attacksThisTurn = Number(actor.system?.turn?.attacksThisTurn ?? 0);
+  const staminaTax = Math.max(0, attacksThisTurn); // 0 / 1 / 2 ...
+  const totalCost = investStamina + staminaTax;
+
+  const ok = await spendResource(actor, "system.pools.stamina.value", totalCost, "HKRPG.Errors.NoStamina");
+  if (!ok) return null;
+
+  const quality = Number(weapon.system?.quality?.value ?? 0);
+  const isRanged = (weapon.system?.range?.value ?? "melee") === "ranged";
+
+  const base = isRanged
+    ? Number(actor.system?.characteristics?.grace?.value ?? 0)
+    : Number(actor.system?.characteristics?.might?.value ?? 0);
+
+  const dice = Math.max(0, Math.floor(base + quality + investStamina));
+  const rerolls = Number(weapon.system?.rerolls?.value ?? 0);
+
+  await actor.update({ "system.turn.attacksThisTurn": attacksThisTurn + 1 });
+
+  return rollSuccessPool({
+    actor,
+    label: t("HKRPG.Chat.AttackRoll", { weapon: weapon.name }),
+    dice,
+    rerolls,
+    flavor: t("HKRPG.Chat.AttackFlavor", {
+      mode: isRanged ? t("HKRPG.Chat.Ranged") : t("HKRPG.Chat.Melee"),
+      base,
+      quality,
+      invest: investStamina,
+      tax: staminaTax,
+      cost: totalCost
+    })
+  });
+}
+
+async function askAttackDialog(actor) {
+  const weapons = getEquippedWeapons(actor);
+  if (!weapons.length) {
+    await postMisuse(actor, "HKRPG.Errors.NoEquippedWeapons");
+    return null;
+  }
+
+  const options = weapons
+    .map(w => `<option value="${w.id}">${foundry.utils.escapeHTML(w.name)}</option>`)
+    .join("");
+
+  return new Promise(resolve => {
+    new Dialog({
+      title: t("HKRPG.Dialog.AttackTitle"),
+      content: `
+        <div class="form-group">
+          <label>${t("HKRPG.Dialog.Weapon")}</label>
+          <select name="weapon">${options}</select>
+        </div>
+        <div class="form-group">
+          <label>${t("HKRPG.Dialog.StaminaInvest")}</label>
+          <input type="number" name="invest" value="1" min="1" step="1"/>
+        </div>
+      `,
+      buttons: {
+        ok: {
+          icon: '<i class="fas fa-dice"></i>',
+          label: t("HKRPG.UI.Roll"),
+          callback: html => {
+            const weaponId = String(html.find('select[name="weapon"]').val());
+            const invest = Number(html.find('input[name="invest"]').val() ?? 1);
+            resolve({ weaponId, invest });
+          }
+        },
+        cancel: {
+          icon: '<i class="fas fa-times"></i>',
+          label: t("HKRPG.UI.Cancel"),
+          callback: () => resolve(null)
+        }
+      },
+      default: "ok"
+    }).render(true);
+  });
+}
+
+async function quickDefense(actor, kind) {
+  if (game.combat && !isMyTurn(actor)) {
+    await postMisuse(actor, "HKRPG.Errors.NotYourTurn");
+    return null;
+  }
+
+  const value =
+    kind === "dodge"
+      ? Number(actor.system?.characteristics?.grace?.value ?? 0)
+      : Number(actor.system?.characteristics?.might?.value ?? 0);
+
+  const label = kind === "dodge" ? t("HKRPG.Chat.Dodge") : t("HKRPG.Chat.Parry");
+  return rollSuccessPool({ actor, label, dice: Math.floor(value) });
+}
+
+// ---------------- Sheets ----------------
+class HKRPGActorSheet extends ActorSheet {
+  static get defaultOptions() {
+    return foundry.utils.mergeObject(super.defaultOptions, {
+      classes: ["hkrpg", "sheet", "actor"],
+      width: 760,
+      height: 720,
+      tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "stats" }]
+    });
+  }
+
+  get template() {
+    const type = this.actor.type;
+    return `systems/hollow-knight/templates/actor/${type}-sheet.html`;
+  }
+
+  async getData(options) {
+    const data = await super.getData(options);
+    data.system = this.actor.system;
+    data.equippedWeapons = getEquippedWeapons(this.actor);
+    data.itemsByType = this.actor.items.reduce((acc, it) => {
+      (acc[it.type] ??= []).push(it);
+      return acc;
+    }, {});
+    return data;
+  }
+
+  activateListeners(html) {
+    super.activateListeners(html);
+
+    html.find("[data-action='roll-init']").on("click", async () => rollInitiative(this.actor));
+
+    html.find("[data-action='attack']").on("click", async () => {
+      const res = await askAttackDialog(this.actor);
+      if (!res) return;
+      const weapon = this.actor.items.get(res.weaponId);
+      if (!weapon) return postMisuse(this.actor, "HKRPG.Errors.WeaponNotSelected");
+      return attackWithWeapon(this.actor, weapon, res.invest);
+    });
+
+    html.find("[data-action='dodge']").on("click", async () => quickDefense(this.actor, "dodge"));
+    html.find("[data-action='parry']").on("click", async () => quickDefense(this.actor, "parry"));
+
+    html.find("[data-action='item-create']").on("click", async (ev) => {
+      const type = ev.currentTarget.dataset.type;
+      await this.actor.createEmbeddedDocuments("Item", [{ name: t(`HKRPG.Item.Types.${type}`), type }]);
+    });
+
+    html.find(".item-edit").on("click", ev => {
+      const li = ev.currentTarget.closest("[data-item-id]");
+      this.actor.items.get(li.dataset.itemId)?.sheet?.render(true);
+    });
+
+    html.find(".item-delete").on("click", async ev => {
+      const li = ev.currentTarget.closest("[data-item-id]");
+      await this.actor.deleteEmbeddedDocuments("Item", [li.dataset.itemId]);
+    });
+
+    html.find(".item-toggle-equipped").on("click", async ev => {
+      const li = ev.currentTarget.closest("[data-item-id]");
+      const item = this.actor.items.get(li.dataset.itemId);
+      if (!item) return;
+      await item.update({ "system.equipped": !item.system.equipped });
+    });
+
+    html.find(".item-roll").on("click", async ev => {
+      const li = ev.currentTarget.closest("[data-item-id]");
+      const item = this.actor.items.get(li.dataset.itemId);
+      if (!item) return;
+
+      if (item.type === "weapon") return attackWithWeapon(this.actor, item, 1);
+      if (item.type === "spell") {
+        // пока просто кидаем проверку Проницательности (полная магия позже)
+        const insight = Number(this.actor.system?.characteristics?.insight?.value ?? 0);
+        return rollSuccessPool({ actor: this.actor, label: t("HKRPG.Chat.SpellRoll", { spell: item.name }), dice: Math.floor(insight) });
+      }
+      if (item.type === "art") {
+        return ChatMessage.create({
+          speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+          content: `<div><b>${t("HKRPG.Chat.ArtUsed")}</b>: ${item.name}</div>`
+        });
+      }
+    });
+  }
+}
+
+class HKRPGItemSheet extends ItemSheet {
+  static get defaultOptions() {
+    return foundry.utils.mergeObject(super.defaultOptions, {
+      classes: ["hkrpg", "sheet", "item"],
+      width: 520,
+      height: 540,
+      tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "details" }]
+    });
+  }
+
+  get template() {
+    return `systems/hollow-knight/templates/item/${this.item.type}-sheet.html`;
+  }
+
+  async getData(options) {
+    const data = await super.getData(options);
+    data.system = this.item.system;
+    return data;
+  }
+}
+
+// --- Combat hooks ---
+// Сброс атак в начале хода и восстановление выносливости в начале хода :contentReference[oaicite:7]{index=7}
+Hooks.once("init", async () => {
+  game.HKRPG = { SYS_ID };
+
+  Actors.unregisterSheet("core", ActorSheet);
+  Actors.registerSheet(SYS_ID, HKRPGActorSheet, { makeDefault: true });
+
+  Items.unregisterSheet("core", ItemSheet);
+  Items.registerSheet(SYS_ID, HKRPGItemSheet, { makeDefault: true });
+
+  Hooks.on("combatTurn", async (combat, turn, prior) => {
+    try {
+      // start of current turn
+      const c = combat.combatant;
+      const actor = c?.actor;
+      if (!actor) return;
+
+      await actor.update({ "system.turn.attacksThisTurn": 0 });
+
+      const maxSt = Number(actor.system?.pools?.stamina?.max ?? 0);
+      if (maxSt > 0) {
+        await actor.update({ "system.pools.stamina.value": maxSt });
+      }
+    } catch (e) {
+      console.error("HKRPG | combatTurn hook error", e);
+    }
+  });
+});
