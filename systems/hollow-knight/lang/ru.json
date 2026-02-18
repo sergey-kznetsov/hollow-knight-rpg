@@ -1,23 +1,9 @@
 {
   "HKRPG": {
     "Actor": {
-      "Types": {
-        "character": "Персонаж",
-        "npc": "НИП",
-        "creature": "Существо"
-      },
-      "Characteristics": {
-        "might": "Мощь",
-        "grace": "Грация",
-        "shell": "Панцирь",
-        "insight": "Проницательность"
-      },
-      "Pools": {
-        "hearts": "Сердца",
-        "soul": "Души",
-        "stamina": "Выносливость",
-        "satiety": "Сытость"
-      },
+      "Types": { "character": "Персонаж", "npc": "НИП", "creature": "Существо" },
+      "Characteristics": { "might": "Мощь", "grace": "Грация", "shell": "Панцирь", "insight": "Проницательность" },
+      "Pools": { "hearts": "Сердца", "soul": "Души", "stamina": "Выносливость", "satiety": "Сытость" },
       "Secondary": {
         "speed": "Скорость",
         "load": "Нагрузка",
@@ -28,13 +14,10 @@
         "absorption": "Поглощение",
         "horror": "Жуть",
         "charm": "Привлекательность",
-        "hunger": "Голод"
+        "hunger": "Голод",
+        "size": "Размер"
       },
-      "Combat": {
-        "initiative": "Инициатива",
-        "imbalance": "Дисбаланс",
-        "delayedDmg": "Отложенный урон"
-      },
+      "Combat": { "initiative": "Инициатива", "imbalance": "Дисбаланс", "delayedDmg": "Отложенный урон" },
       "Paths": {
         "military": "Военный",
         "mystic": "Мистический",
@@ -55,6 +38,7 @@
         "dust": "Пыль"
       }
     },
+
     "Item": {
       "Types": {
         "weapon": "Оружие",
@@ -74,40 +58,15 @@
         "range": "Дальность",
         "properties": "Свойства",
         "durability": "Износ",
-        "types": {
-          "nail": "Гвоздь",
-          "needle": "Игла",
-          "fang": "Клык",
-          "hook": "Крюк",
-          "sling": "Праща",
-          "natural": "Природное"
-        },
-        "ranges": {
-          "melee": "Ближний",
-          "reach": "Досягаемость",
-          "ranged": "Дальний"
-        }
+        "types": { "nail": "Гвоздь", "needle": "Игла", "fang": "Клык", "hook": "Крюк", "sling": "Праща", "natural": "Природное" },
+        "ranges": { "melee": "Ближний", "reach": "Досягаемость", "ranged": "Дальний" }
       },
-      "Armor": {
-        "protection": "Защита",
-        "durability": "Прочность",
-        "weight": "Вес",
-        "pu": "Понижение Урона",
-        "absorption": "Поглощение"
-      },
+      "Armor": { "protection": "Защита", "durability": "Прочность", "weight": "Вес", "pu": "Понижение Урона", "absorption": "Поглощение" },
       "Charm": {
         "slots": "Стоимость Меток",
         "rarity": "Редкость",
         "description": "Описание",
-        "rarities": {
-          "common": "Обычный",
-          "uncommon": "Необычный",
-          "rare": "Редкий",
-          "unique": "Уникальный",
-          "legendary": "Легендарный",
-          "cursed": "Проклятый",
-          "fragile": "Хрупкий"
-        }
+        "rarities": { "common": "Обычный", "uncommon": "Необычный", "rare": "Редкий", "unique": "Уникальный", "legendary": "Легендарный", "cursed": "Проклятый", "fragile": "Хрупкий" }
       },
       "Spell": {
         "cost": "Стоимость Душ",
@@ -115,173 +74,58 @@
         "path": "Путь",
         "range": "Дальность",
         "damage": "Урон",
-        "duration": "Длительность",
-        "ranges": {
-          "self": "На себя",
-          "touch": "Касание",
-          "close": "Близко",
-          "far": "Далеко",
-          "sense": "Чувство"
-        },
-        "durations": {
-          "concentration": "Концентрация",
-          "brief": "Краткая",
-          "scene": "Сцена",
-          "rest": "Отдых",
-          "life": "Жизнь",
-          "eternity": "Вечность"
-        }
+        "ranges": { "self": "На себя", "touch": "Касание", "close": "Близко", "far": "Далеко", "sense": "Чувство" }
       },
       "Art": {
-        "cost": "Стоимость Выносливости",
+        "cost": "Стоимость",
         "path": "Путь",
         "type": "Тип",
         "description": "Описание",
-        "types": {
-          "standard": "Обычное",
-          "enhancement": "Усиление",
-          "reaction": "Реакция",
-          "unique": "Уникальное"
-        }
+        "types": { "standard": "Обычное", "enhancement": "Усиление", "reaction": "Реакция", "unique": "Уникальное" }
       },
-      "Consumable": {
-        "quantity": "Количество",
-        "effect": "Эффект",
-        "satiety": "Сытость"
-      },
+      "Consumable": { "quantity": "Количество", "effect": "Эффект", "satiety": "Сытость" },
       "Trait": {
         "hungerCost": "Стоимость Голода",
         "description": "Описание",
         "type": "Тип Черты",
-        "types": {
-          "general": "Общая",
-          "characteristic": "Характеристики",
-          "mind": "Разума",
-          "physiological": "Физиологическая",
-          "sense": "Чувств",
-          "mystic": "Мистическая",
-          "body": "Тела",
-          "movement": "Движения",
-          "defense": "Природной Защиты"
-        }
+        "types": { "general": "Общая", "characteristic": "Характеристики", "mind": "Разума", "physiological": "Физиологическая", "sense": "Чувств", "mystic": "Мистическая", "body": "Тела", "movement": "Движения", "defense": "Природной Защиты" }
       },
-      "Path": {
-        "rank": "Ранг",
-        "type": "Тип Пути",
-        "abilities": "Способности"
-      }
+      "Path": { "rank": "Ранг", "type": "Тип Пути", "abilities": "Способности" }
     },
+
     "Sheet": {
-      "Actor": {
-        "Character": "Лист Персонажа",
-        "NPC": "Лист НИП",
-        "Creature": "Лист Существа"
-      },
-      "Item": {
-        "Weapon": "Лист Оружия",
-        "Armor": "Лист Брони",
-        "Charm": "Лист Амулета",
-        "Spell": "Лист Заклинания",
-        "Art": "Лист Искусства",
-        "Consumable": "Лист Расходника",
-        "Trait": "Лист Черты",
-        "Path": "Лист Пути"
-      },
-      "Tabs": {
-        "characteristics": "Характеристики",
-        "inventory": "Инвентарь",
-        "paths": "Пути",
-        "traits": "Черты",
-        "biography": "Биография",
-        "combat": "Бой",
-        "magic": "Магия"
-      },
-      "Sections": {
-        "equipment": "Снаряжение",
-        "techniques": "Техники",
-        "arts": "Искусства",
-        "spells": "Заклинания",
-        "charms": "Амулеты",
-        "notes": "Заметки"
-      }
+      "Tabs": { "characteristics": "Характеристики", "inventory": "Инвентарь", "biography": "Биография", "combat": "Бой" },
+      "Sections": { "equipment": "Снаряжение", "notes": "Заметки" }
     },
+
     "Chat": {
+      "MisuseTitle": "Неправильное действие",
       "Roll": "Бросок",
-      "Success": "Успех",
-      "Successes": "Успехов",
+      "Successes": "Результат",
       "Dice": "Кубов",
-      "Characteristic": "Характеристика",
-      "Check": "Проверка",
-      "Save": "Спасбросок",
-      "Damage": "Урон",
-      "Healing": "Лечение",
-      "Initiative": "Инициатива"
+      "Initiative": "Инициатива",
+      "InitiativeFlavor": "Грация: {grace}\nБонус: {bonus}\nКубов: {grace}+{bonus}",
+      "AttackRoll": "Бросок атаки: {weapon}",
+      "SpellRoll": "Применение заклинания: {spell}",
+      "ArtUsed": "Применено искусство",
+      "Cost": "Стоимость",
+      "Melee": "Ближняя",
+      "Ranged": "Дальняя",
+      "AttackFlavor": "{mode} атака\nБаза: {base}\nКачество: {quality}\nВложено выносливости: {invest}\nНалог выносливости: {tax}\nИтого потрачено: {cost}"
     },
-    "Combat": {
-      "Actions": {
-        "attack": "Атака",
-        "defend": "Защита",
-        "parry": "Парирование",
-        "dodge": "Уклонение",
-        "focus": "Фокусировка",
-        "move": "Перемещение",
-        "dash": "Рывок",
-        "jump": "Прыжок",
-        "grapple": "Захват",
-        "useItem": "Использовать Предмет",
-        "castSpell": "Применить Заклинание",
-        "useArt": "Применить Искусство"
-      },
-      "States": {
-        "imbalance": "Дисбаланс",
-        "delayedDamage": "Отложенный Урон",
-        "paralyzed": "Парализован",
-        "poisoned": "Отравлен",
-        "burning": "Горит",
-        "bleeding": "Кровотечение",
-        "grabbed": "Схвачен",
-        "asleep": "Спит",
-        "unconscious": "Без сознания",
-        "dead": "Мёртв"
-      }
+
+    "Dialog": {
+      "AttackTitle": "Атака",
+      "StaminaInvest": "Сколько выносливости вложить в атаку? (минимум 1)"
     },
-    "UI": {
-      "Edit": "Редактировать",
-      "Delete": "Удалить",
-      "Add": "Добавить",
-      "Save": "Сохранить",
-      "Cancel": "Отмена",
-      "Close": "Закрыть",
-      "Roll": "Бросить",
-      "Config": "Настройки",
-      "Macro": "Макрос",
-      "Create": "Создать",
-      "Import": "Импорт",
-      "Export": "Экспорт"
-    },
-    "Settings": {
-      "Title": "Настройки HKRPG",
-      "Difficulty": "Сложность",
-      "ShowDice": "Показывать Кубики",
-      "AutoDamage": "Авто-Урон",
-      "AutoHealing": "Авто-Лечение",
-      "InitiativeFormula": "Формула Инициативы"
-    },
+
+    "UI": { "Edit": "Редактировать", "Delete": "Удалить", "Add": "Добавить", "Save": "Сохранить", "Cancel": "Отмена", "Close": "Закрыть", "Roll": "Бросить" },
+
     "Errors": {
-      "NoDice": "Недостаточно кубиков для броска",
-      "NoStamina": "Недостаточно выносливости",
-      "NoSoul": "Недостаточно душ",
-      "NoHearts": "Недостаточно сердец",
-      "InvalidTarget": "Неверная цель",
-      "SystemNotReady": "Система ещё не готова"
-    },
-    "Notifications": {
-      "RollMade": "Бросок совершён",
-      "DamageDealt": "Урон нанесён",
-      "HealingApplied": "Лечение применено",
-      "StaminaRestored": "Выносливость восстановлена",
-      "TurnStarted": "Ход начался",
-      "TurnEnded": "Ход завершён"
+      "NoDice": "Недостаточно кубиков для броска.",
+      "NoStamina": "Недостаточно выносливости.",
+      "NoSoul": "Недостаточно душ.",
+      "NotYourTurn": "Сейчас не ваш ход. Это действие в бою делать нельзя."
     }
   }
 }
