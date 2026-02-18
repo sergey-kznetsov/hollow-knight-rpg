@@ -8,23 +8,11 @@
     "verified": "12",
     "maximum": "13"
   },
-  "esmodules": [
-    "hkrg.js"
-  ],
-  "styles": [
-    "style.css"
-  ],
+  "esmodules": ["hkrg.js"],
+  "styles": ["style.css"],
   "languages": [
-    {
-      "lang": "ru",
-      "name": "Russian",
-      "path": "lang/ru.json"
-    },
-    {
-      "lang": "en",
-      "name": "English",
-      "path": "lang/en.json"
-    }
+    { "lang": "ru", "name": "Russian", "path": "lang/ru.json" },
+    { "lang": "en", "name": "English", "path": "lang/en.json" }
   ],
   "packs": [
     {
@@ -40,6 +28,20 @@
       "path": "packs/items",
       "type": "Item",
       "system": "hollow-knight"
+    },
+    {
+      "name": "spells",
+      "label": "Заклинания",
+      "path": "packs/spells",
+      "type": "Item",
+      "system": "hollow-knight"
+    },
+    {
+      "name": "tables",
+      "label": "Таблицы",
+      "path": "packs/tables",
+      "type": "RollTable",
+      "system": "hollow-knight"
     }
   ],
   "manifest": "https://raw.githubusercontent.com/sergey-kznetsov/hollow-knight-rpg/main/systems/hollow-knight/system.json",
@@ -49,9 +51,6 @@
   "bugs": "https://github.com/sergey-kznetsov/hollow-knight-rpg/issues",
   "changelog": "CHANGELOG.md",
   "background": "assets/background.jpg",
-  "grid": {
-    "distance": 1,
-    "units": "клетки"
-  },
+  "grid": { "distance": 1, "units": "клетки" },
   "initiative": "1d6 + @characteristics.grace.value"
 }
