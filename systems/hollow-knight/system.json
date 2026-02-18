@@ -11,7 +11,16 @@
   "esmodules": ["hkrg.js"],
   "styles": ["style.css"],
   "languages": [
-    { "lang": "ru", "name": "Russian", "path": "lang/ru.json" },
+    {
+      "lang": "ru",
+      "name": "Russian",
+      "path": "lang/ru.json"
+    },
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
   ],
   "packs": [
     {
@@ -50,6 +59,9 @@
   "bugs": "https://github.com/sergey-kznetsov/hollow-knight-rpg/issues",
   "changelog": "CHANGELOG.md",
   "background": "assets/background.jpg",
-  "grid": { "distance": 1, "units": "клетки" },
+  "grid": {
+    "distance": 1,
+    "units": "клетки"
+  },
   "initiative": "1d6 + @characteristics.grace.value"
 }
