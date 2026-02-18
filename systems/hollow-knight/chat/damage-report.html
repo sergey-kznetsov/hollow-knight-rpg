@@ -1,0 +1,23 @@
+<div class="hkrpg-damage-report">
+  <h3 style="margin:0 0 6px;">{{localize "HKRPG.Chat.DamageReportTitle"}}</h3>
+
+  <div style="color: var(--hk-muted); margin-bottom:6px;">
+    {{attackerName}} → {{defenderName}} ({{weaponName}})
+  </div>
+
+  <div class="hkrpg-row" style="justify-content:space-between;">
+    <span>{{localize "HKRPG.Chat.AttackSuccesses"}}: <b>{{attackSuccesses}}</b></span>
+    <span>{{localize "HKRPG.Chat.DefenseSuccesses"}}: <b>{{defenseSuccesses}}</b></span>
+    <span>{{localize "HKRPG.Chat.NetHits"}}: <b>{{netHits}}</b></span>
+  </div>
+
+  <hr />
+
+  <div>{{localize "HKRPG.Chat.BaseDamage"}}: <b>{{baseDamage}}</b></div>
+  <div>{{localize "HKRPG.Chat.PU"}}: <b>{{pu}}</b></div>
+  <div>{{localize "HKRPG.Chat.Soak"}}: <b>{{soakSuccesses}}</b></div>
+
+  <div style="margin-top:6px;">
+    {{localize "HKRPG.Chat.FinalDamage"}}: <b>{{finalDamage}}</b>
+  </div>
+</div>
