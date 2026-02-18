@@ -136,12 +136,14 @@ async function attackWithWeapon(actor, weapon, investStamina) {
   if (!ok) return null;
 
   const quality = Number(weapon.system?.quality?.value ?? 0);
-  const isRanged = (weapon.system?.range?.value ?? "melee") === "ranged";
+  const isRanged = (weapon.system?.range?.category?.value ?? weapon.system?.range?.value ?? "melee") === "ranged";
 
   const base = isRanged
     ? Number(actor.system?.characteristics?.grace?.value ?? 0)
     : Number(actor.system?.characteristics?.might?.value ?? 0);
 
+  // ВАЖНО: пока используем чистое качество.
+  // Позже (когда начнем улучшения оружия) добавим weapon.system.upgrade.qualityBonus.
   const dice = Math.max(0, Math.floor(base + quality + investStamina));
   const rerolls = Number(weapon.system?.rerolls?.value ?? 0);
 
@@ -340,8 +342,8 @@ class HKRPGItemSheet extends ItemSheet {
   static get defaultOptions() {
     return foundry.utils.mergeObject(super.defaultOptions, {
       classes: ["hkrpg", "sheet", "item"],
-      width: 520,
-      height: 540,
+      width: 560,
+      height: 620,
       tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "details" }]
     });
   }
@@ -354,6 +356,40 @@ class HKRPGItemSheet extends ItemSheet {
     const data = await super.getData(options);
     data.system = this.item.system;
     return data;
+  }
+
+  activateListeners(html) {
+    super.activateListeners(html);
+
+    // Добавить модификацию (weapon/armor)
+    html.find("[data-action='add-mod']").on("click", async (ev) => {
+      ev.preventDefault();
+      const mods = foundry.utils.duplicate(this.item.system?.mods?.value ?? []);
+      mods.push({ name: "", effect: "", price: "", active: true });
+      await this.item.update({ "system.mods.value": mods });
+    });
+
+    // Удалить модификацию (weapon/armor)
+    html.find("[data-action='remove-mod']").on("click", async (ev) => {
+      ev.preventDefault();
+      const idx = Number(ev.currentTarget.dataset.idx);
+      const mods = foundry.utils.duplicate(this.item.system?.mods?.value ?? []);
+      if (Number.isNaN(idx) || idx < 0 || idx >= mods.length) return;
+      mods.splice(idx, 1);
+      await this.item.update({ "system.mods.value": mods });
+    });
+
+    // Починка брони: durability.value -> durability.max, broken -> false
+    html.find("[data-action='repair-armor']").on("click", async (ev) => {
+      ev.preventDefault();
+      if (this.item.type !== "armor") return;
+
+      const max = Number(this.item.system?.durability?.max ?? 0);
+      await this.item.update({
+        "system.durability.value": Math.max(0, max),
+        "system.broken.value": false
+      });
+    });
   }
 }
 
