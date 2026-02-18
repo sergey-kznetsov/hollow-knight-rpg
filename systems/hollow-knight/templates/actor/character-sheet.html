@@ -154,81 +154,228 @@
       </div>
     </div>
 
-    <!-- INVENTORY -->
+    <!-- INVENTORY (GROUPED) -->
     <div class="tab" data-group="primary" data-tab="inventory">
-      <div class="hkrpg-card">
-        <h3>{{localize "HKRPG.Sheet.Sections.equipment"}}</h3>
-
-        <div class="hkrpg-actions" style="margin-bottom:8px;">
-          <button type="button" data-action="item-create" data-type="weapon"><i class="fas fa-plus"></i> {{localize "HKRPG.Item.Types.weapon"}}</button>
-          <button type="button" data-action="item-create" data-type="armor"><i class="fas fa-plus"></i> {{localize "HKRPG.Item.Types.armor"}}</button>
-          <button type="button" data-action="item-create" data-type="charm"><i class="fas fa-plus"></i> {{localize "HKRPG.Item.Types.charm"}}</button>
-          <button type="button" data-action="item-create" data-type="consumable"><i class="fas fa-plus"></i> {{localize "HKRPG.Item.Types.consumable"}}</button>
-          <button type="button" data-action="item-create" data-type="art"><i class="fas fa-plus"></i> {{localize "HKRPG.Item.Types.art"}}</button>
-          <button type="button" data-action="item-create" data-type="spell"><i class="fas fa-plus"></i> {{localize "HKRPG.Item.Types.spell"}}</button>
-          <button type="button" data-action="item-create" data-type="trait"><i class="fas fa-plus"></i> {{localize "HKRPG.Item.Types.trait"}}</button>
-          <button type="button" data-action="item-create" data-type="path"><i class="fas fa-plus"></i> {{localize "HKRPG.Item.Types.path"}}</button>
+      <div class="hkrpg-grid hkrpg-cols-2">
+        <div class="hkrpg-card">
+          <h3>{{localize "HKRPG.Item.Types.weapon"}}</h3>
+          <div class="hkrpg-actions" style="margin-bottom:8px;">
+            <button type="button" data-action="item-create" data-type="weapon"><i class="fas fa-plus"></i> Добавить</button>
+          </div>
+          <ol class="items-list">
+            {{#each itemsByType.weapon as |item|}}
+            <li class="item hkrpg-row" data-item-id="{{item._id}}">
+              <div style="display:flex; align-items:center; gap:8px; flex:1;">
+                <img src="{{item.img}}" width="24" height="24" />
+                <b>{{item.name}}</b>
+                {{#if item.system.equipped}}<span class="hkrpg-pill">экип.</span>{{/if}}
+              </div>
+              <div class="hkrpg-actions">
+                <button type="button" class="item-roll" title="{{localize 'HKRPG.UI.Roll'}}"><i class="fas fa-dice"></i></button>
+                <button type="button" class="item-toggle-equipped" title="Экипировать/снять"><i class="fas fa-tshirt"></i></button>
+                <button type="button" class="item-edit" title="{{localize 'HKRPG.UI.Edit'}}"><i class="fas fa-edit"></i></button>
+                <button type="button" class="item-delete" title="{{localize 'HKRPG.UI.Delete'}}"><i class="fas fa-trash"></i></button>
+              </div>
+            </li>
+            {{/each}}
+          </ol>
         </div>
 
-        <ol class="items-list">
-          {{#each items as |item|}}
-          <li class="item hkrpg-row" data-item-id="{{item._id}}">
-            <div style="display:flex; align-items:center; gap:8px; flex:1;">
-              <img src="{{item.img}}" width="24" height="24" />
-              <b>{{item.name}}</b>
-              <span style="color: var(--hk-muted);">
-                ({{localize (concat "HKRPG.Item.Types." item.type)}})
-              </span>
-              {{#if item.system.equipped}}<span class="hkrpg-pill">экип.</span>{{/if}}
-            </div>
+        <div class="hkrpg-card">
+          <h3>{{localize "HKRPG.Item.Types.armor"}} / {{localize "HKRPG.Item.Types.charm"}}</h3>
+          <div class="hkrpg-actions" style="margin-bottom:8px;">
+            <button type="button" data-action="item-create" data-type="armor"><i class="fas fa-plus"></i> Броня</button>
+            <button type="button" data-action="item-create" data-type="charm"><i class="fas fa-plus"></i> Амулет</button>
+          </div>
 
-            <div class="hkrpg-actions">
-              {{#if (or (eq item.type "weapon") (eq item.type "spell") (eq item.type "art"))}}
-              <button type="button" class="item-roll" title="{{localize 'HKRPG.UI.Roll'}}">
-                <i class="fas fa-dice"></i>
-              </button>
-              {{/if}}
+          <h4 style="margin:6px 0; color: var(--hk-muted);">{{localize "HKRPG.Item.Types.armor"}}</h4>
+          <ol class="items-list">
+            {{#each itemsByType.armor as |item|}}
+            <li class="item hkrpg-row" data-item-id="{{item._id}}">
+              <div style="display:flex; align-items:center; gap:8px; flex:1;">
+                <img src="{{item.img}}" width="24" height="24" />
+                <b>{{item.name}}</b>
+                {{#if item.system.equipped}}<span class="hkrpg-pill">экип.</span>{{/if}}
+              </div>
+              <div class="hkrpg-actions">
+                <button type="button" class="item-toggle-equipped" title="Экипировать/снять"><i class="fas fa-tshirt"></i></button>
+                <button type="button" class="item-edit"><i class="fas fa-edit"></i></button>
+                <button type="button" class="item-delete"><i class="fas fa-trash"></i></button>
+              </div>
+            </li>
+            {{/each}}
+          </ol>
 
-              {{#if (or (eq item.type "weapon") (eq item.type "armor") (eq item.type "charm"))}}
-              <button type="button" class="item-toggle-equipped" title="Экипировать/снять">
-                <i class="fas fa-tshirt"></i>
-              </button>
-              {{/if}}
+          <h4 style="margin:10px 0 6px; color: var(--hk-muted);">{{localize "HKRPG.Item.Types.charm"}}</h4>
+          <ol class="items-list">
+            {{#each itemsByType.charm as |item|}}
+            <li class="item hkrpg-row" data-item-id="{{item._id}}">
+              <div style="display:flex; align-items:center; gap:8px; flex:1;">
+                <img src="{{item.img}}" width="24" height="24" />
+                <b>{{item.name}}</b>
+                {{#if item.system.equipped}}<span class="hkrpg-pill">экип.</span>{{/if}}
+              </div>
+              <div class="hkrpg-actions">
+                <button type="button" class="item-toggle-equipped" title="Экипировать/снять"><i class="fas fa-tshirt"></i></button>
+                <button type="button" class="item-edit"><i class="fas fa-edit"></i></button>
+                <button type="button" class="item-delete"><i class="fas fa-trash"></i></button>
+              </div>
+            </li>
+            {{/each}}
+          </ol>
+        </div>
 
-              <button type="button" class="item-edit" title="{{localize 'HKRPG.UI.Edit'}}">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button type="button" class="item-delete" title="{{localize 'HKRPG.UI.Delete'}}">
-                <i class="fas fa-trash"></i>
-              </button>
-            </div>
-          </li>
-          {{/each}}
-        </ol>
+        <div class="hkrpg-card">
+          <h3>{{localize "HKRPG.Item.Types.consumable"}}</h3>
+          <div class="hkrpg-actions" style="margin-bottom:8px;">
+            <button type="button" data-action="item-create" data-type="consumable"><i class="fas fa-plus"></i> Добавить</button>
+          </div>
+          <ol class="items-list">
+            {{#each itemsByType.consumable as |item|}}
+            <li class="item hkrpg-row" data-item-id="{{item._id}}">
+              <div style="display:flex; align-items:center; gap:8px; flex:1;">
+                <img src="{{item.img}}" width="24" height="24" />
+                <b>{{item.name}}</b>
+              </div>
+              <div class="hkrpg-actions">
+                <button type="button" class="item-edit"><i class="fas fa-edit"></i></button>
+                <button type="button" class="item-delete"><i class="fas fa-trash"></i></button>
+              </div>
+            </li>
+            {{/each}}
+          </ol>
+        </div>
+
+        <div class="hkrpg-card">
+          <h3>{{localize "HKRPG.Item.Types.art"}} / {{localize "HKRPG.Item.Types.spell"}}</h3>
+          <div class="hkrpg-actions" style="margin-bottom:8px;">
+            <button type="button" data-action="item-create" data-type="art"><i class="fas fa-plus"></i> Искусство</button>
+            <button type="button" data-action="item-create" data-type="spell"><i class="fas fa-plus"></i> Заклинание</button>
+          </div>
+
+          <h4 style="margin:6px 0; color: var(--hk-muted);">{{localize "HKRPG.Item.Types.art"}}</h4>
+          <ol class="items-list">
+            {{#each itemsByType.art as |item|}}
+            <li class="item hkrpg-row" data-item-id="{{item._id}}">
+              <div style="display:flex; align-items:center; gap:8px; flex:1;">
+                <img src="{{item.img}}" width="24" height="24" />
+                <b>{{item.name}}</b>
+              </div>
+              <div class="hkrpg-actions">
+                <button type="button" class="item-roll"><i class="fas fa-dice"></i></button>
+                <button type="button" class="item-edit"><i class="fas fa-edit"></i></button>
+                <button type="button" class="item-delete"><i class="fas fa-trash"></i></button>
+              </div>
+            </li>
+            {{/each}}
+          </ol>
+
+          <h4 style="margin:10px 0 6px; color: var(--hk-muted);">{{localize "HKRPG.Item.Types.spell"}}</h4>
+          <ol class="items-list">
+            {{#each itemsByType.spell as |item|}}
+            <li class="item hkrpg-row" data-item-id="{{item._id}}">
+              <div style="display:flex; align-items:center; gap:8px; flex:1;">
+                <img src="{{item.img}}" width="24" height="24" />
+                <b>{{item.name}}</b>
+              </div>
+              <div class="hkrpg-actions">
+                <button type="button" class="item-roll"><i class="fas fa-dice"></i></button>
+                <button type="button" class="item-edit"><i class="fas fa-edit"></i></button>
+                <button type="button" class="item-delete"><i class="fas fa-trash"></i></button>
+              </div>
+            </li>
+            {{/each}}
+          </ol>
+        </div>
+
+        <div class="hkrpg-card">
+          <h3>{{localize "HKRPG.Item.Types.path"}} / {{localize "HKRPG.Item.Types.trait"}}</h3>
+          <div class="hkrpg-actions" style="margin-bottom:8px;">
+            <button type="button" data-action="item-create" data-type="path"><i class="fas fa-plus"></i> Путь</button>
+            <button type="button" data-action="item-create" data-type="trait"><i class="fas fa-plus"></i> Черта</button>
+          </div>
+
+          <h4 style="margin:6px 0; color: var(--hk-muted);">{{localize "HKRPG.Item.Types.path"}}</h4>
+          <ol class="items-list">
+            {{#each itemsByType.path as |item|}}
+            <li class="item hkrpg-row" data-item-id="{{item._id}}">
+              <div style="display:flex; align-items:center; gap:8px; flex:1;">
+                <img src="{{item.img}}" width="24" height="24" />
+                <b>{{item.name}}</b>
+              </div>
+              <div class="hkrpg-actions">
+                <button type="button" class="item-edit"><i class="fas fa-edit"></i></button>
+                <button type="button" class="item-delete"><i class="fas fa-trash"></i></button>
+              </div>
+            </li>
+            {{/each}}
+          </ol>
+
+          <h4 style="margin:10px 0 6px; color: var(--hk-muted);">{{localize "HKRPG.Item.Types.trait"}}</h4>
+          <ol class="items-list">
+            {{#each itemsByType.trait as |item|}}
+            <li class="item hkrpg-row" data-item-id="{{item._id}}">
+              <div style="display:flex; align-items:center; gap:8px; flex:1;">
+                <img src="{{item.img}}" width="24" height="24" />
+                <b>{{item.name}}</b>
+              </div>
+              <div class="hkrpg-actions">
+                <button type="button" class="item-edit"><i class="fas fa-edit"></i></button>
+                <button type="button" class="item-delete"><i class="fas fa-trash"></i></button>
+              </div>
+            </li>
+            {{/each}}
+          </ol>
+        </div>
       </div>
     </div>
 
     <!-- COMBAT -->
     <div class="tab" data-group="primary" data-tab="combat">
-      <div class="hkrpg-card">
-        <h3>Бой</h3>
+      <div class="hkrpg-grid hkrpg-cols-2">
+        <div class="hkrpg-card">
+          <h3>Бой</h3>
+          <div class="hkrpg-actions">
+            <button type="button" data-action="attack"><i class="fas fa-dice"></i> Атака…</button>
+            <button type="button" data-action="dodge"><i class="fas fa-wind"></i> {{localize "HKRPG.Chat.Dodge"}}</button>
+            <button type="button" data-action="parry"><i class="fas fa-shield-alt"></i> {{localize "HKRPG.Chat.Parry"}}</button>
+          </div>
 
-        <div class="hkrpg-actions">
-          <button type="button" data-action="attack"><i class="fas fa-dice"></i> {{localize "HKRPG.Combat.Actions.attack"}}</button>
-          <button type="button" data-action="dodge"><i class="fas fa-wind"></i> {{localize "HKRPG.Chat.Dodge"}}</button>
-          <button type="button" data-action="parry"><i class="fas fa-shield-alt"></i> {{localize "HKRPG.Chat.Parry"}}</button>
+          <hr />
+
+          <div class="hkrpg-row">
+            <label>Атак за ход (служебное)</label>
+            <input type="number" name="system.turn.attacksThisTurn" value="{{system.turn.attacksThisTurn}}" />
+          </div>
         </div>
 
-        <hr />
+        <div class="hkrpg-card">
+          <h3>Экипированное оружие</h3>
 
-        <div class="hkrpg-row">
-          <label>Атак за ход (служебное)</label>
-          <input type="number" name="system.turn.attacksThisTurn" value="{{system.turn.attacksThisTurn}}" />
+          {{#if equippedWeapons.length}}
+            <ol class="items-list">
+              {{#each equippedWeapons as |w|}}
+              <li class="hkrpg-row">
+                <div style="display:flex; align-items:center; gap:8px; flex:1;">
+                  <img src="{{w.img}}" width="24" height="24" />
+                  <b>{{w.name}}</b>
+                </div>
+
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <input data-role="invest" type="number" value="1" min="1" step="1" style="width:64px; text-align:center;" />
+                  <button type="button" data-action="attack-weapon" data-item-id="{{w._id}}" title="Быстрая атака">
+                    <i class="fas fa-dice"></i>
+                  </button>
+                </div>
+              </li>
+              {{/each}}
+            </ol>
+          {{else}}
+            <p style="color: var(--hk-muted); margin:0;">
+              Нет экипированного оружия. Открой “Инвентарь” → Оружие → экипируй.
+            </p>
+          {{/if}}
         </div>
-
-        <p style="color: var(--hk-muted); margin-top:8px;">
-          Атака требует минимум 1 Выносливости и имеет налог на повторные атаки в этот же ход.
-        </p>
       </div>
     </div>
 
