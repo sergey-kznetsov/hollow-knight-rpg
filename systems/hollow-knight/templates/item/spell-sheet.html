@@ -1,125 +1,46 @@
-Принято. Вот `systems/hollow-knight/templates/item/spell-sheet.html`.
-
-Этот шаблон соответствует структуре `template.json` (поля `cost`, `complexity`, `path`, `range`, `damage`, `duration`) и использует классы из `style.css`. Заклинания в HKRPG требуют указания Стоимости Душ, Сложности, Пути, Дальности и Длительности.
-
-```html
-<form class="{{cssClass}} flexcol" autocomplete="off">
-  {{!-- Sheet Header --}}
+<form class="hkrpg sheet" autocomplete="off">
   <header class="sheet-header">
-    <img class="profile-img" src="{{img}}" data-edit="img" title="{{name}}"/>
-    <div class="header-fields">
-      <h1 class="charname"><input name="name" type="text" value="{{name}}" placeholder="Название Заклинания"/></h1>
-      
-      <div class="grid grid-2col">
-        <div class="resource">
-          <label>{{localize 'HKRPG.Item.Types.spell'}}</label>
-          <input type="text" value="{{localize 'HKRPG.Item.Types.spell'}}" disabled/>
-        </div>
-        <div class="resource">
-          <label>{{localize 'HKRPG.Item.Spell.cost'}}</label>
-          <input type="number" name="system.cost.value" value="{{system.cost.value}}" data-dtype="Number"/>
-        </div>
+    <div class="hkrpg-row">
+      <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" height="64" width="64"/>
+      <div style="flex:1; margin-left:10px;">
+        <h2 style="margin:0;"><input name="name" type="text" value="{{item.name}}"/></h2>
+        <div style="color: var(--hk-muted);">{{localize "HKRPG.Item.Types.spell"}}</div>
       </div>
     </div>
   </header>
 
-  {{!-- Sheet Tab Navigation --}}
-  <nav class="sheet-tabs tabs" data-group="primary">
-    <a class="item" data-tab="details">{{localize 'HKRPG.Sheet.Tabs.characteristics'}}</a>
-    <a class="item" data-tab="description">{{localize 'HKRPG.Sheet.Tabs.biography'}}</a>
-  </nav>
-
-  {{!-- Sheet Body --}}
   <section class="sheet-body">
-    
-    {{!-- Details Tab --}}
-    <div class="tab active" data-group="primary" data-tab="details">
-      <div class="grid grid-2col">
-        {{!-- Сложность --}}
-        <div class="resource">
-          <label>{{localize 'HKRPG.Item.Spell.complexity'}}</label>
-          <input type="number" name="system.complexity.value" value="{{system.complexity.value}}" data-dtype="Number"/>
-        </div>
-
-        {{!-- Путь (Шпиль, Плащ, Грёзы...) --}}
-        <div class="resource">
-          <label>{{localize 'HKRPG.Item.Spell.path'}}</label>
-          <select name="system.path.value">
-            {{#select system.path.value}}
-            <option value="spire">{{localize 'HKRPG.Actor.Paths.spire'}}</option>
-            <option value="cloak">{{localize 'HKRPG.Actor.Paths.cloak'}}</option>
-            <option value="dreams">{{localize 'HKRPG.Actor.Paths.dreams'}}</option>
-            <option value="nightmares">{{localize 'HKRPG.Actor.Paths.nightmares'}}</option>
-            <option value="bloom">{{localize 'HKRPG.Actor.Paths.bloom'}}</option>
-            <option value="thorn">{{localize 'HKRPG.Actor.Paths.thorn'}}</option>
-            <option value="dust">{{localize 'HKRPG.Actor.Paths.dust'}}</option>
-            {{/select}}
-          </select>
-        </div>
-
-        {{!-- Дальность --}}
-        <div class="resource">
-          <label>{{localize 'HKRPG.Item.Spell.range'}}</label>
-          <select name="system.range.value">
-            {{#select system.range.value}}
-            <option value="self">{{localize 'HKRPG.Item.Spell.ranges.self'}}</option>
-            <option value="touch">{{localize 'HKRPG.Item.Spell.ranges.touch'}}</option>
-            <option value="close">{{localize 'HKRPG.Item.Spell.ranges.close'}}</option>
-            <option value="far">{{localize 'HKRPG.Item.Spell.ranges.far'}}</option>
-            <option value="sense">{{localize 'HKRPG.Item.Spell.ranges.sense'}}</option>
-            {{/select}}
-          </select>
-        </div>
-
-        {{!-- Длительность --}}
-        <div class="resource">
-          <label>{{localize 'HKRPG.Item.Spell.duration'}}</label>
-          <select name="system.duration.value">
-            {{#select system.duration.value}}
-            <option value="concentration">{{localize 'HKRPG.Item.Spell.durations.concentration'}}</option>
-            <option value="brief">{{localize 'HKRPG.Item.Spell.durations.brief'}}</option>
-            <option value="scene">{{localize 'HKRPG.Item.Spell.durations.scene'}}</option>
-            <option value="rest">{{localize 'HKRPG.Item.Spell.durations.rest'}}</option>
-            <option value="life">{{localize 'HKRPG.Item.Spell.durations.life'}}</option>
-            <option value="eternity">{{localize 'HKRPG.Item.Spell.durations.eternity'}}</option>
-            {{/select}}
-          </select>
-        </div>
+    <div class="hkrpg-card">
+      <h3>Параметры</h3>
+      <div class="hkrpg-row"><label>{{localize "HKRPG.Item.Spell.cost"}}</label>
+        <input type="number" name="system.costSoul.value" value="{{system.costSoul.value}}"/></div>
+      <div class="hkrpg-row"><label>{{localize "HKRPG.Item.Spell.complexity"}}</label>
+        <input type="number" name="system.complexity.value" value="{{system.complexity.value}}"/></div>
+      <div class="hkrpg-row"><label>{{localize "HKRPG.Item.Spell.path"}}</label>
+        <select name="system.path.value">
+          <option value="spire" {{#if (eq system.path.value "spire")}}selected{{/if}}>{{localize "HKRPG.Actor.Paths.spire"}}</option>
+          <option value="cloak" {{#if (eq system.path.value "cloak")}}selected{{/if}}>{{localize "HKRPG.Actor.Paths.cloak"}}</option>
+          <option value="dreams" {{#if (eq system.path.value "dreams")}}selected{{/if}}>{{localize "HKRPG.Actor.Paths.dreams"}}</option>
+          <option value="nightmares" {{#if (eq system.path.value "nightmares")}}selected{{/if}}>{{localize "HKRPG.Actor.Paths.nightmares"}}</option>
+          <option value="bloom" {{#if (eq system.path.value "bloom")}}selected{{/if}}>{{localize "HKRPG.Actor.Paths.bloom"}}</option>
+          <option value="thorn" {{#if (eq system.path.value "thorn")}}selected{{/if}}>{{localize "HKRPG.Actor.Paths.thorn"}}</option>
+          <option value="dust" {{#if (eq system.path.value "dust")}}selected{{/if}}>{{localize "HKRPG.Actor.Paths.dust"}}</option>
+        </select>
       </div>
+      <div class="hkrpg-row"><label>{{localize "HKRPG.Item.Spell.range"}}</label>
+        <select name="system.range.value">
+          <option value="self" {{#if (eq system.range.value "self")}}selected{{/if}}>{{localize "HKRPG.Item.Spell.ranges.self"}}</option>
+          <option value="touch" {{#if (eq system.range.value "touch")}}selected{{/if}}>{{localize "HKRPG.Item.Spell.ranges.touch"}}</option>
+          <option value="close" {{#if (eq system.range.value "close")}}selected{{/if}}>{{localize "HKRPG.Item.Spell.ranges.close"}}</option>
+          <option value="far" {{#if (eq system.range.value "far")}}selected{{/if}}>{{localize "HKRPG.Item.Spell.ranges.far"}}</option>
+          <option value="sense" {{#if (eq system.range.value "sense")}}selected{{/if}}>{{localize "HKRPG.Item.Spell.ranges.sense"}}</option>
+        </select>
+      </div>
+      <div class="hkrpg-row"><label>{{localize "HKRPG.Item.Spell.damage"}}</label>
+        <input type="number" name="system.damage.value" value="{{system.damage.value}}"/></div>
 
-      {{!-- Урон / Эффект --}}
-      <div class="resource" style="margin-top: 10px;">
-        <label>{{localize 'HKRPG.Item.Spell.damage'}}</label>
-        <input type="number" name="system.damage.value" value="{{system.damage.value}}" data-dtype="Number"/>
-      </div>
-      
-      {{!-- Краткое Описание Эффектов --}}
-      <div class="resource" style="margin-top: 10px;">
-        <label>{{localize 'HKRPG.Sheet.Sections.notes'}}</label>
-        <textarea name="system.description" data-dtype="String">{{system.description}}</textarea>
-      </div>
+      <h3 style="margin-top:10px;">{{localize "HKRPG.Sheet.Sections.notes"}}</h3>
+      <textarea name="system.description.value" rows="12">{{system.description.value}}</textarea>
     </div>
-
-    {{!-- Description Tab --}}
-    <div class="tab" data-group="primary" data-tab="description">
-      <div class="resource">
-        <label>{{localize 'HKRPG.Sheet.Sections.notes'}}</label>
-        <textarea name="system.description" data-dtype="String" style="height: 300px;">{{system.description}}</textarea>
-      </div>
-    </div>
-
   </section>
 </form>
-```
-
-### Что здесь важно:
-1.  **Header:** Поле стоимости (`system.cost.value`) вынесено в шапку, так как это ключевой ресурс для заклинаний (Души).
-2.  **Path Select:** Выпадающий список Мистических Путей (Шпиль, Плащ, Грёзы, Кошмары, Цветение, Шип, Пыль). Соответствует правилам HKRPG (стр. 37-43).
-3.  **Range & Duration:** Списки Дальности и Длительности соответствуют таблицам модификаций заклинаний (стр. 59-60 правил v1.8).
-4.  **Complexity:** Поле Сложности (`system.complexity.value`), определяющее базовую стоимость Душ.
-5.  **Consistency:** Использует те же классы (`grid-2col`, `resource`, `tabs`) и пути данных (`system.*`), что и `armor-sheet.html`, `art-sheet.html`.
-6.  **Localization:** Использует ключи из `lang/ru.json` (например, `HKRPG.Item.Spell.ranges.close`).
-
-Сохраняй в `systems/hollow-knight/templates/item/spell-sheet.html`.
-
-Следующий файл? (Рекомендую `templates/item/weapon-sheet.html` для Оружия, чтобы закрыть базовый набор предметов).
