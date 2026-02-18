@@ -1,14 +1,18 @@
-<div class="hkrpg-card">
-  <h3>{{title}}</h3>
-  <div style="color: var(--hk-muted); margin-bottom:6px;">
-    {{localize "HKRPG.Chat.Dice"}}: <b>{{dice}}</b>
-    {{#if rerolls}} | перебросы: <b>{{rerolls}}</b>{{/if}}
+<div class="hkrpg-roll-card">
+  <h3 style="margin:0 0 6px;">{{title}}</h3>
+
+  <div class="hkrpg-row" style="justify-content:space-between;">
+    <span><b>{{localize "HKRPG.Chat.Dice"}}</b>: {{dice}}</span>
+    <span><b>{{localize "HKRPG.Chat.Successes"}}</b>: {{successes}}</span>
   </div>
-  <div style="font-size:16px;">
-    <b>{{localize "HKRPG.Chat.Successes"}}:</b> {{successes}}
+
+  {{#if rerolls}}
+  <div style="color: var(--hk-muted); margin-top:4px;">
+    Перебросов: {{rerolls}}
   </div>
+  {{/if}}
+
   {{#if flavor}}
-  <hr/>
-  <div style="color: var(--hk-text); white-space: pre-wrap;">{{flavor}}</div>
+  <pre style="white-space:pre-wrap; margin:8px 0 0; color: var(--hk-muted);">{{flavor}}</pre>
   {{/if}}
 </div>
