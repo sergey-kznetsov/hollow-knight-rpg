@@ -1,52 +1,146 @@
-<form class="hkrpg sheet" autocomplete="off">
+<form class="hkrpg sheet item-sheet" autocomplete="off">
   <header class="sheet-header">
     <div class="hkrpg-row">
-      <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" height="64" width="64"/>
+      <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" height="72" width="72" />
+
       <div style="flex:1; margin-left:10px;">
-        <h2 style="margin:0;"><input name="name" type="text" value="{{item.name}}"/></h2>
-        <div style="color: var(--hk-muted);">{{localize "HKRPG.Item.Types.armor"}}</div>
+        <h2 style="margin:0;">
+          <input name="name" type="text" value="{{item.name}}" />
+        </h2>
+
+        <div class="hkrpg-row" style="margin-top:6px;">
+          <label style="min-width:120px;">{{localize "HKRPG.Item.Types.armor"}}</label>
+          <span class="hkrpg-pill">{{item.type}}</span>
+        </div>
       </div>
-      <span class="hkrpg-pill">
-        <label style="display:flex; gap:6px; align-items:center; margin:0;">
-          <input type="checkbox" name="system.equipped" {{checked system.equipped}}/> экип.
+
+      <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end;">
+        <label class="hkrpg-row" style="gap:8px;">
+          <input type="checkbox" name="system.equipped" {{checked system.equipped}} />
+          <span>{{localize "HKRPG.Item.Armor.equipped"}}</span>
         </label>
-      </span>
+
+        <button type="button" data-action="repair-armor" title="Починить (восстановить прочность)">
+          <i class="fas fa-hammer"></i> Починить
+        </button>
+      </div>
     </div>
   </header>
 
   <nav class="sheet-tabs tabs" data-group="primary">
-    <a class="item" data-tab="details">{{localize "HKRPG.Sheet.Tabs.characteristics"}}</a>
-    <a class="item" data-tab="desc">{{localize "HKRPG.Sheet.Sections.notes"}}</a>
+    <a class="item" data-tab="details">Параметры</a>
+    <a class="item" data-tab="mods">Модификации</a>
+    <a class="item" data-tab="desc">{{localize "HKRPG.Item.Common.description"}}</a>
   </nav>
 
   <section class="sheet-body">
+    <!-- DETAILS -->
     <div class="tab" data-group="primary" data-tab="details">
-      <div class="hkrpg-card">
-        <h3>Параметры</h3>
-        <div class="hkrpg-row"><label>{{localize "HKRPG.Item.Armor.protection"}}</label>
-          <input type="number" name="system.protection.value" value="{{system.protection.value}}"/></div>
-        <div class="hkrpg-row"><label>{{localize "HKRPG.Item.Armor.pu"}}</label>
-          <input type="number" name="system.pu.value" value="{{system.pu.value}}"/></div>
-        <div class="hkrpg-row"><label>{{localize "HKRPG.Item.Armor.absorption"}}</label>
-          <input type="number" name="system.absorption.value" value="{{system.absorption.value}}"/></div>
-        <div class="hkrpg-row"><label>{{localize "HKRPG.Item.Armor.weight"}}</label>
-          <input type="number" name="system.weight.value" value="{{system.weight.value}}"/></div>
-        <div class="hkrpg-row"><label>{{localize "HKRPG.Item.Armor.durability"}}</label>
-          <input type="number" name="system.durability.value" value="{{system.durability.value}}"/>
-          <span>/</span>
-          <input type="number" name="system.durability.max" value="{{system.durability.max}}"/>
+      <div class="hkrpg-grid hkrpg-cols-2">
+        <div class="hkrpg-card">
+          <h3>База</h3>
+
+          <div class="hkrpg-row">
+            <label>{{localize "HKRPG.Item.Armor.weight"}}</label>
+            <input type="number" name="system.weight.value" value="{{system.weight.value}}" min="0" step="1" />
+          </div>
+
+          <div class="hkrpg-row">
+            <label>{{localize "HKRPG.Item.Armor.price"}}</label>
+            <input type="number" name="system.price.value" value="{{system.price.value}}" min="0" step="1" />
+          </div>
+
+          <div class="hkrpg-row">
+            <label>{{localize "HKRPG.Item.Armor.pu"}}</label>
+            <input type="number" name="system.pu.value" value="{{system.pu.value}}" min="0" step="1" />
+          </div>
+
+          <div class="hkrpg-row">
+            <label>{{localize "HKRPG.Item.Armor.absorptionBonus"}}</label>
+            <input type="number" name="system.absorptionBonus.value" value="{{system.absorptionBonus.value}}" step="1" />
+          </div>
+
+          <div class="hkrpg-row">
+            <label>{{localize "HKRPG.Item.Armor.absorptionRerolls"}}</label>
+            <input type="number" name="system.absorptionRerolls.value" value="{{system.absorptionRerolls.value}}" min="0" step="1" />
+          </div>
         </div>
-        <div class="hkrpg-row" style="align-items:flex-start;">
-          <label>{{localize "HKRPG.Item.Weapon.properties"}}</label>
-          <textarea name="system.properties.value" rows="4" style="flex:1;">{{system.properties.value}}</textarea>
+
+        <div class="hkrpg-card">
+          <h3>Прочность</h3>
+
+          <div class="hkrpg-row">
+            <label>{{localize "HKRPG.Item.Armor.durability"}}</label>
+            <input type="number" name="system.durability.value" value="{{system.durability.value}}" min="0" step="1" />
+            <span>/</span>
+            <input type="number" name="system.durability.max" value="{{system.durability.max}}" min="0" step="1" />
+          </div>
+
+          <label class="hkrpg-row" style="gap:8px;">
+            <input type="checkbox" name="system.broken.value" {{checked system.broken.value}} />
+            <span>{{localize "HKRPG.Item.Armor.broken"}}</span>
+          </label>
+
+          <p style="color: var(--hk-muted); margin:8px 0 0;">
+            Когда прочность падает до 0 — броня пробита и не защищает, пока её не починят.
+          </p>
+        </div>
+
+        <div class="hkrpg-card" style="grid-column: 1 / -1;">
+          <h3>{{localize "HKRPG.Item.Common.properties"}}</h3>
+          <textarea name="system.properties.value" rows="4">{{system.properties.value}}</textarea>
         </div>
       </div>
     </div>
 
+    <!-- MODS -->
+    <div class="tab" data-group="primary" data-tab="mods">
+      <div class="hkrpg-card">
+        <div class="hkrpg-row" style="justify-content:space-between;">
+          <h3 style="margin:0;">{{localize "HKRPG.Item.Common.mods"}}</h3>
+          <button type="button" data-action="add-mod"><i class="fas fa-plus"></i> Добавить</button>
+        </div>
+
+        {{#if system.mods.value.length}}
+          <ol class="items-list">
+            {{#each system.mods.value as |m idx|}}
+            <li class="hkrpg-row" style="align-items:flex-start;">
+              <div style="flex:1; display:flex; flex-direction:column; gap:6px;">
+                <div class="hkrpg-row">
+                  <label style="min-width:120px;">Название</label>
+                  <input type="text" name="system.mods.value.{{idx}}.name" value="{{m.name}}" />
+                </div>
+                <div class="hkrpg-row">
+                  <label style="min-width:120px;">Эффект</label>
+                  <textarea name="system.mods.value.{{idx}}.effect" rows="3">{{m.effect}}</textarea>
+                </div>
+                <div class="hkrpg-row">
+                  <label style="min-width:120px;">Цена</label>
+                  <input type="text" name="system.mods.value.{{idx}}.price" value="{{m.price}}" />
+                </div>
+                <label class="hkrpg-row" style="gap:8px;">
+                  <input type="checkbox" name="system.mods.value.{{idx}}.active" {{checked m.active}} />
+                  <span>Активна</span>
+                </label>
+              </div>
+
+              <button type="button" data-action="remove-mod" data-idx="{{idx}}" title="Удалить модификацию">
+                <i class="fas fa-trash"></i>
+              </button>
+            </li>
+            {{/each}}
+          </ol>
+        {{else}}
+          <p style="color: var(--hk-muted); margin:0;">Модификаций нет.</p>
+        {{/if}}
+      </div>
+    </div>
+
+    <!-- DESCRIPTION -->
     <div class="tab" data-group="primary" data-tab="desc">
       <div class="hkrpg-card">
-        <h3>{{localize "HKRPG.Sheet.Sections.notes"}}</h3>
-        <textarea name="system.description" rows="12">{{system.description}}</textarea>
+        <h3>{{localize "HKRPG.Item.Common.description"}}</h3>
+        {{editor system.description.value target="system.description.value" button=true owner=owner editable=editable}}
       </div>
     </div>
   </section>
