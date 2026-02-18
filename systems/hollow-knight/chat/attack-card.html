@@ -1,0 +1,43 @@
+<div class="hkrpg-attack-card" data-message-id="{{messageId}}">
+  <h3 style="margin:0 0 6px;">
+    {{localize "HKRPG.Chat.AttackCardTitle"}}: <b>{{weaponName}}</b>
+  </h3>
+
+  <div style="color: var(--hk-muted); margin-bottom:6px;">
+    {{attackerName}} → {{targetName}}
+  </div>
+
+  <div class="hkrpg-row" style="justify-content:space-between;">
+    <span><b>{{localize "HKRPG.Chat.Successes"}}</b>: {{attackSuccesses}}</span>
+    <span><b>{{localize "HKRPG.Chat.BaseDamage"}}</b>: {{baseDamage}}</span>
+  </div>
+
+  <div style="color: var(--hk-muted); margin-top:6px;">
+    {{localize "HKRPG.Chat.Range"}}: {{range}} ({{rangeDistance}})
+    · {{localize "HKRPG.Chat.Cost"}}: {{totalCost}} ({{localize "HKRPG.Chat.Invest"}} {{investStamina}}, {{localize "HKRPG.Chat.Tax"}} {{staminaTax}})
+  </div>
+
+  <hr />
+
+  <div class="hkrpg-actions">
+    <button type="button" data-hkrpg-action="dodge" data-message-id="{{messageId}}">
+      <i class="fas fa-wind"></i> {{localize "HKRPG.Chat.Dodge"}}
+    </button>
+
+    <button type="button" data-hkrpg-action="parry" data-message-id="{{messageId}}">
+      <i class="fas fa-shield-alt"></i> {{localize "HKRPG.Chat.Parry"}}
+    </button>
+
+    <button type="button" data-hkrpg-action="soak" data-message-id="{{messageId}}">
+      <i class="fas fa-shield"></i> {{localize "HKRPG.Chat.Soak"}}
+    </button>
+
+    <button type="button" data-hkrpg-action="apply-damage" data-message-id="{{messageId}}">
+      <i class="fas fa-skull-crossbones"></i> {{localize "HKRPG.Chat.ApplyDamage"}}
+    </button>
+  </div>
+
+  <div style="margin-top:6px; color: var(--hk-muted); font-size: 12px;">
+    {{localize "HKRPG.Chat.AttackHint"}}
+  </div>
+</div>
