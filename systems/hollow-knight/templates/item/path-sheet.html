@@ -1,74 +1,43 @@
-<form class="{{cssClass}}" autocomplete="off">
+<form class="{{cssClass}} flexcol" autocomplete="off">
   <header class="sheet-header">
     <img class="profile-img" src="{{item.img}}" data-edit="img" alt="{{item.name}}"/>
     <div class="header-fields">
       <h1 class="charname"><input name="name" type="text" value="{{item.name}}" placeholder="Название Пути"/></h1>
-      
       <div class="grid grid-2col">
         <div class="resource">
-          <label class="resource-label">Тип Пути</label>
-          <select name="system.pathType">
-            <option value="martial" {{#if (eq system.pathType "martial")}}selected{{/if}}>Военный</option>
-            <option value="mystic" {{#if (eq system.pathType "mystic")}}selected{{/if}}>Мистический</option>
-          </select>
+          <label>{{localize 'HKRPG.Item.Path.rank'}}</label>
+          <input type="number" name="system.rank.value" value="{{system.rank.value}}" data-dtype="Number" min="1" max="3"/>
         </div>
         <div class="resource">
-          <label class="resource-label">Макс. Ранг</label>
-          <input type="number" name="system.maxRank" value="{{system.maxRank}}" min="1" max="3"/>
+          <label>{{localize 'HKRPG.Item.Path.type'}}</label>
+          <select name="system.type.value">
+            {{#select system.type.value}}
+            <option value="military">{{localize 'HKRPG.Actor.Paths.military'}}</option>
+            <option value="mystic">{{localize 'HKRPG.Actor.Paths.mystic'}}</option>
+            {{/select}}
+          </select>
         </div>
       </div>
     </div>
   </header>
 
   <nav class="sheet-tabs tabs" data-group="primary">
-    <a class="item" data-tab="ranks">Ранги</a>
-    <a class="item" data-tab="mysteries">Тайны</a>
-    <a class="item" data-tab="arts">Искусства</a>
+    <a class="item" data-tab="description">{{localize 'HKRPG.Sheet.Tabs.biography'}}</a>
+    <a class="item" data-tab="abilities">{{localize 'HKRPG.Item.Path.abilities'}}</a>
   </nav>
 
   <section class="sheet-body">
-    <div class="tab" data-group="primary" data-tab="ranks">
-      {{#each system.ranks as |rank idx|}}
-      <div class="rank-section">
-        <h3>Ранг {{rank.number}}</h3>
-        <div class="editor" data-edit="system.ranks.{{idx}}.description" data-engine="prosemirror"></div>
-        <div class="rank-abilities">
-          <h4>Способности:</h4>
-          {{#each rank.abilities as |ability aidx|}}
-          <div class="ability-item">
-            <input type="text" name="system.ranks.{{idx}}.abilities.{{aidx}}.name" value="{{ability.name}}" placeholder="Название способности"/>
-            <textarea name="system.ranks.{{idx}}.abilities.{{aidx}}.description" placeholder="Описание">{{ability.description}}</textarea>
-          </div>
-          {{/each}}
-        </div>
+    <div class="tab active" data-group="primary" data-tab="description">
+      <div class="resource">
+        <label>{{localize 'HKRPG.Item.Path.description'}}</label>
+        <textarea name="system.description.value" data-dtype="String" style="height: 300px;">{{system.description.value}}</textarea>
       </div>
-      {{/each}}
     </div>
-
-    <div class="tab" data-group="primary" data-tab="mysteries">
-      <div class="mysteries-list">
-        {{#each system.mysteries as |mystery idx|}}
-        <div class="mystery-item">
-          <input type="text" name="system.mysteries.{{idx}}.name" value="{{mystery.name}}" placeholder="Название Тайны"/>
-          <input type="number" name="system.mysteries.{{idx}}.complexity" value="{{mystery.complexity}}" placeholder="Сложность"/>
-          <textarea name="system.mysteries.{{idx}}.description" placeholder="Описание Тайны">{{mystery.description}}</textarea>
-        </div>
-        {{/each}}
+    <div class="tab" data-group="primary" data-tab="abilities">
+      <div class="resource">
+        <label>Способности Пути</label>
+        <textarea name="system.abilities.value" data-dtype="String" style="height: 300px;" placeholder="Перечислите способности через запятую">{{system.abilities.value}}</textarea>
       </div>
-      <button type="button" class="add-mystery">Добавить Тайну</button>
-    </div>
-
-    <div class="tab" data-group="primary" data-tab="arts">
-      <div class="arts-list">
-        {{#each system.arts as |art idx|}}
-        <div class="art-item">
-          <input type="text" name="system.arts.{{idx}}.name" value="{{art.name}}" placeholder="Название Искусства"/>
-          <input type="number" name="system.arts.{{idx}}.staminaCost" value="{{art.staminaCost}}" placeholder="Стоимость Выносливости"/>
-          <textarea name="system.arts.{{idx}}.description" placeholder="Описание Искусства">{{art.description}}</textarea>
-        </div>
-        {{/each}}
-      </div>
-      <button type="button" class="add-art">Добавить Искусство</button>
     </div>
   </section>
 </form>
