@@ -1,56 +1,23 @@
 {
   "id": "hollow-knight",
   "title": "Hollow Knight RPG",
-  "description": "Unofficial HKRPG System for Foundry VTT",
-  "version": "1.0.0",
+  "description": "Unofficial HKRPG System for Foundry VTT (RU only)",
+  "version": "1.1.0",
   "compatibility": {
-    "minimum": "11",
-    "verified": "12",
+    "minimum": "13",
+    "verified": "13",
     "maximum": "13"
   },
   "esmodules": ["hkrg.js"],
   "styles": ["style.css"],
   "languages": [
-    {
-      "lang": "ru",
-      "name": "Russian",
-      "path": "lang/ru.json"
-    },
-    {
-      "lang": "en",
-      "name": "English",
-      "path": "lang/en.json"
-    }
+    { "lang": "ru", "name": "Russian", "path": "lang/ru.json" }
   ],
   "packs": [
-    {
-      "name": "bestiary",
-      "label": "Бестиарий",
-      "path": "packs/bestiary",
-      "type": "Actor",
-      "system": "hollow-knight"
-    },
-    {
-      "name": "items",
-      "label": "Предметы",
-      "path": "packs/items",
-      "type": "Item",
-      "system": "hollow-knight"
-    },
-    {
-      "name": "spells",
-      "label": "Заклинания",
-      "path": "packs/spells",
-      "type": "Item",
-      "system": "hollow-knight"
-    },
-    {
-      "name": "tables",
-      "label": "Таблицы",
-      "path": "packs/tables",
-      "type": "RollTable",
-      "system": "hollow-knight"
-    }
+    { "name": "bestiary", "label": "Бестиарий", "path": "packs/bestiary", "type": "Actor", "system": "hollow-knight" },
+    { "name": "items", "label": "Предметы", "path": "packs/items", "type": "Item", "system": "hollow-knight" },
+    { "name": "spells", "label": "Заклинания", "path": "packs/spells", "type": "Item", "system": "hollow-knight" },
+    { "name": "tables", "label": "Таблицы", "path": "packs/tables", "type": "RollTable", "system": "hollow-knight" }
   ],
   "manifest": "https://raw.githubusercontent.com/sergey-kznetsov/hollow-knight-rpg/main/systems/hollow-knight/system.json",
   "download": "https://github.com/sergey-kznetsov/hollow-knight-rpg/archive/main.zip",
@@ -59,9 +26,6 @@
   "bugs": "https://github.com/sergey-kznetsov/hollow-knight-rpg/issues",
   "changelog": "CHANGELOG.md",
   "background": "assets/background.jpg",
-  "grid": {
-    "distance": 1,
-    "units": "клетки"
-  },
-  "initiative": "1d6 + @characteristics.grace.value"
+  "grid": { "distance": 1, "units": "клетки" },
+  "initiative": "1d6"
 }
