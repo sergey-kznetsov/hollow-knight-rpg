@@ -72,17 +72,11 @@ function hasAnySix(roll) {
   }
 }
 
+/**
+ * Теперь Поглощение живёт только тут: system.combat.absorption.value
+ */
 function getAbsorptionValue(actor) {
-  const v1 = Number(foundry.utils.getProperty(actor, "system.combat.absorption.value") ?? NaN);
-  if (!Number.isNaN(v1)) return v1;
-
-  const v2 = Number(foundry.utils.getProperty(actor, "system.absorption.value") ?? NaN);
-  if (!Number.isNaN(v2)) return v2;
-
-  const v3 = Number(foundry.utils.getProperty(actor, "system.pools.absorption.value") ?? NaN);
-  if (!Number.isNaN(v3)) return v3;
-
-  return 0;
+  return Number(foundry.utils.getProperty(actor, "system.combat.absorption.value") ?? 0);
 }
 
 /**
@@ -387,11 +381,12 @@ async function rollSoak(defender) {
     return { armor: armor ?? null, soakSuccesses: 0, pu: 0, roll: null };
   }
 
-  // Впитывание урона: проверка Панциря (плюс бонусы брони), каждый успех -1 урона :contentReference[oaicite:1]{index=1}
   const shell = Number(defender.system?.characteristics?.shell?.value ?? 0);
-  const soakBonus = Number(armor.system?.soakBonus?.value ?? armor.system?.absorptionBonus?.value ?? 0);
+
+  // поддержка старого/нового формата брони:
+  const soakBonus = Number(armor.system?.soakBonus?.value ?? armor.system?.absorptionBonus?.value ?? armor.system?.absorption?.value ?? 0);
   const rerolls = Number(armor.system?.soakRerolls?.value ?? armor.system?.absorptionRerolls?.value ?? 0);
-  const pu = Number(armor.system?.pu?.value ?? 0);
+  const pu = Number(armor.system?.pu?.value ?? armor.system?.pu ?? 0);
 
   const dice = Math.max(0, Math.floor(shell + soakBonus));
   const roll = await rollSuccessPool({
@@ -406,6 +401,7 @@ async function rollSoak(defender) {
 }
 
 async function applyArmorBreakIfNeeded(attackFlags) {
+  // триггер сейчас такой: атака попала (успехи > 0) и есть хотя бы одна 6 в броске атаки
   if (!attackFlags?.attackHasSix) return;
   if (Number(attackFlags?.attackSuccesses ?? 0) <= 0) return;
 
@@ -453,22 +449,22 @@ async function applyDamageFromAttack(attackMsg) {
 
   const baseDamage = Number(f.baseDamage ?? 0);
 
-  // Вероятный урон: базовый + доп. (мы берём доп. как netHits, затем ограничим)
-  // Ограничение по книге: максимум доп. урона = max(базовый урон, вложенная выносливость). :contentReference[oaicite:2]{index=2}
+  // Ограничение доп. урона по книге: максимум = max(базовый урон, вложенная выносливость)
   const invest = Number(f.investStamina ?? 0);
   const maxExtra = Math.max(baseDamage, invest);
   const extraDamage = Math.min(netHits, maxExtra);
+
   let probableDamage = Math.max(0, baseDamage + extraDamage);
 
-  // ПУ: вычитается до Впитывания, но не может опустить нанесённый урон ниже 1. :contentReference[oaicite:3]{index=3}
+  // ПУ применяется до Впитывания, но не может опустить урон ниже 1 (если урон > 0)
   if (probableDamage > 0 && pu > 0) {
     probableDamage = Math.max(1, probableDamage - pu);
   }
 
-  // Впитывание: каждый успех -1 урона :contentReference[oaicite:4]{index=4}
-  let afterSoak = Math.max(0, probableDamage - soakSuccesses);
+  // Впитывание: успехи уменьшают урон
+  const afterSoak = Math.max(0, probableDamage - soakSuccesses);
 
-  // Поглощение по книге :contentReference[oaicite:5]{index=5}
+  // Поглощение по книге
   const absorptionValue = getAbsorptionValue(defender);
   const absRes = applyAbsorption(afterSoak, absorptionValue);
   const finalDamage = absRes.finalDamage;
@@ -481,6 +477,7 @@ async function applyDamageFromAttack(attackMsg) {
     await defender.update({ "system.pools.hearts.value": nextHearts });
   }
 
+  // поломка брони (наш текущий триггер)
   await applyArmorBreakIfNeeded(f);
 
   const report = await renderTemplate("systems/hollow-knight/chat/damage-report.html", {
@@ -540,6 +537,7 @@ class HKRPGActorSheet extends ActorSheet {
   activateListeners(html) {
     super.activateListeners(html);
 
+    // клик по характеристике = быстрая проверка
     html.find(".characteristic input").on("click", async (ev) => {
       ev.preventDefault();
       const input = ev.currentTarget;
@@ -574,6 +572,7 @@ class HKRPGActorSheet extends ActorSheet {
     html.find("[data-action='dodge']").on("click", async () => rollDefense(this.actor, "dodge"));
     html.find("[data-action='parry']").on("click", async () => rollDefense(this.actor, "parry"));
 
+    // create item
     html.find("[data-action='item-create']").on("click", async (ev) => {
       const type = ev.currentTarget.dataset.type;
       await this.actor.createEmbeddedDocuments("Item", [{ name: t(`HKRPG.Item.Types.${type}`), type }]);
@@ -602,16 +601,19 @@ class HKRPGActorSheet extends ActorSheet {
       }
     });
 
+    // Быстрый ролл на строке предмета
     html.find(".item-roll").on("click", async ev => {
       const li = ev.currentTarget.closest("[data-item-id]");
       const item = this.actor.items.get(li.dataset.itemId);
       if (!item) return;
 
       if (item.type === "weapon") return attackWithWeapon(this.actor, item, 1);
+
       if (item.type === "spell") {
         const insight = Number(this.actor.system?.characteristics?.insight?.value ?? 0);
         return rollSuccessPool({ actor: this.actor, label: t("HKRPG.Chat.SpellRoll", { spell: item.name }), dice: Math.floor(insight) });
       }
+
       if (item.type === "art") {
         return ChatMessage.create({
           speaker: ChatMessage.getSpeaker({ actor: this.actor }),
@@ -645,6 +647,7 @@ class HKRPGItemSheet extends ItemSheet {
   activateListeners(html) {
     super.activateListeners(html);
 
+    // mods add/remove
     html.find("[data-action='add-mod']").on("click", async (ev) => {
       ev.preventDefault();
       const mods = foundry.utils.duplicate(this.item.system?.mods?.value ?? this.item.system?.mods ?? []);
@@ -663,6 +666,7 @@ class HKRPGItemSheet extends ItemSheet {
       else await this.item.update({ "system.mods": mods });
     });
 
+    // repair armor
     html.find("[data-action='repair-armor']").on("click", async (ev) => {
       ev.preventDefault();
       if (this.item.type !== "armor") return;
@@ -798,6 +802,7 @@ Hooks.once("init", async () => {
   Items.unregisterSheet("core", ItemSheet);
   Items.registerSheet(SYS_ID, HKRPGItemSheet, { makeDefault: true });
 
+  // сброс счётчика атак и авто-восстановление выносливости в начале хода (временно)
   Hooks.on("combatTurn", async (combat) => {
     try {
       const actor = combat.combatant?.actor;
