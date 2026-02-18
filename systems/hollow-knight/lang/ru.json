@@ -264,3 +264,52 @@
     }
   }
 }
+
+{
+  "HKRPG": {
+    "Chat": {
+      "MisuseTitle": "Некорректное действие",
+      "Dice": "Кубов",
+      "Successes": "Успехов",
+
+      "AttackCardTitle": "Атака",
+      "DefenseCardTitle": "Защита",
+      "DamageReportTitle": "Результат урона",
+
+      "BaseDamage": "Базовый урон",
+      "AttackSuccesses": "Успехи атаки",
+      "DefenseSuccesses": "Успехи защиты",
+      "NetHits": "Чистые попадания",
+      "FinalDamage": "Итоговый урон",
+
+      "Range": "Дальность",
+      "Invest": "Вложено",
+      "Tax": "Налог",
+      "Cost": "Стоимость",
+
+      "Soak": "Впитывание",
+      "SoakArmor": "Броня",
+      "PU": "ПУ",
+
+      "ApplyDamage": "Применить урон",
+      "LinkedAttack": "Атака",
+
+      "ArmorDamage": "Броня повреждена",
+      "ArmorBroken": "Броня пробита",
+
+      "DefenseSaved": "Защита записана в атаку.",
+      "SoakSaved": "Впитывание записано в атаку.",
+
+      "AttackHint": "Важно: атакующий должен иметь ровно одну цель в Target (выделение цели)."
+    },
+    "Errors": {
+      "NeedOneTarget": "Для атаки нужно выбрать ровно одну цель (Target).",
+      "NotEnoughStaminaForAttack": "Не хватает выносливости: нужно {need}, есть {have}.",
+      "NotYourTurn": "Сейчас не ваш ход.",
+      "NoEquippedWeapons": "Нет экипированного оружия.",
+      "WeaponNotSelected": "Оружие не выбрано.",
+      "InvalidTarget": "Цель не выбрана или у цели нет актёра.",
+      "NoDice": "Недостаточно кубиков для броска"
+    }
+  }
+}
