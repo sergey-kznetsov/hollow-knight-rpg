@@ -213,6 +213,11 @@
       "Successes": "Результат",
       "Dice": "Кубов",
 
+      "HKRPG.Chat.MaxExtra": "Макс. доп. урон",
+      "HKRPG.Chat.ExtraDamage": "Доп. урон",
+      "HKRPG.Chat.Absorption": "Поглощение",
+      "HKRPG.Chat.AbsorptionReduced": "Снижено Поглощением"
+
       "Initiative": "Инициатива",
       "InitiativeFlavor": "Грация: {grace}\nБонус: {bonus}\nКубов: {grace}+{bonus}",
 
