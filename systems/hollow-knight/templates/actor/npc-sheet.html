@@ -1,243 +1,203 @@
 <form class="hkrpg sheet actor-sheet" autocomplete="off">
   <header class="sheet-header">
     <div class="hkrpg-row">
-      <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" height="80" width="80" />
-
+      <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" height="72" width="72" />
       <div style="flex:1; margin-left:10px;">
         <h2 style="margin:0;">
           <input name="name" type="text" value="{{actor.name}}" />
         </h2>
 
-        <div class="hkrpg-actions" style="margin-top:6px;">
-          <button type="button" data-action="roll-init">
-            <i class="fas fa-bolt"></i> {{localize "HKRPG.Chat.Initiative"}}
-          </button>
+        <div class="hkrpg-row" style="gap:12px; margin-top:6px; flex-wrap:wrap;">
+          <div class="hkrpg-pill">
+            {{localize "HKRPG.Actor.Pools.hearts"}}:
+            <input type="number" name="system.pools.hearts.value" value="{{system.pools.hearts.value}}" min="0" style="width:60px;" />
+            /
+            <input type="number" name="system.pools.hearts.max" value="{{system.pools.hearts.max}}" min="0" style="width:60px;" />
+          </div>
+
+          <div class="hkrpg-pill">
+            {{localize "HKRPG.Actor.Pools.soul"}}:
+            <input type="number" name="system.pools.soul.value" value="{{system.pools.soul.value}}" min="0" style="width:60px;" />
+            /
+            <input type="number" name="system.pools.soul.max" value="{{system.pools.soul.max}}" min="0" style="width:60px;" />
+          </div>
+
+          <div class="hkrpg-pill">
+            {{localize "HKRPG.Actor.Pools.stamina"}}:
+            <input type="number" name="system.pools.stamina.value" value="{{system.pools.stamina.value}}" min="0" style="width:60px;" />
+            /
+            <input type="number" name="system.pools.stamina.max" value="{{system.pools.stamina.max}}" min="0" style="width:60px;" />
+          </div>
         </div>
       </div>
 
-      <span class="hkrpg-pill">{{localize "HKRPG.Actor.Types.npc"}}</span>
+      <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end;">
+        <button type="button" data-action="roll-init">
+          <i class="fas fa-bolt"></i> {{localize "HKRPG.Chat.Initiative"}}
+        </button>
+        <button type="button" data-action="attack">
+          <i class="fas fa-dice"></i> {{localize "HKRPG.Dialog.AttackTitle"}}
+        </button>
+      </div>
     </div>
   </header>
 
   <nav class="sheet-tabs tabs" data-group="primary">
     <a class="item" data-tab="stats">{{localize "HKRPG.Sheet.Tabs.characteristics"}}</a>
+    <a class="item" data-tab="combat">Бой</a>
     <a class="item" data-tab="inventory">{{localize "HKRPG.Sheet.Tabs.inventory"}}</a>
-    <a class="item" data-tab="combat">{{localize "HKRPG.Sheet.Tabs.combat"}}</a>
-    <a class="item" data-tab="biography">{{localize "HKRPG.Sheet.Tabs.biography"}}</a>
+    <a class="item" data-tab="bio">{{localize "HKRPG.Sheet.Tabs.biography"}}</a>
   </nav>
 
   <section class="sheet-body">
+    <!-- STATS -->
     <div class="tab" data-group="primary" data-tab="stats">
       <div class="hkrpg-grid hkrpg-cols-2">
         <div class="hkrpg-card">
-          <h3>{{localize "HKRPG.Sheet.Tabs.characteristics"}}</h3>
+          <h3>Характеристики</h3>
 
           <div class="hkrpg-row characteristic">
             <label>{{localize "HKRPG.Actor.Characteristics.might"}}</label>
-            <input type="number" name="system.characteristics.might.value" value="{{system.characteristics.might.value}}" />
+            <input type="number" name="system.characteristics.might.value" value="{{system.characteristics.might.value}}" min="0" />
           </div>
 
           <div class="hkrpg-row characteristic">
             <label>{{localize "HKRPG.Actor.Characteristics.grace"}}</label>
-            <input type="number" name="system.characteristics.grace.value" value="{{system.characteristics.grace.value}}" />
+            <input type="number" name="system.characteristics.grace.value" value="{{system.characteristics.grace.value}}" min="0" />
           </div>
 
           <div class="hkrpg-row characteristic">
             <label>{{localize "HKRPG.Actor.Characteristics.shell"}}</label>
-            <input type="number" name="system.characteristics.shell.value" value="{{system.characteristics.shell.value}}" />
+            <input type="number" name="system.characteristics.shell.value" value="{{system.characteristics.shell.value}}" min="0" />
           </div>
 
           <div class="hkrpg-row characteristic">
             <label>{{localize "HKRPG.Actor.Characteristics.insight"}}</label>
-            <input type="number" name="system.characteristics.insight.value" value="{{system.characteristics.insight.value}}" />
+            <input type="number" name="system.characteristics.insight.value" value="{{system.characteristics.insight.value}}" min="0" />
           </div>
         </div>
 
         <div class="hkrpg-card">
-          <h3>{{localize "HKRPG.Actor.Pools.hearts"}} / {{localize "HKRPG.Actor.Pools.stamina"}}</h3>
-
-          <div class="hkrpg-row">
-            <label>{{localize "HKRPG.Actor.Pools.hearts"}}</label>
-            <input type="number" name="system.pools.hearts.value" value="{{system.pools.hearts.value}}" />
-            <span>/</span>
-            <input type="number" name="system.pools.hearts.max" value="{{system.pools.hearts.max}}" />
-          </div>
-
-          <div class="hkrpg-row">
-            <label>{{localize "HKRPG.Actor.Pools.stamina"}}</label>
-            <input type="number" name="system.pools.stamina.value" value="{{system.pools.stamina.value}}" />
-            <span>/</span>
-            <input type="number" name="system.pools.stamina.max" value="{{system.pools.stamina.max}}" />
-          </div>
+          <h3>Вторичные</h3>
 
           <div class="hkrpg-row">
             <label>{{localize "HKRPG.Actor.Secondary.speed"}}</label>
-            <input type="number" name="system.secondary.speed.value" value="{{system.secondary.speed.value}}" />
+            <input type="number" name="system.secondary.speed.value" value="{{system.secondary.speed.value}}" min="0" />
           </div>
 
           <div class="hkrpg-row">
             <label>{{localize "HKRPG.Actor.Secondary.horror"}}</label>
-            <input type="number" name="system.secondary.horror.value" value="{{system.secondary.horror.value}}" />
+            <input type="number" name="system.secondary.horror.value" value="{{system.secondary.horror.value}}" min="0" />
           </div>
 
           <div class="hkrpg-row">
             <label>{{localize "HKRPG.Actor.Secondary.charm"}}</label>
-            <input type="number" name="system.secondary.charm.value" value="{{system.secondary.charm.value}}" />
+            <input type="number" name="system.secondary.charm.value" value="{{system.secondary.charm.value}}" min="0" />
           </div>
 
           <div class="hkrpg-row">
             <label>{{localize "HKRPG.Actor.Secondary.hunger"}}</label>
-            <input type="number" name="system.secondary.hunger.value" value="{{system.secondary.hunger.value}}" />
+            <input type="number" name="system.secondary.hunger.value" value="{{system.secondary.hunger.value}}" min="0" />
           </div>
         </div>
       </div>
     </div>
 
-    <div class="tab" data-group="primary" data-tab="inventory">
-      <div class="hkrpg-grid hkrpg-cols-2">
-        <div class="hkrpg-card">
-          <h3>{{localize "HKRPG.Item.Types.weapon"}}</h3>
-          <div class="hkrpg-actions" style="margin-bottom:8px;">
-            <button type="button" data-action="item-create" data-type="weapon"><i class="fas fa-plus"></i> Добавить</button>
-          </div>
-          <ol class="items-list">
-            {{#each itemsByType.weapon as |item|}}
-            <li class="item hkrpg-row" data-item-id="{{item._id}}">
-              <div style="display:flex; align-items:center; gap:8px; flex:1;">
-                <img src="{{item.img}}" width="24" height="24" />
-                <b>{{item.name}}</b>
-                {{#if item.system.equipped}}<span class="hkrpg-pill">экип.</span>{{/if}}
-              </div>
-              <div class="hkrpg-actions">
-                <button type="button" class="item-roll"><i class="fas fa-dice"></i></button>
-                <button type="button" class="item-toggle-equipped"><i class="fas fa-tshirt"></i></button>
-                <button type="button" class="item-edit"><i class="fas fa-edit"></i></button>
-                <button type="button" class="item-delete"><i class="fas fa-trash"></i></button>
-              </div>
-            </li>
-            {{/each}}
-          </ol>
-        </div>
-
-        <div class="hkrpg-card">
-          <h3>{{localize "HKRPG.Item.Types.armor"}}</h3>
-          <div class="hkrpg-actions" style="margin-bottom:8px;">
-            <button type="button" data-action="item-create" data-type="armor"><i class="fas fa-plus"></i> Добавить</button>
-          </div>
-          <ol class="items-list">
-            {{#each itemsByType.armor as |item|}}
-            <li class="item hkrpg-row" data-item-id="{{item._id}}">
-              <div style="display:flex; align-items:center; gap:8px; flex:1;">
-                <img src="{{item.img}}" width="24" height="24" />
-                <b>{{item.name}}</b>
-                {{#if item.system.equipped}}<span class="hkrpg-pill">экип.</span>{{/if}}
-              </div>
-              <div class="hkrpg-actions">
-                <button type="button" class="item-toggle-equipped"><i class="fas fa-tshirt"></i></button>
-                <button type="button" class="item-edit"><i class="fas fa-edit"></i></button>
-                <button type="button" class="item-delete"><i class="fas fa-trash"></i></button>
-              </div>
-            </li>
-            {{/each}}
-          </ol>
-        </div>
-
-        <div class="hkrpg-card">
-          <h3>{{localize "HKRPG.Item.Types.art"}} / {{localize "HKRPG.Item.Types.spell"}}</h3>
-          <div class="hkrpg-actions" style="margin-bottom:8px;">
-            <button type="button" data-action="item-create" data-type="art"><i class="fas fa-plus"></i> Искусство</button>
-            <button type="button" data-action="item-create" data-type="spell"><i class="fas fa-plus"></i> Заклинание</button>
-          </div>
-
-          <h4 style="margin:6px 0; color: var(--hk-muted);">{{localize "HKRPG.Item.Types.art"}}</h4>
-          <ol class="items-list">
-            {{#each itemsByType.art as |item|}}
-            <li class="item hkrpg-row" data-item-id="{{item._id}}">
-              <div style="display:flex; align-items:center; gap:8px; flex:1;">
-                <img src="{{item.img}}" width="24" height="24" />
-                <b>{{item.name}}</b>
-              </div>
-              <div class="hkrpg-actions">
-                <button type="button" class="item-roll"><i class="fas fa-dice"></i></button>
-                <button type="button" class="item-edit"><i class="fas fa-edit"></i></button>
-                <button type="button" class="item-delete"><i class="fas fa-trash"></i></button>
-              </div>
-            </li>
-            {{/each}}
-          </ol>
-
-          <h4 style="margin:10px 0 6px; color: var(--hk-muted);">{{localize "HKRPG.Item.Types.spell"}}</h4>
-          <ol class="items-list">
-            {{#each itemsByType.spell as |item|}}
-            <li class="item hkrpg-row" data-item-id="{{item._id}}">
-              <div style="display:flex; align-items:center; gap:8px; flex:1;">
-                <img src="{{item.img}}" width="24" height="24" />
-                <b>{{item.name}}</b>
-              </div>
-              <div class="hkrpg-actions">
-                <button type="button" class="item-roll"><i class="fas fa-dice"></i></button>
-                <button type="button" class="item-edit"><i class="fas fa-edit"></i></button>
-                <button type="button" class="item-delete"><i class="fas fa-trash"></i></button>
-              </div>
-            </li>
-            {{/each}}
-          </ol>
-        </div>
-      </div>
-    </div>
-
+    <!-- COMBAT -->
     <div class="tab" data-group="primary" data-tab="combat">
       <div class="hkrpg-grid hkrpg-cols-2">
         <div class="hkrpg-card">
-          <h3>Бой</h3>
-          <div class="hkrpg-actions">
-            <button type="button" data-action="attack"><i class="fas fa-dice"></i> Атака…</button>
-            <button type="button" data-action="dodge"><i class="fas fa-wind"></i> {{localize "HKRPG.Chat.Dodge"}}</button>
-            <button type="button" data-action="parry"><i class="fas fa-shield-alt"></i> {{localize "HKRPG.Chat.Parry"}}</button>
+          <h3>Статусы</h3>
+
+          <div class="hkrpg-row">
+            <label>{{localize "HKRPG.Actor.Combat.imbalance"}}</label>
+            <input type="number" name="system.combat.imbalance.value" value="{{system.combat.imbalance.value}}" min="0" />
+            <span>/</span>
+            <input type="number" name="system.combat.imbalance.max" value="{{system.combat.imbalance.max}}" min="0" />
+          </div>
+
+          <div class="hkrpg-row">
+            <label>{{localize "HKRPG.Actor.Combat.delayedDmg"}}</label>
+            <input type="number" name="system.combat.delayedDmg.value" value="{{system.combat.delayedDmg.value}}" min="0" />
+          </div>
+        </div>
+
+        <div class="hkrpg-card">
+          <h3>Защита</h3>
+
+          <div class="hkrpg-row">
+            <label>{{localize "HKRPG.Actor.Secondary.absorption"}}</label>
+            <input type="number" name="system.combat.absorption.value" value="{{system.combat.absorption.value}}" min="0" />
           </div>
 
           <hr />
 
-          <div class="hkrpg-row">
-            <label>Атак за ход (служебное)</label>
-            <input type="number" name="system.turn.attacksThisTurn" value="{{system.turn.attacksThisTurn}}" />
+          <div class="hkrpg-row" style="gap:10px;">
+            <button type="button" data-action="dodge"><i class="fas fa-wind"></i> {{localize "HKRPG.Chat.Dodge"}}</button>
+            <button type="button" data-action="parry"><i class="fas fa-shield-alt"></i> {{localize "HKRPG.Chat.Parry"}}</button>
           </div>
-        </div>
-
-        <div class="hkrpg-card">
-          <h3>Экипированное оружие</h3>
-
-          {{#if equippedWeapons.length}}
-            <ol class="items-list">
-              {{#each equippedWeapons as |w|}}
-              <li class="hkrpg-row">
-                <div style="display:flex; align-items:center; gap:8px; flex:1;">
-                  <img src="{{w.img}}" width="24" height="24" />
-                  <b>{{w.name}}</b>
-                </div>
-
-                <div style="display:flex; align-items:center; gap:6px;">
-                  <input data-role="invest" type="number" value="1" min="1" step="1" style="width:64px; text-align:center;" />
-                  <button type="button" data-action="attack-weapon" data-item-id="{{w._id}}">
-                    <i class="fas fa-dice"></i>
-                  </button>
-                </div>
-              </li>
-              {{/each}}
-            </ol>
-          {{else}}
-            <p style="color: var(--hk-muted); margin:0;">
-              Нет экипированного оружия.
-            </p>
-          {{/if}}
         </div>
       </div>
     </div>
 
-    <div class="tab" data-group="primary" data-tab="biography">
+    <!-- INVENTORY -->
+    <div class="tab" data-group="primary" data-tab="inventory">
       <div class="hkrpg-card">
-        <h3>{{localize "HKRPG.Sheet.Sections.notes"}}</h3>
-        <textarea name="system.biography.description" rows="16">{{system.biography.description}}</textarea>
+        <div class="hkrpg-row" style="justify-content:space-between;">
+          <h3 style="margin:0;">{{localize "HKRPG.Sheet.Sections.equipment"}}</h3>
+          <div class="hkrpg-row" style="gap:6px;">
+            <button type="button" data-action="item-create" data-type="weapon"><i class="fas fa-plus"></i> Оружие</button>
+            <button type="button" data-action="item-create" data-type="armor"><i class="fas fa-plus"></i> Броня</button>
+            <button type="button" data-action="item-create" data-type="consumable"><i class="fas fa-plus"></i> Расходник</button>
+          </div>
+        </div>
+
+        <ol class="items-list">
+          {{#each actor.items as |item|}}
+          <li class="hkrpg-row" data-item-id="{{item.id}}" style="justify-content:space-between;">
+            <div class="hkrpg-row" style="gap:10px;">
+              <img src="{{item.img}}" width="28" height="28" />
+              <b>{{item.name}}</b>
+              <span class="hkrpg-pill">{{item.type}}</span>
+            </div>
+
+            <div class="hkrpg-row" style="gap:6px;">
+              {{#if (or (eq item.type "weapon") (eq item.type "armor"))}}
+              <button type="button" class="item-toggle-equipped" title="Экипировать/снять">
+                <i class="fas fa-tshirt"></i>
+              </button>
+              {{/if}}
+
+              <button type="button" class="item-roll" title="Быстрый бросок">
+                <i class="fas fa-dice"></i>
+              </button>
+
+              <button type="button" class="item-edit" title="Открыть">
+                <i class="fas fa-edit"></i>
+              </button>
+
+              <button type="button" class="item-delete" title="Удалить">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </li>
+          {{/each}}
+        </ol>
+      </div>
+    </div>
+
+    <!-- BIO -->
+    <div class="tab" data-group="primary" data-tab="bio">
+      <div class="hkrpg-grid hkrpg-cols-2">
+        <div class="hkrpg-card">
+          <h3>Описание / Особенности</h3>
+          <textarea name="system.biography.description" rows="10">{{system.biography.description}}</textarea>
+        </div>
+
+        <div class="hkrpg-card">
+          <h3>Заметки ГМ / Лор</h3>
+          <textarea name="system.biography.notes" rows="10">{{system.biography.notes}}</textarea>
+        </div>
       </div>
     </div>
   </section>
