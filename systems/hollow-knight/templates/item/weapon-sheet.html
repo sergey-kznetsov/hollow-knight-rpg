@@ -1,101 +1,83 @@
-<form class="{{cssClass}} flexcol" autocomplete="off">
-  {{!-- Sheet Header --}}
+<form class="hkrpg sheet" autocomplete="off">
   <header class="sheet-header">
-    <img class="profile-img" src="{{img}}" data-edit="img" title="{{name}}"/>
-    <div class="header-fields">
-      <h1 class="charname"><input name="name" type="text" value="{{name}}" placeholder="Название Оружия"/></h1>
-      
-      <div class="grid grid-2col">
-        <div class="resource">
-          <label>{{localize 'HKRPG.Item.Types.weapon'}}</label>
-          <input type="text" value="{{localize 'HKRPG.Item.Types.weapon'}}" disabled/>
-        </div>
-        <div class="resource">
-          <label>{{localize 'HKRPG.Item.Weapon.damage'}}</label>
-          <input type="number" name="system.damage.value" value="{{system.damage.value}}" data-dtype="Number"/>
-        </div>
+    <div class="hkrpg-row">
+      <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" height="64" width="64"/>
+      <div style="flex:1; margin-left:10px;">
+        <h2 style="margin:0;"><input name="name" type="text" value="{{item.name}}"/></h2>
+        <div style="color: var(--hk-muted);">{{localize "HKRPG.Item.Types.weapon"}}</div>
       </div>
+      <span class="hkrpg-pill">
+        <label style="display:flex; gap:6px; align-items:center; margin:0;">
+          <input type="checkbox" name="system.equipped" {{checked system.equipped}}/> экип.
+        </label>
+      </span>
     </div>
   </header>
 
-  {{!-- Sheet Tab Navigation --}}
   <nav class="sheet-tabs tabs" data-group="primary">
-    <a class="item" data-tab="details">{{localize 'HKRPG.Sheet.Tabs.characteristics'}}</a>
-    <a class="item" data-tab="description">{{localize 'HKRPG.Sheet.Tabs.biography'}}</a>
+    <a class="item" data-tab="details">{{localize "HKRPG.Sheet.Tabs.characteristics"}}</a>
+    <a class="item" data-tab="desc">{{localize "HKRPG.Sheet.Sections.notes"}}</a>
   </nav>
 
-  {{!-- Sheet Body --}}
   <section class="sheet-body">
-    
-    {{!-- Details Tab --}}
-    <div class="tab active" data-group="primary" data-tab="details">
-      <div class="grid grid-2col">
-        {{!-- Качество --}}
-        <div class="resource">
-          <label>{{localize 'HKRPG.Item.Weapon.quality'}}</label>
-          <input type="number" name="system.quality.value" value="{{system.quality.value}}" data-dtype="Number"/>
-        </div>
+    <div class="tab" data-group="primary" data-tab="details">
+      <div class="hkrpg-card">
+        <h3>Параметры</h3>
+        <div class="hkrpg-row"><label>{{localize "HKRPG.Item.Weapon.quality"}}</label>
+          <input type="number" name="system.quality.value" value="{{system.quality.value}}"/></div>
+        <div class="hkrpg-row"><label>{{localize "HKRPG.Item.Weapon.damage"}}</label>
+          <input type="number" name="system.damage.value" value="{{system.damage.value}}"/></div>
+        <div class="hkrpg-row"><label>Руки</label>
+          <input type="number" name="system.hands.value" value="{{system.hands.value}}"/></div>
+        <div class="hkrpg-row"><label>{{localize "HKRPG.Item.Weapon.weight"}}</label>
+          <input type="number" name="system.weight.value" value="{{system.weight.value}}"/></div>
 
-        {{!-- Вес --}}
-        <div class="resource">
-          <label>{{localize 'HKRPG.Item.Weapon.weight'}}</label>
-          <input type="number" name="system.weight.value" value="{{system.weight.value}}" data-dtype="Number"/>
-        </div>
-
-        {{!-- Тип Оружия (Гвоздь, Игла...) --}}
-        <div class="resource">
-          <label>{{localize 'HKRPG.Item.Weapon.type'}}</label>
+        <div class="hkrpg-row"><label>{{localize "HKRPG.Item.Weapon.type"}}</label>
           <select name="system.type.value">
-            {{#select system.type.value}}
-            <option value="nail">{{localize 'HKRPG.Item.Weapon.types.nail'}}</option>
-            <option value="needle">{{localize 'HKRPG.Item.Weapon.types.needle'}}</option>
-            <option value="fang">{{localize 'HKRPG.Item.Weapon.types.fang'}}</option>
-            <option value="hook">{{localize 'HKRPG.Item.Weapon.types.hook'}}</option>
-            <option value="sling">{{localize 'HKRPG.Item.Weapon.types.sling'}}</option>
-            <option value="natural">{{localize 'HKRPG.Item.Weapon.types.natural'}}</option>
-            {{/select}}
+            <option value="nail" {{#if (eq system.type.value "nail")}}selected{{/if}}>{{localize "HKRPG.Item.Weapon.types.nail"}}</option>
+            <option value="needle" {{#if (eq system.type.value "needle")}}selected{{/if}}>{{localize "HKRPG.Item.Weapon.types.needle"}}</option>
+            <option value="fang" {{#if (eq system.type.value "fang")}}selected{{/if}}>{{localize "HKRPG.Item.Weapon.types.fang"}}</option>
+            <option value="hook" {{#if (eq system.type.value "hook")}}selected{{/if}}>{{localize "HKRPG.Item.Weapon.types.hook"}}</option>
+            <option value="sling" {{#if (eq system.type.value "sling")}}selected{{/if}}>{{localize "HKRPG.Item.Weapon.types.sling"}}</option>
+            <option value="natural" {{#if (eq system.type.value "natural")}}selected{{/if}}>{{localize "HKRPG.Item.Weapon.types.natural"}}</option>
           </select>
         </div>
 
-        {{!-- Дальность --}}
-        <div class="resource">
-          <label>{{localize 'HKRPG.Item.Weapon.range'}}</label>
+        <div class="hkrpg-row"><label>{{localize "HKRPG.Item.Weapon.range"}}</label>
           <select name="system.range.value">
-            {{#select system.range.value}}
-            <option value="melee">{{localize 'HKRPG.Item.Weapon.ranges.melee'}}</option>
-            <option value="reach">{{localize 'HKRPG.Item.Weapon.ranges.reach'}}</option>
-            <option value="ranged">{{localize 'HKRPG.Item.Weapon.ranges.ranged'}}</option>
-            {{/select}}
+            <option value="melee" {{#if (eq system.range.value "melee")}}selected{{/if}}>{{localize "HKRPG.Item.Weapon.ranges.melee"}}</option>
+            <option value="reach" {{#if (eq system.range.value "reach")}}selected{{/if}}>{{localize "HKRPG.Item.Weapon.ranges.reach"}}</option>
+            <option value="ranged" {{#if (eq system.range.value "ranged")}}selected{{/if}}>{{localize "HKRPG.Item.Weapon.ranges.ranged"}}</option>
           </select>
         </div>
-      </div>
 
-      {{!-- Износ (Прочность) --}}
-      <div class="grid grid-2col" style="margin-top: 10px;">
-        <div class="resource">
-          <label>{{localize 'HKRPG.Item.Weapon.durability'}}</label>
-          <div class="grid grid-2col">
-            <input type="number" name="system.durability.value" value="{{system.durability.value}}" data-dtype="Number"/>
-            <span> / </span>
-            <input type="number" name="system.durability.max" value="{{system.durability.max}}" data-dtype="Number"/>
-          </div>
+        <div class="hkrpg-row"><label>Дистанция (клетки)</label>
+          <input type="number" name="system.range.distance" value="{{system.range.distance}}"/></div>
+
+        <div class="hkrpg-row"><label>Бонус инициативы (только от оружия)</label>
+          <input type="number" name="system.initiativeBonus.value" value="{{system.initiativeBonus.value}}"/></div>
+
+        <div class="hkrpg-row"><label>Перебросы (если даёт оружие)</label>
+          <input type="number" name="system.rerolls.value" value="{{system.rerolls.value}}"/></div>
+
+        <div class="hkrpg-row"><label>{{localize "HKRPG.Item.Weapon.durability"}}</label>
+          <input type="number" name="system.durability.value" value="{{system.durability.value}}"/>
+          <span>/</span>
+          <input type="number" name="system.durability.max" value="{{system.durability.max}}"/>
+        </div>
+
+        <div class="hkrpg-row" style="align-items:flex-start;">
+          <label>{{localize "HKRPG.Item.Weapon.properties"}}</label>
+          <textarea name="system.properties.value" rows="4" style="flex:1;">{{system.properties.value}}</textarea>
         </div>
       </div>
-      
-      {{!-- Свойства Оружия --}}
-      <div class="resource" style="margin-top: 10px;">
-        <label>{{localize 'HKRPG.Item.Weapon.properties'}}</label>
-        <textarea name="system.properties.value" data-dtype="String">{{system.properties.value}}</textarea>
-      </div>
     </div>
 
-    {{!-- Description Tab --}}
-    <div class="tab" data-group="primary" data-tab="description">
-      <div class="resource">
-        <label>{{localize 'HKRPG.Sheet.Sections.notes'}}</label>
-        <textarea name="system.description" data-dtype="String" style="height: 300px;">{{system.description}}</textarea>
+    <div class="tab" data-group="primary" data-tab="desc">
+      <div class="hkrpg-card">
+        <h3>{{localize "HKRPG.Sheet.Sections.notes"}}</h3>
+        <textarea name="system.description" rows="12">{{system.description}}</textarea>
       </div>
     </div>
-
   </section>
 </form>
