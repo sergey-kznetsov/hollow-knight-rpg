@@ -1,55 +1,43 @@
-<form class="{{cssClass}}" autocomplete="off">
+<form class="{{cssClass}} flexcol" autocomplete="off">
   <header class="sheet-header">
     <img class="profile-img" src="{{item.img}}" data-edit="img" alt="{{item.name}}"/>
     <div class="header-fields">
       <h1 class="charname"><input name="name" type="text" value="{{item.name}}" placeholder="Название черты"/></h1>
-      
       <div class="grid grid-2col">
         <div class="resource">
-          <label class="resource-label">Голод</label>
-          <input type="number" name="system.hunger" value="{{system.hunger}}" placeholder="0" step="0.5"/>
+          <label>{{localize 'HKRPG.Item.Trait.hungerCost'}}</label>
+          <input type="number" name="system.hungerCost.value" value="{{system.hungerCost.value}}" data-dtype="Number"/>
         </div>
         <div class="resource">
-          <label class="resource-label">Жуть/Привлекательность</label>
-          <input type="text" name="system.appeal" value="{{system.appeal}}" placeholder="+0.5 Жуть"/>
+          <label>{{localize 'HKRPG.Item.Trait.type'}}</label>
+          <select name="system.type.value">
+            {{#select system.type.value}}
+            <option value="general">{{localize 'HKRPG.Item.Trait.types.general'}}</option>
+            <option value="characteristic">{{localize 'HKRPG.Item.Trait.types.characteristic'}}</option>
+            <option value="mind">{{localize 'HKRPG.Item.Trait.types.mind'}}</option>
+            <option value="physiological">{{localize 'HKRPG.Item.Trait.types.physiological'}}</option>
+            <option value="sense">{{localize 'HKRPG.Item.Trait.types.sense'}}</option>
+            <option value="mystic">{{localize 'HKRPG.Item.Trait.types.mystic'}}</option>
+            <option value="body">{{localize 'HKRPG.Item.Trait.types.body'}}</option>
+            <option value="movement">{{localize 'HKRPG.Item.Trait.types.movement'}}</option>
+            <option value="defense">{{localize 'HKRPG.Item.Trait.types.defense'}}</option>
+            {{/select}}
+          </select>
         </div>
       </div>
     </div>
   </header>
 
   <nav class="sheet-tabs tabs" data-group="primary">
-    <a class="item" data-tab="description">Описание</a>
-    <a class="item" data-tab="effects">Эффекты</a>
-    <a class="item" data-tab="subtraits">Подчерты</a>
+    <a class="item" data-tab="description">{{localize 'HKRPG.Sheet.Tabs.biography'}}</a>
   </nav>
 
   <section class="sheet-body">
-    <div class="tab" data-group="primary" data-tab="description">
-      <div class="editor" data-edit="system.description" data-engine="prosemirror"></div>
-    </div>
-
-    <div class="tab" data-group="primary" data-tab="effects">
-      <div class="effects-list">
-        {{#each system.effects as |effect idx|}}
-        <div class="effect-item flexrow">
-          <input type="text" name="system.effects.{{idx}}.name" value="{{effect.name}}" placeholder="Название эффекта"/>
-          <textarea name="system.effects.{{idx}}.description" placeholder="Описание эффекта">{{effect.description}}</textarea>
-        </div>
-        {{/each}}
+    <div class="tab active" data-group="primary" data-tab="description">
+      <div class="resource">
+        <label>{{localize 'HKRPG.Item.Trait.description'}}</label>
+        <textarea name="system.description.value" data-dtype="String" style="height: 300px;">{{system.description.value}}</textarea>
       </div>
-      <button type="button" class="add-effect">Добавить эффект</button>
-    </div>
-
-    <div class="tab" data-group="primary" data-tab="subtraits">
-      <div class="subtraits-list">
-        {{#each system.subtraits as |subtrait idx|}}
-        <div class="subtrait-item flexrow">
-          <input type="text" name="system.subtraits.{{idx}}.name" value="{{subtrait.name}}" placeholder="Название подчерты"/>
-          <input type="number" name="system.subtraits.{{idx}}.hunger" value="{{subtrait.hunger}}" placeholder="Голод"/>
-        </div>
-        {{/each}}
-      </div>
-      <button type="button" class="add-subtrait">Добавить подчерту</button>
     </div>
   </section>
 </form>
