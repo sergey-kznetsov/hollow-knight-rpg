@@ -1,80 +1,43 @@
-<form class="{{cssClass}} flexcol" autocomplete="off">
-  {{!-- Sheet Header --}}
+<form class="hkrpg sheet" autocomplete="off">
   <header class="sheet-header">
-    <img class="profile-img" src="{{img}}" data-edit="img" title="{{name}}"/>
-    <div class="header-fields">
-      <h1 class="charname"><input name="name" type="text" value="{{name}}" placeholder="Название Искусства"/></h1>
-      
-      <div class="grid grid-2col">
-        <div class="resource">
-          <label>{{localize 'HKRPG.Item.Types.art'}}</label>
-          <input type="text" value="{{localize 'HKRPG.Item.Types.art'}}" disabled/>
-        </div>
-        <div class="resource">
-          <label>{{localize 'HKRPG.Item.Art.cost'}}</label>
-          <input type="number" name="system.cost.value" value="{{system.cost.value}}" data-dtype="Number"/>
-        </div>
+    <div class="hkrpg-row">
+      <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" height="64" width="64"/>
+      <div style="flex:1; margin-left:10px;">
+        <h2 style="margin:0;"><input name="name" type="text" value="{{item.name}}"/></h2>
+        <div style="color: var(--hk-muted);">{{localize "HKRPG.Item.Types.art"}}</div>
       </div>
     </div>
   </header>
 
-  {{!-- Sheet Tab Navigation --}}
-  <nav class="sheet-tabs tabs" data-group="primary">
-    <a class="item" data-tab="details">{{localize 'HKRPG.Sheet.Tabs.characteristics'}}</a>
-    <a class="item" data-tab="description">{{localize 'HKRPG.Sheet.Tabs.biography'}}</a>
-  </nav>
-
-  {{!-- Sheet Body --}}
   <section class="sheet-body">
-    
-    {{!-- Details Tab --}}
-    <div class="tab active" data-group="primary" data-tab="details">
-      <div class="grid grid-2col">
-        {{!-- Путь (Гвоздь, Игла, Клык...) --}}
-        <div class="resource">
-          <label>{{localize 'HKRPG.Item.Art.path'}}</label>
-          <select name="system.path.value">
-            {{#select system.path.value}}
-            <option value="nail">{{localize 'HKRPG.Actor.Paths.nail'}}</option>
-            <option value="needle">{{localize 'HKRPG.Actor.Paths.needle'}}</option>
-            <option value="fang">{{localize 'HKRPG.Actor.Paths.fang'}}</option>
-            <option value="hook">{{localize 'HKRPG.Actor.Paths.hook'}}</option>
-            <option value="natural">{{localize 'HKRPG.Item.Weapon.types.natural'}}</option>
-            <option value="sling">{{localize 'HKRPG.Actor.Paths.sling'}}</option>
-            <option value="shield">{{localize 'HKRPG.Sheet.Sections.equipment'}}</option>
-            <option value="counter">{{localize 'HKRPG.Sheet.Tabs.characteristics'}}</option>
-            {{/select}}
-          </select>
-        </div>
+    <div class="hkrpg-card">
+      <h3>Стоимость</h3>
+      <div class="hkrpg-row"><label>Выносливость</label>
+        <input type="number" name="system.costStamina.value" value="{{system.costStamina.value}}"/></div>
+      <div class="hkrpg-row"><label>Души</label>
+        <input type="number" name="system.costSoul.value" value="{{system.costSoul.value}}"/></div>
 
-        {{!-- Тип Искусства (Обычное, Усиление...) --}}
-        <div class="resource">
-          <label>{{localize 'HKRPG.Item.Art.type'}}</label>
-          <select name="system.type.value">
-            {{#select system.type.value}}
-            <option value="standard">{{localize 'HKRPG.Item.Art.types.standard'}}</option>
-            <option value="enhancement">{{localize 'HKRPG.Item.Art.types.enhancement'}}</option>
-            <option value="reaction">{{localize 'HKRPG.Item.Art.types.reaction'}}</option>
-            <option value="unique">{{localize 'HKRPG.Item.Art.types.unique'}}</option>
-            {{/select}}
-          </select>
-        </div>
+      <h3 style="margin-top:10px;">Тип</h3>
+      <div class="hkrpg-row"><label>{{localize "HKRPG.Item.Art.path"}}</label>
+        <select name="system.path.value">
+          <option value="nail" {{#if (eq system.path.value "nail")}}selected{{/if}}>{{localize "HKRPG.Actor.Paths.nail"}}</option>
+          <option value="needle" {{#if (eq system.path.value "needle")}}selected{{/if}}>{{localize "HKRPG.Actor.Paths.needle"}}</option>
+          <option value="fang" {{#if (eq system.path.value "fang")}}selected{{/if}}>{{localize "HKRPG.Actor.Paths.fang"}}</option>
+          <option value="hook" {{#if (eq system.path.value "hook")}}selected{{/if}}>{{localize "HKRPG.Actor.Paths.hook"}}</option>
+          <option value="natural" {{#if (eq system.path.value "natural")}}selected{{/if}}>{{localize "HKRPG.Item.Weapon.types.natural"}}</option>
+        </select>
       </div>
-      
-      {{!-- Краткое Описание / Эффект --}}
-      <div class="resource" style="margin-top: 10px;">
-        <label>{{localize 'HKRPG.Item.Art.description'}}</label>
-        <textarea name="system.description" data-dtype="String">{{system.description}}</textarea>
+      <div class="hkrpg-row"><label>{{localize "HKRPG.Item.Art.type"}}</label>
+        <select name="system.type.value">
+          <option value="standard" {{#if (eq system.type.value "standard")}}selected{{/if}}>{{localize "HKRPG.Item.Art.types.standard"}}</option>
+          <option value="enhancement" {{#if (eq system.type.value "enhancement")}}selected{{/if}}>{{localize "HKRPG.Item.Art.types.enhancement"}}</option>
+          <option value="reaction" {{#if (eq system.type.value "reaction")}}selected{{/if}}>{{localize "HKRPG.Item.Art.types.reaction"}}</option>
+          <option value="unique" {{#if (eq system.type.value "unique")}}selected{{/if}}>{{localize "HKRPG.Item.Art.types.unique"}}</option>
+        </select>
       </div>
+
+      <h3 style="margin-top:10px;">{{localize "HKRPG.Sheet.Sections.notes"}}</h3>
+      <textarea name="system.description.value" rows="12">{{system.description.value}}</textarea>
     </div>
-
-    {{!-- Description Tab --}}
-    <div class="tab" data-group="primary" data-tab="description">
-      <div class="resource">
-        <label>{{localize 'HKRPG.Sheet.Sections.notes'}}</label>
-        <textarea name="system.description" data-dtype="String" style="height: 300px;">{{system.description}}</textarea>
-      </div>
-    </div>
-
   </section>
 </form>
