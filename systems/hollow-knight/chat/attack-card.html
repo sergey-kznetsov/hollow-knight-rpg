@@ -11,6 +11,12 @@
     <span><b>{{localize "HKRPG.Chat.Successes"}}</b>: {{attackSuccesses}}</span>
     <span><b>{{localize "HKRPG.Chat.BaseDamage"}}</b>: {{baseDamage}}</span>
   </div>
+  
+  <div style="margin-top:6px;">
+  <b>{{localize "HKRPG.Chat.Result"}}</b>:
+  {{#if hit}}<span style="font-weight:700;">{{localize "HKRPG.Chat.Hit"}}</span>{{else}}<span style="font-weight:700;">{{localize "HKRPG.Chat.Miss"}}</span>{{/if}}
+  </div>
+
 
   <div style="color: var(--hk-muted); margin-top:6px;">
     {{localize "HKRPG.Chat.Range"}}: {{range}} ({{rangeDistance}})
