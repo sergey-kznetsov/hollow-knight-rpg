@@ -1,66 +1,38 @@
-<form class="{{cssClass}} flexcol" autocomplete="off">
-  {{!-- Sheet Header --}}
+<form class="hkrpg sheet" autocomplete="off">
   <header class="sheet-header">
-    <img class="profile-img" src="{{img}}" data-edit="img" title="{{name}}"/>
-    <div class="header-fields">
-      <h1 class="charname"><input name="name" type="text" value="{{name}}" placeholder="Название Амулета"/></h1>
-      
-      <div class="grid grid-2col">
-        <div class="resource">
-          <label>{{localize 'HKRPG.Item.Types.charm'}}</label>
-          <input type="text" value="{{localize 'HKRPG.Item.Types.charm'}}" disabled/>
-        </div>
-        <div class="resource">
-          <label>{{localize 'HKRPG.Item.Charm.slots'}}</label>
-          <input type="number" name="system.slots.value" value="{{system.slots.value}}" data-dtype="Number"/>
-        </div>
+    <div class="hkrpg-row">
+      <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" height="64" width="64"/>
+      <div style="flex:1; margin-left:10px;">
+        <h2 style="margin:0;"><input name="name" type="text" value="{{item.name}}"/></h2>
+        <div style="color: var(--hk-muted);">{{localize "HKRPG.Item.Types.charm"}}</div>
       </div>
+      <span class="hkrpg-pill">
+        <label style="display:flex; gap:6px; align-items:center; margin:0;">
+          <input type="checkbox" name="system.equipped" {{checked system.equipped}}/> экип.
+        </label>
+      </span>
     </div>
   </header>
 
-  {{!-- Sheet Tab Navigation --}}
-  <nav class="sheet-tabs tabs" data-group="primary">
-    <a class="item" data-tab="details">{{localize 'HKRPG.Sheet.Tabs.characteristics'}}</a>
-    <a class="item" data-tab="description">{{localize 'HKRPG.Sheet.Tabs.biography'}}</a>
-  </nav>
-
-  {{!-- Sheet Body --}}
   <section class="sheet-body">
-    
-    {{!-- Details Tab --}}
-    <div class="tab active" data-group="primary" data-tab="details">
-      <div class="grid grid-2col">
-        {{!-- Редкость Амулета --}}
-        <div class="resource">
-          <label>{{localize 'HKRPG.Item.Charm.rarity'}}</label>
-          <select name="system.rarity.value">
-            {{#select system.rarity.value}}
-            <option value="common">{{localize 'HKRPG.Item.Charm.rarities.common'}}</option>
-            <option value="uncommon">{{localize 'HKRPG.Item.Charm.rarities.uncommon'}}</option>
-            <option value="rare">{{localize 'HKRPG.Item.Charm.rarities.rare'}}</option>
-            <option value="unique">{{localize 'HKRPG.Item.Charm.rarities.unique'}}</option>
-            <option value="legendary">{{localize 'HKRPG.Item.Charm.rarities.legendary'}}</option>
-            <option value="cursed">{{localize 'HKRPG.Item.Charm.rarities.cursed'}}</option>
-            <option value="fragile">{{localize 'HKRPG.Item.Charm.rarities.fragile'}}</option>
-            {{/select}}
-          </select>
-        </div>
+    <div class="hkrpg-card">
+      <h3>Параметры</h3>
+      <div class="hkrpg-row"><label>{{localize "HKRPG.Item.Charm.slots"}}</label>
+        <input type="number" name="system.slots.value" value="{{system.slots.value}}"/></div>
+      <div class="hkrpg-row"><label>{{localize "HKRPG.Item.Charm.rarity"}}</label>
+        <select name="system.rarity.value">
+          <option value="common" {{#if (eq system.rarity.value "common")}}selected{{/if}}>{{localize "HKRPG.Item.Charm.rarities.common"}}</option>
+          <option value="uncommon" {{#if (eq system.rarity.value "uncommon")}}selected{{/if}}>{{localize "HKRPG.Item.Charm.rarities.uncommon"}}</option>
+          <option value="rare" {{#if (eq system.rarity.value "rare")}}selected{{/if}}>{{localize "HKRPG.Item.Charm.rarities.rare"}}</option>
+          <option value="unique" {{#if (eq system.rarity.value "unique")}}selected{{/if}}>{{localize "HKRPG.Item.Charm.rarities.unique"}}</option>
+          <option value="legendary" {{#if (eq system.rarity.value "legendary")}}selected{{/if}}>{{localize "HKRPG.Item.Charm.rarities.legendary"}}</option>
+          <option value="cursed" {{#if (eq system.rarity.value "cursed")}}selected{{/if}}>{{localize "HKRPG.Item.Charm.rarities.cursed"}}</option>
+          <option value="fragile" {{#if (eq system.rarity.value "fragile")}}selected{{/if}}>{{localize "HKRPG.Item.Charm.rarities.fragile"}}</option>
+        </select>
       </div>
-      
-      {{!-- Краткое Описание Эффектов --}}
-      <div class="resource" style="margin-top: 10px;">
-        <label>{{localize 'HKRPG.Item.Charm.description'}}</label>
-        <textarea name="system.description.value" data-dtype="String">{{system.description.value}}</textarea>
-      </div>
-    </div>
 
-    {{!-- Description Tab --}}
-    <div class="tab" data-group="primary" data-tab="description">
-      <div class="resource">
-        <label>{{localize 'HKRPG.Sheet.Sections.notes'}}</label>
-        <textarea name="system.description.value" data-dtype="String" style="height: 300px;">{{system.description.value}}</textarea>
-      </div>
+      <h3 style="margin-top:10px;">{{localize "HKRPG.Sheet.Sections.notes"}}</h3>
+      <textarea name="system.description.value" rows="12">{{system.description.value}}</textarea>
     </div>
-
   </section>
 </form>
