@@ -17,6 +17,14 @@
         "soul": "Души",
         "stamina": "Выносливость",
         "satiety": "Сытость"
+        "HKRPG.Chat.Result": "Результат",
+        "HKRPG.Chat.Hit": "ПОПАЛ",
+        "HKRPG.Chat.Miss": "ПРОМАХ",
+        "HKRPG.Dialog.DefenseTitle": "Защита",
+        "HKRPG.Dialog.DefenseHint": "Выберите реакцию. Можно пропустить защиту, тогда урон применится без уменьшения.",
+        "HKRPG.Dialog.SkipDefense": "Пропустить",
+        "HKRPG.Errors.ArmorBrokenNoSoak": "Броня пробита или не надета — Впитывание от брони не работает."
+
       },
       "Secondary": {
         "speed": "Скорость",
