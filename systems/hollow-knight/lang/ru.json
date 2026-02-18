@@ -28,10 +28,12 @@
         "absorption": "Поглощение",
         "horror": "Жуть",
         "charm": "Привлекательность",
-        "hunger": "Голод"
+        "hunger": "Голод",
+        "size": "Размер"
       },
       "Combat": {
         "initiative": "Инициатива",
+        "initiativeBonus": "Бонус инициативы",
         "imbalance": "Дисбаланс",
         "delayedDmg": "Отложенный урон"
       },
@@ -67,14 +69,31 @@
         "trait": "Черта",
         "path": "Путь"
       },
+
+      "Common": {
+        "equipped": "Экипировано",
+        "price": "Цена (Гео)",
+        "description": "Описание",
+        "properties": "Свойства",
+        "mods": "Модификации"
+      },
+
       "Weapon": {
         "quality": "Качество",
         "damage": "Урон",
         "weight": "Вес",
         "type": "Тип",
-        "range": "Дальность",
-        "properties": "Свойства",
+        "hands": "Руки",
+        "range": "Дальность боя",
+        "rangeCategory": "Категория дальности",
+        "rangeDistance": "Дистанция (клетки)",
+        "initiativeBonus": "Бонус инициативы (от оружия)",
+        "rerolls": "Перебросы (даёт оружие)",
         "durability": "Износ",
+        "upgradeTier": "Степень улучшения",
+        "upgradeQualityBonus": "Бонус качества от улучшения",
+        "upgradeRequirementsText": "Требования улучшения",
+        "upgradeCostText": "Цена улучшения",
         "types": {
           "nail": "Гвоздь",
           "needle": "Игла",
@@ -89,13 +108,18 @@
           "ranged": "Дальний"
         }
       },
+
       "Armor": {
-        "protection": "Защита",
-        "durability": "Прочность",
+        "equipped": "Надето",
         "weight": "Вес",
+        "price": "Цена (Гео)",
         "pu": "Понижение Урона",
-        "absorption": "Поглощение"
+        "absorptionBonus": "Бонус к Впитыванию",
+        "absorptionRerolls": "Перебросы Впитывания",
+        "durability": "Прочность",
+        "broken": "Пробита (не защищает)"
       },
+
       "Charm": {
         "slots": "Стоимость Меток",
         "rarity": "Редкость",
@@ -110,6 +134,7 @@
           "fragile": "Хрупкий"
         }
       },
+
       "Spell": {
         "cost": "Стоимость Душ",
         "complexity": "Сложность",
@@ -123,18 +148,11 @@
           "close": "Близко",
           "far": "Далеко",
           "sense": "Чувство"
-        },
-        "durations": {
-          "concentration": "Концентрация",
-          "brief": "Краткая",
-          "scene": "Сцена",
-          "rest": "Отдых",
-          "life": "Жизнь",
-          "eternity": "Вечность"
         }
       },
+
       "Art": {
-        "cost": "Стоимость Выносливости",
+        "cost": "Стоимость",
         "path": "Путь",
         "type": "Тип",
         "description": "Описание",
@@ -145,11 +163,13 @@
           "unique": "Уникальное"
         }
       },
+
       "Consumable": {
         "quantity": "Количество",
         "effect": "Эффект",
         "satiety": "Сытость"
       },
+
       "Trait": {
         "hungerCost": "Стоимость Голода",
         "description": "Описание",
@@ -166,6 +186,7 @@
           "defense": "Природной Защиты"
         }
       },
+
       "Path": {
         "rank": "Ранг",
         "type": "Тип Пути",
@@ -174,65 +195,36 @@
     },
 
     "Sheet": {
-      "Actor": {
-        "Character": "Лист Персонажа",
-        "NPC": "Лист НИП",
-        "Creature": "Лист Существа"
-      },
-      "Item": {
-        "Weapon": "Лист Оружия",
-        "Armor": "Лист Брони",
-        "Charm": "Лист Амулета",
-        "Spell": "Лист Заклинания",
-        "Art": "Лист Искусства",
-        "Consumable": "Лист Расходника",
-        "Trait": "Лист Черты",
-        "Path": "Лист Пути"
-      },
       "Tabs": {
         "characteristics": "Характеристики",
         "inventory": "Инвентарь",
-        "paths": "Пути",
-        "traits": "Черты",
         "biography": "Биография",
-        "combat": "Бой",
-        "magic": "Магия"
+        "combat": "Бой"
       },
       "Sections": {
         "equipment": "Снаряжение",
-        "techniques": "Техники",
-        "arts": "Искусства",
-        "spells": "Заклинания",
-        "charms": "Амулеты",
         "notes": "Заметки"
       }
     },
 
     "Chat": {
-      "MisuseTitle": "Некорректное действие",
-
+      "MisuseTitle": "Неправильное действие",
       "Roll": "Бросок",
-      "Success": "Успех",
-      "Successes": "Успехов",
+      "Successes": "Результат",
       "Dice": "Кубов",
-      "Characteristic": "Характеристика",
-      "Check": "Проверка",
-      "Save": "Спасбросок",
-      "Damage": "Урон",
-      "Healing": "Лечение",
 
       "Initiative": "Инициатива",
       "InitiativeFlavor": "Грация: {grace}\nБонус: {bonus}\nКубов: {grace}+{bonus}",
 
-      "Melee": "Ближняя",
-      "Ranged": "Дальняя",
-
       "AttackRoll": "Бросок атаки: {weapon}",
-      "AttackFlavor": "{mode} атака\nБаза: {base}\nКачество: {quality}\nВложено выносливости: {invest}\nНалог выносливости: {tax}\nИтого потрачено: {cost}",
-
       "SpellRoll": "Применение заклинания: {spell}",
       "ArtUsed": "Применено искусство",
       "Cost": "Стоимость",
+
+      "Melee": "Ближняя",
+      "Ranged": "Дальняя",
+
+      "AttackFlavor": "{mode} атака\nБаза: {base}\nКачество: {quality}\nВложено выносливости: {invest}\nНалог выносливости: {tax}\nИтого потрачено: {cost}",
 
       "Dodge": "Уклонение",
       "Parry": "Парирование"
@@ -241,36 +233,7 @@
     "Dialog": {
       "AttackTitle": "Атака",
       "Weapon": "Оружие",
-      "StaminaInvest": "Сколько выносливости вложить? (минимум 1)"
-    },
-
-    "Combat": {
-      "Actions": {
-        "attack": "Атака",
-        "defend": "Защита",
-        "parry": "Парирование",
-        "dodge": "Уклонение",
-        "focus": "Фокусировка",
-        "move": "Перемещение",
-        "dash": "Рывок",
-        "jump": "Прыжок",
-        "grapple": "Захват",
-        "useItem": "Использовать Предмет",
-        "castSpell": "Применить Заклинание",
-        "useArt": "Применить Искусство"
-      },
-      "States": {
-        "imbalance": "Дисбаланс",
-        "delayedDamage": "Отложенный Урон",
-        "paralyzed": "Парализован",
-        "poisoned": "Отравлен",
-        "burning": "Горит",
-        "bleeding": "Кровотечение",
-        "grabbed": "Схвачен",
-        "asleep": "Спит",
-        "unconscious": "Без сознания",
-        "dead": "Мёртв"
-      }
+      "StaminaInvest": "Сколько выносливости вложить в атаку? (минимум 1)"
     },
 
     "UI": {
@@ -280,44 +243,24 @@
       "Save": "Сохранить",
       "Cancel": "Отмена",
       "Close": "Закрыть",
-      "Roll": "Бросить",
-      "Config": "Настройки",
-      "Macro": "Макрос",
-      "Create": "Создать",
-      "Import": "Импорт",
-      "Export": "Экспорт"
-    },
-
-    "Settings": {
-      "Title": "Настройки HKRPG",
-      "Difficulty": "Сложность",
-      "ShowDice": "Показывать Кубики",
-      "AutoDamage": "Авто-Урон",
-      "AutoHealing": "Авто-Лечение",
-      "InitiativeFormula": "Формула Инициативы"
+      "Roll": "Бросить"
     },
 
     "Errors": {
+      "Title": "Некорректное действие",
       "NoDice": "Недостаточно кубиков для броска",
-      "NoStamina": "Недостаточно выносливости (нужно {need}, есть {have}).",
-      "NoSoul": "Недостаточно душ (нужно {need}, есть {have}).",
-      "NoHearts": "Недостаточно сердец (нужно {need}, есть {have}).",
+      "NoStamina": "Недостаточно выносливости",
+      "NoSoul": "Недостаточно душ",
+      "NoHearts": "Недостаточно сердец",
+      "InvalidTarget": "Не выбран токен/цель",
+      "SystemNotReady": "Система ещё не готова",
 
-      "InvalidTarget": "Не выбран актёр/токен для действия.",
-      "SystemNotReady": "Система ещё не готова.",
+      "NotYourTurn": "Сейчас не ваш ход.",
+      "NoEquippedWeapons": "Нет экипированного оружия.",
 
-      "NotYourTurn": "Сейчас не ваш ход. Это действие в бою делать нельзя.",
-      "NoEquippedWeapons": "Нет экипированного оружия. Экипируй оружие и попробуй снова.",
-      "WeaponNotSelected": "Оружие не выбрано."
-    },
-
-    "Notifications": {
-      "RollMade": "Бросок совершён",
-      "DamageDealt": "Урон нанесён",
-      "HealingApplied": "Лечение применено",
-      "StaminaRestored": "Выносливость восстановлена",
-      "TurnStarted": "Ход начался",
-      "TurnEnded": "Ход завершён"
+      "WeaponNotSelected": "Не выбрано оружие (weaponId).",
+      "AttackMinStamina": "Атака требует вложить минимум 1 Выносливости.",
+      "NotEnoughStaminaForAttack": "Не хватает выносливости: нужно {need}, есть {have}."
     }
   }
 }
