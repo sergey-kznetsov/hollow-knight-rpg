@@ -1,398 +1,120 @@
-/* systems/hollow-knight/style.css */
-
 :root {
-  --hk-bg-primary: #1a1a1a;
-  --hk-bg-secondary: #2b2b2b;
-  --hk-bg-tertiary: #333333;
-  --hk-text-primary: #e0e0e0;
-  --hk-text-muted: #aaaaaa;
-  --hk-accent: #f0a500; /* Янтарь (Душа) */
-  --hk-heart: #c93838;  /* Сердца */
-  --hk-stamina: #6b8c42; /* Выносливость */
-  --hk-border: #444444;
-  --hk-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  --font-primary: 'Signika', sans-serif;
+  --hk-bg: #17160f;
+  --hk-bg2: #1f1d14;
+  --hk-panel: #242114;
+  --hk-border: #3a331c;
+  --hk-text: #e7e0c8;
+  --hk-muted: #b9b094;
+  --hk-accent: #ff8a1f; /* оранжевый акцент */
+  --hk-accent2: #c5a23a; /* горчичный */
+  --hk-danger: #ff4d4d;
 }
 
-/* --- Общие стили окна системы --- */
-.sheet.hollow-knight {
-  background: var(--hk-bg-primary);
-  color: var(--hk-text-primary);
-  font-family: var(--font-primary);
-  min-width: 450px;
-  min-height: 500px;
+.hkrpg.sheet .window-content {
+  background: linear-gradient(180deg, var(--hk-bg), var(--hk-bg2));
+  color: var(--hk-text);
 }
 
-.sheet.hollow-knight .window-content {
-  background: var(--hk-bg-primary);
-  padding: 10px;
-  overflow-y: auto;
-}
-
-.sheet.hollow-knight h1, 
-.sheet.hollow-knight h2, 
-.sheet.hollow-knight h3, 
-.sheet.hollow-knight h4 {
-  color: var(--hk-accent);
-  border-bottom: 1px solid var(--hk-border);
-  margin-top: 0;
-  margin-bottom: 10px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-/* --- Header (Изображение и Имя) --- */
-.sheet-header {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  background: var(--hk-bg-secondary);
+.hkrpg.sheet input,
+.hkrpg.sheet select,
+.hkrpg.sheet textarea {
+  background: var(--hk-panel);
+  color: var(--hk-text);
   border: 1px solid var(--hk-border);
-  border-radius: 4px;
-  margin-bottom: 15px;
 }
 
-.profile-img {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  border: 2px solid var(--hk-accent);
-  border-radius: 4px;
-  margin-right: 15px;
-  background: #000;
-  cursor: pointer;
-  transition: border-color 0.2s;
-}
-
-.profile-img:hover {
-  border-color: #fff;
-}
-
-.header-fields {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.charname input {
-  width: 100%;
-  background: transparent;
-  border: none;
+.hkrpg.sheet .sheet-header {
   border-bottom: 1px solid var(--hk-border);
-  color: #fff;
-  font-size: 1.5em;
-  font-weight: bold;
-  padding: 5px;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
 }
 
-.charname input:focus {
-  outline: none;
-  border-bottom-color: var(--hk-accent);
+.hkrpg.sheet .sheet-header .profile-img {
+  border: 1px solid var(--hk-border);
+  background: var(--hk-panel);
 }
 
-/* --- Характеристики (Мощь, Грация, Панцирь, Проницательность) --- */
-.hk-characteristics {
+.hkrpg.sheet .tabs {
+  border-bottom: 1px solid var(--hk-border);
+  margin-bottom: 8px;
+}
+
+.hkrpg.sheet .tabs .item {
+  color: var(--hk-muted);
+  padding: 6px 10px;
+}
+
+.hkrpg.sheet .tabs .item.active {
+  color: var(--hk-text);
+  border-bottom: 2px solid var(--hk-accent);
+}
+
+.hkrpg-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  margin-bottom: 20px;
-  background: var(--hk-bg-secondary);
+  gap: 8px;
+}
+
+.hkrpg-cols-2 { grid-template-columns: 1fr 1fr; }
+.hkrpg-cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+.hkrpg-card {
+  background: rgba(36, 33, 20, 0.85);
+  border: 1px solid var(--hk-border);
+  border-radius: 10px;
   padding: 10px;
-  border: 1px solid var(--hk-border);
-  border-radius: 4px;
 }
 
-.hk-characteristic {
+.hkrpg-card h3 {
+  margin: 0 0 6px 0;
+  font-size: 14px;
+  color: var(--hk-accent2);
+}
+
+.hkrpg-row {
   display: flex;
-  flex-direction: column;
+  gap: 8px;
   align-items: center;
-  text-align: center;
-  background: var(--hk-bg-tertiary);
-  padding: 5px;
-  border-radius: 3px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.hk-characteristic:hover {
-  background: #444;
-}
-
-.hk-characteristic label {
-  font-size: 0.8em;
-  color: var(--hk-text-muted);
-  margin-bottom: 5px;
-  text-transform: uppercase;
-}
-
-.hk-characteristic input {
-  width: 40px;
-  text-align: center;
-  background: #111;
-  color: var(--hk-accent);
-  border: 1px solid var(--hk-border);
-  border-radius: 3px;
-  font-weight: bold;
-  font-size: 1.1em;
-}
-
-/* --- Запасы (Сердца, Души, Выносливость) --- */
-.hk-pools {
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 20px;
-  background: var(--hk-bg-secondary);
-  padding: 10px;
-  border: 1px solid var(--hk-border);
-  border-radius: 4px;
-}
-
-.hk-pool {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-}
-
-.hk-pool label {
-  font-size: 0.75em;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--hk-text-muted);
-}
-
-.hk-pool input {
-  width: 50px;
-  text-align: center;
-  background: #111;
-  border: 1px solid var(--hk-border);
-  border-radius: 3px;
-  font-weight: bold;
-  font-size: 1.1em;
-}
-
-.hk-pool.hearts input { color: var(--hk-heart); }
-.hk-pool.soul input { color: #fff; }
-.hk-pool.stamina input { color: var(--hk-stamina); }
-
-/* --- Вкладки (Tabs) --- */
-.sheet-tabs {
-  display: flex;
-  justify-content: flex-start;
-  border-bottom: 2px solid var(--hk-border);
-  margin-bottom: 15px;
-  gap: 5px;
-}
-
-.sheet-tabs .item {
-  background: var(--hk-bg-secondary);
-  border: 1px solid var(--hk-border);
-  padding: 8px 15px;
-  cursor: pointer;
-  border-radius: 4px 4px 0 0;
-  color: var(--hk-text-muted);
-  font-weight: bold;
-  transition: all 0.2s;
-}
-
-.sheet-tabs .item:hover {
-  background: #333;
-  color: #fff;
-}
-
-.sheet-tabs .item.active {
-  background: var(--hk-accent);
-  color: #000;
-  border-color: var(--hk-accent);
-}
-
-.tab {
-  display: none;
-}
-
-.tab.active {
-  display: block;
-  animation: fadeIn 0.3s ease-in;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* --- Списки предметов (Inventory) --- */
-.hk-list, .items-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.hk-list li, .items-list li {
-  display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 8px;
-  background: var(--hk-bg-secondary);
-  border: 1px solid var(--hk-border);
-  border-radius: 3px;
-  transition: background 0.2s;
+  margin: 4px 0;
 }
 
-.hk-list li:hover, .items-list li:hover {
-  background: var(--hk-bg-tertiary);
-  border-color: var(--hk-accent);
+.hkrpg-row label {
+  color: var(--hk-muted);
+  flex: 1;
 }
 
-.item-name {
-  flex-grow: 1;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.item-name img {
-  width: 30px;
-  height: 30px;
-  object-fit: contain;
-  background: #000;
-  border-radius: 3px;
-}
-
-.item-controls {
-  display: flex;
-  gap: 10px;
-}
-
-.item-controls a {
-  color: var(--hk-text-muted);
-  font-size: 0.9em;
-  transition: color 0.2s;
-}
-
-.item-controls a:hover {
-  color: var(--hk-accent);
-}
-
-/* --- Вторичные статы (Скорость, Нагрузка и т.д.) --- */
-.hk-secondary {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: 10px;
-  margin-bottom: 20px;
-  background: var(--hk-bg-secondary);
-  padding: 10px;
-  border: 1px solid var(--hk-border);
-  border-radius: 4px;
-}
-
-.hk-secondary .resource {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.hk-secondary label {
-  font-size: 0.75em;
-  color: var(--hk-text-muted);
-}
-
-.hk-secondary input {
-  background: #111;
-  border: 1px solid var(--hk-border);
-  color: #fff;
-  padding: 3px;
-  border-radius: 3px;
+.hkrpg-row input {
+  width: 70px;
   text-align: center;
 }
 
-/* --- Чат карточки (Броски) --- */
-.chat-message.hollow-knight {
-  background: var(--hk-bg-secondary);
+.hkrpg-pill {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  padding: 4px 8px;
   border: 1px solid var(--hk-border);
-  border-left: 4px solid var(--hk-accent);
-  color: var(--hk-text-primary);
-  padding: 10px;
-  border-radius: 4px;
+  border-radius: 999px;
+  background: var(--hk-panel);
+  color: var(--hk-text);
 }
 
-.chat-message.hollow-knight .hkrpg-roll {
-  text-align: center;
+.hkrpg-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
-.chat-message.hollow-knight h3 {
-  margin: 0 0 10px 0;
-  font-size: 1.2em;
-  border: none;
-}
-
-.chat-message.hollow-knight .dice-results {
-  font-family: 'Signika', sans-serif;
-  font-size: 1.1em;
-  color: #fff;
-  margin-top: 5px;
-  background: #111;
-  padding: 5px;
-  border-radius: 3px;
-}
-
-/* --- Кнопки и Инпуты (Global Overrides) --- */
-button {
-  background: var(--hk-bg-secondary);
-  color: var(--hk-text-primary);
+.hkrpg-actions button {
+  background: var(--hk-panel);
+  color: var(--hk-text);
   border: 1px solid var(--hk-border);
-  padding: 5px 10px;
-  cursor: pointer;
-  border-radius: 3px;
-  transition: all 0.2s;
-  font-family: var(--font-primary);
 }
 
-button:hover {
-  background: var(--hk-accent);
-  color: #000;
+.hkrpg-actions button:hover {
   border-color: var(--hk-accent);
 }
 
-input[type="text"], 
-input[type="number"], 
-textarea, 
-select {
-  background: #111;
-  border: 1px solid var(--hk-border);
-  color: #fff;
-  padding: 5px;
-  border-radius: 3px;
-  font-family: var(--font-primary);
-}
-
-input:focus, 
-textarea:focus, 
-select:focus {
-  outline: none;
-  border-color: var(--hk-accent);
-}
-
-/* --- Утилиты (Grid) --- */
-.grid-2col { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-.grid-3col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.grid-4col { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-
-/* --- Адаптивность --- */
-@media (max-width: 600px) {
-  .hk-characteristics {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .sheet-header {
-    flex-direction: column;
-    text-align: center;
-  }
-  .profile-img {
-    margin-right: 0;
-    margin-bottom: 10px;
-  }
+.hkrpg-warn {
+  color: var(--hk-danger);
 }
