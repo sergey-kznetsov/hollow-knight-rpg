@@ -72,18 +72,12 @@ function hasAnySix(roll) {
   }
 }
 
-/**
- * Теперь Поглощение живёт только тут: system.combat.absorption.value
- */
+/** Поглощение хранится здесь */
 function getAbsorptionValue(actor) {
   return Number(foundry.utils.getProperty(actor, "system.combat.absorption.value") ?? 0);
 }
 
-/**
- * Поглощение по книге:
- * снижает оставшийся урон на (1 + floor(remaining / absorptionValue))
- * применяется после ПУ и Впитывания.
- */
+/** Поглощение по книге */
 function applyAbsorption(remainingDamage, absorptionValue) {
   remainingDamage = Math.max(0, Number(remainingDamage ?? 0));
   absorptionValue = Math.max(0, Number(absorptionValue ?? 0));
@@ -108,7 +102,6 @@ async function rollSuccessPool({ actor, label, dice, rerolls = 0, flavor = "", f
 
   const roll = await new Roll(`${dice}d6cs>=5`).evaluate({ async: true });
 
-  // Перебросы: перебрасываем провалы
   let remaining = rerolls;
   if (remaining > 0) {
     const results = roll.dice[0]?.results ?? [];
@@ -226,11 +219,249 @@ function getWeaponRangeDistance(weapon) {
   return Number(weapon.system?.range?.distance?.value ?? weapon.system?.range?.distance ?? 1);
 }
 
+function userCanDefendFor(actor) {
+  if (!actor) return false;
+  if (game.user.isGM) return true;
+  return actor.testUserPermission(game.user, "OWNER");
+}
+
+async function maybeOpenDefenseDialog(attackMessageId) {
+  const msg = game.messages.get(attackMessageId);
+  if (!msg) return;
+  const f = msg.flags?.[SYS_ID];
+  if (!f || f.kind !== "attack") return;
+
+  // если промах — нечего защищать
+  if (!f.hit) return;
+
+  const defender = game.actors.get(f.targetActorId);
+  if (!defender) return;
+  if (!userCanDefendFor(defender)) return;
+
+  // если защита уже выбрана — не спамим окнами
+  if (f.defense || f.soak) return;
+
+  return new Promise(resolve => {
+    const content = `
+      <p style="margin:0 0 8px;">
+        <b>${t("HKRPG.Dialog.DefenseTitle")}</b>
+      </p>
+      <p style="margin:0 0 8px; color: var(--hk-muted);">
+        ${foundry.utils.escapeHTML(f.attackerName)} → <b>${foundry.utils.escapeHTML(f.targetName)}</b> (${foundry.utils.escapeHTML(f.weaponName)})
+      </p>
+      <p style="margin:0; color: var(--hk-muted);">
+        ${t("HKRPG.Dialog.DefenseHint")}
+      </p>
+    `;
+
+    new Dialog({
+      title: t("HKRPG.Dialog.DefenseTitle"),
+      content,
+      buttons: {
+        dodge: {
+          icon: '<i class="fas fa-wind"></i>',
+          label: t("HKRPG.Chat.Dodge"),
+          callback: () => resolve("dodge")
+        },
+        parry: {
+          icon: '<i class="fas fa-shield-alt"></i>',
+          label: t("HKRPG.Chat.Parry"),
+          callback: () => resolve("parry")
+        },
+        soak: {
+          icon: '<i class="fas fa-shield"></i>',
+          label: t("HKRPG.Chat.Soak"),
+          callback: () => resolve("soak")
+        },
+        none: {
+          icon: '<i class="fas fa-forward"></i>',
+          label: t("HKRPG.Dialog.SkipDefense"),
+          callback: () => resolve("none")
+        }
+      },
+      default: "dodge",
+      close: () => resolve(null)
+    }).render(true);
+  }).then(async choice => {
+    if (!choice || choice === "none") return;
+    await handleAttackCardAction(choice, attackMessageId);
+  });
+}
+
+async function createDefenseCard({ defender, attackMsg, defenseType, successes, armorName = "", pu = 0 }) {
+  const defMsg = await ChatMessage.create({
+    speaker: ChatMessage.getSpeaker({ actor: defender }),
+    content: `<div class="hkrpg-defense-card">...</div>`,
+    flags: {
+      [SYS_ID]: {
+        kind: defenseType === "soak" ? "soak" : "defense",
+        attackMessageId: attackMsg.id,
+        defenseType,
+        defenderActorId: defender.id,
+        defenderName: defender.name,
+        armorName,
+        pu,
+        successes
+      }
+    }
+  });
+
+  const defHtml = await renderTemplate("systems/hollow-knight/chat/defense-card.html", {
+    messageId: defMsg.id,
+    attackMessageId: attackMsg.id,
+    defenderName: defender.name,
+    defenseType,
+    successes,
+    armorName,
+    pu
+  });
+
+  await defMsg.update({ content: defHtml });
+  return defMsg;
+}
+
+async function rollSoak(defender) {
+  const armor = getEquippedArmor(defender);
+  const broken = armorIsBroken(armor);
+
+  if (!armor || broken) {
+    return { armor: armor ?? null, soakSuccesses: 0, pu: 0, roll: null, broken: true };
+  }
+
+  const shell = Number(defender.system?.characteristics?.shell?.value ?? 0);
+  const soakBonus = Number(armor.system?.soakBonus?.value ?? armor.system?.absorptionBonus?.value ?? armor.system?.absorption?.value ?? 0);
+  const rerolls = Number(armor.system?.soakRerolls?.value ?? armor.system?.absorptionRerolls?.value ?? 0);
+  const pu = Number(armor.system?.pu?.value ?? armor.system?.pu ?? 0);
+
+  const dice = Math.max(0, Math.floor(shell + soakBonus));
+  const roll = await rollSuccessPool({
+    actor: defender,
+    label: t("HKRPG.Chat.Soak"),
+    dice,
+    rerolls,
+    flavor: `${t("HKRPG.Chat.SoakArmor")}: ${armor.name}\n${t("HKRPG.Chat.PU")}: ${pu}`
+  });
+
+  return { armor, soakSuccesses: Number(roll?.total ?? 0), pu, roll, broken: false };
+}
+
+async function applyArmorBreakIfNeeded(attackFlags) {
+  if (!attackFlags?.attackHasSix) return;
+  if (!attackFlags?.hit) return;
+
+  const target = game.actors.get(attackFlags.targetActorId);
+  if (!target) return;
+
+  const armor = getEquippedArmor(target);
+  if (!armor) return;
+
+  const cur = Number(armor.system?.durability?.value ?? 0);
+  const max = Number(armor.system?.durability?.max ?? cur);
+  const next = Math.max(0, cur - 1);
+  const broken = next <= 0;
+
+  await armor.update({
+    "system.durability.value": next,
+    "system.durability.max": Math.max(max, 0),
+    "system.broken.value": broken
+  });
+
+  await ChatMessage.create({
+    speaker: ChatMessage.getSpeaker({ actor: target }),
+    content: `<div class="hkrpg-warn"><b>${t("HKRPG.Chat.ArmorDamage")}</b>: ${armor.name} (-1 прочность, теперь ${next}/${max})${broken ? ` — <b>${t("HKRPG.Chat.ArmorBroken")}</b>` : ""}</div>`
+  });
+}
+
+async function applyDamageFromAttack(attackMsg) {
+  const f = attackMsg.flags?.[SYS_ID];
+  if (!f || f.kind !== "attack") return;
+
+  const attacker = game.actors.get(f.attackerActorId);
+  const defender = game.actors.get(f.targetActorId);
+
+  if (!attacker || !defender) {
+    if (attacker) await postMisuse(attacker, "HKRPG.Errors.InvalidTarget");
+    return;
+  }
+
+  // если промах — просто сообщим
+  if (!f.hit) {
+    await ChatMessage.create({
+      speaker: ChatMessage.getSpeaker({ actor: attacker }),
+      content: `<div class="hkrpg-warn"><b>${t("HKRPG.Chat.Result")}</b>: ${t("HKRPG.Chat.Miss")} (${attacker.name} → ${defender.name})</div>`
+    });
+    return;
+  }
+
+  const defenseSuccesses = Number(f.defense?.successes ?? 0);
+  const soakSuccesses = Number(f.soak?.successes ?? 0);
+  const pu = Number(f.soak?.pu ?? 0);
+
+  const attackSuccesses = Number(f.attackSuccesses ?? 0);
+  const netHits = Math.max(0, attackSuccesses - defenseSuccesses);
+
+  const baseDamage = Number(f.baseDamage ?? 0);
+
+  // по книге: max доп. урона = max(база, вложенная выносливость)
+  const invest = Number(f.investStamina ?? 0);
+  const maxExtra = Math.max(baseDamage, invest);
+  const extraDamage = Math.min(netHits, maxExtra);
+
+  let probableDamage = Math.max(0, baseDamage + extraDamage);
+
+  // ПУ: не ниже 1 если урон > 0
+  if (probableDamage > 0 && pu > 0) {
+    probableDamage = Math.max(1, probableDamage - pu);
+  }
+
+  // впитывание
+  const afterSoak = Math.max(0, probableDamage - soakSuccesses);
+
+  // поглощение
+  const absorptionValue = getAbsorptionValue(defender);
+  const absRes = applyAbsorption(afterSoak, absorptionValue);
+  const finalDamage = absRes.finalDamage;
+  const absorbedBy = absRes.reducedBy;
+
+  if (finalDamage > 0) {
+    const curHearts = Number(defender.system?.pools?.hearts?.value ?? 0);
+    const nextHearts = Math.max(0, curHearts - finalDamage);
+    await defender.update({ "system.pools.hearts.value": nextHearts });
+  }
+
+  await applyArmorBreakIfNeeded(f);
+
+  const report = await renderTemplate("systems/hollow-knight/chat/damage-report.html", {
+    attackerName: attacker.name,
+    defenderName: defender.name,
+    weaponName: f.weaponName,
+    attackSuccesses,
+    defenseSuccesses,
+    netHits,
+    baseDamage,
+    invest,
+    maxExtra,
+    extraDamage,
+    pu,
+    soakSuccesses,
+    absorptionValue,
+    absorbedBy,
+    finalDamage
+  });
+
+  await ChatMessage.create({
+    speaker: ChatMessage.getSpeaker({ actor: attacker }),
+    content: report
+  });
+}
+
 async function createAttackCard({ attacker, target, weapon, investStamina, staminaTax, totalCost, roll }) {
   const attackSuccesses = Number(roll?.total ?? 0);
   const attackHasSix = hasAnySix(roll);
   const range = getWeaponRangeCategory(weapon);
   const rangeDistance = getWeaponRangeDistance(weapon);
+
+  const hit = attackSuccesses > 0;
 
   const flags = {
     [SYS_ID]: {
@@ -256,6 +487,7 @@ async function createAttackCard({ attacker, target, weapon, investStamina, stami
 
       attackSuccesses,
       attackHasSix,
+      hit,
 
       defense: null,
       soak: null
@@ -279,10 +511,18 @@ async function createAttackCard({ attacker, target, weapon, investStamina, stami
     rangeDistance,
     investStamina,
     staminaTax,
-    totalCost
+    totalCost,
+    hit
   });
 
   await msg.update({ content: html });
+
+  // ВАЖНО: если попал — покажем диалог защиты владельцу цели/ГМу
+  if (hit) {
+    // запускаем на стороне всех клиентов, но реально откроется только у того, кто может защищаться
+    setTimeout(() => maybeOpenDefenseDialog(msg.id), 150);
+  }
+
   return msg;
 }
 
@@ -328,7 +568,6 @@ async function attackWithWeapon(attacker, weapon, investStamina) {
 
   const roll = await new Roll(`${dice}d6cs>=5`).evaluate({ async: true });
 
-  // перебросы
   let remaining = rerolls;
   if (remaining > 0) {
     const results = roll.dice[0]?.results ?? [];
@@ -357,151 +596,79 @@ async function attackWithWeapon(attacker, weapon, investStamina) {
   return roll;
 }
 
-async function rollDefense(defender, type) {
-  if (game.combat && !isMyTurn(defender)) {
-    await postMisuse(defender, "HKRPG.Errors.NotYourTurn");
-    return null;
-  }
+/* ---------- Chat actions (единая точка) ---------- */
 
-  const value =
-    type === "dodge"
-      ? Number(defender.system?.characteristics?.grace?.value ?? 0)
-      : Number(defender.system?.characteristics?.might?.value ?? 0);
+async function handleAttackCardAction(action, attackMessageId) {
+  const attackMsg = game.messages.get(attackMessageId);
+  if (!attackMsg) return;
 
-  const label = type === "dodge" ? t("HKRPG.Chat.Dodge") : t("HKRPG.Chat.Parry");
-  const roll = await rollSuccessPool({ actor: defender, label, dice: Math.floor(value) });
-  return roll;
-}
-
-async function rollSoak(defender) {
-  const armor = getEquippedArmor(defender);
-  const broken = armorIsBroken(armor);
-
-  if (!armor || broken) {
-    return { armor: armor ?? null, soakSuccesses: 0, pu: 0, roll: null };
-  }
-
-  const shell = Number(defender.system?.characteristics?.shell?.value ?? 0);
-
-  // поддержка старого/нового формата брони:
-  const soakBonus = Number(armor.system?.soakBonus?.value ?? armor.system?.absorptionBonus?.value ?? armor.system?.absorption?.value ?? 0);
-  const rerolls = Number(armor.system?.soakRerolls?.value ?? armor.system?.absorptionRerolls?.value ?? 0);
-  const pu = Number(armor.system?.pu?.value ?? armor.system?.pu ?? 0);
-
-  const dice = Math.max(0, Math.floor(shell + soakBonus));
-  const roll = await rollSuccessPool({
-    actor: defender,
-    label: t("HKRPG.Chat.Soak"),
-    dice,
-    rerolls,
-    flavor: `${t("HKRPG.Chat.SoakArmor")}: ${armor.name}\n${t("HKRPG.Chat.PU")}: ${pu}`
-  });
-
-  return { armor, soakSuccesses: Number(roll?.total ?? 0), pu, roll };
-}
-
-async function applyArmorBreakIfNeeded(attackFlags) {
-  // триггер сейчас такой: атака попала (успехи > 0) и есть хотя бы одна 6 в броске атаки
-  if (!attackFlags?.attackHasSix) return;
-  if (Number(attackFlags?.attackSuccesses ?? 0) <= 0) return;
-
-  const target = game.actors.get(attackFlags.targetActorId);
-  if (!target) return;
-
-  const armor = getEquippedArmor(target);
-  if (!armor) return;
-
-  const cur = Number(armor.system?.durability?.value ?? 0);
-  const max = Number(armor.system?.durability?.max ?? cur);
-  const next = Math.max(0, cur - 1);
-  const broken = next <= 0;
-
-  await armor.update({
-    "system.durability.value": next,
-    "system.durability.max": Math.max(max, 0),
-    "system.broken.value": broken
-  });
-
-  await ChatMessage.create({
-    speaker: ChatMessage.getSpeaker({ actor: target }),
-    content: `<div class="hkrpg-warn"><b>${t("HKRPG.Chat.ArmorDamage")}</b>: ${armor.name} (-1 прочность, теперь ${next}/${max})${broken ? ` — <b>${t("HKRPG.Chat.ArmorBroken")}</b>` : ""}</div>`
-  });
-}
-
-async function applyDamageFromAttack(attackMsg) {
   const f = attackMsg.flags?.[SYS_ID];
   if (!f || f.kind !== "attack") return;
 
-  const attacker = game.actors.get(f.attackerActorId);
   const defender = game.actors.get(f.targetActorId);
+  if (!defender) return;
 
-  if (!attacker || !defender) {
-    if (attacker) await postMisuse(attacker, "HKRPG.Errors.InvalidTarget");
+  if (action === "dodge" || action === "parry") {
+    if (game.combat && !isMyTurn(defender)) {
+      await postMisuse(defender, "HKRPG.Errors.NotYourTurn");
+      return;
+    }
+
+    const value =
+      action === "dodge"
+        ? Number(defender.system?.characteristics?.grace?.value ?? 0)
+        : Number(defender.system?.characteristics?.might?.value ?? 0);
+
+    const label = action === "dodge" ? t("HKRPG.Chat.Dodge") : t("HKRPG.Chat.Parry");
+    const roll = await rollSuccessPool({ actor: defender, label, dice: Math.floor(value) });
+    const successes = Number(roll?.total ?? 0);
+
+    await createDefenseCard({ defender, attackMsg, defenseType: action, successes });
+
+    await attackMsg.update({
+      [`flags.${SYS_ID}.defense`]: { type: action, actorId: defender.id, successes }
+    });
+
+    ui.notifications.info(t("HKRPG.Chat.DefenseSaved"));
     return;
   }
 
-  const defenseSuccesses = Number(f.defense?.successes ?? 0);
-  const soakSuccesses = Number(f.soak?.successes ?? 0);
-  const pu = Number(f.soak?.pu ?? 0);
+  if (action === "soak") {
+    const res = await rollSoak(defender);
 
-  const attackSuccesses = Number(f.attackSuccesses ?? 0);
-  const netHits = Math.max(0, attackSuccesses - defenseSuccesses);
+    if (res.broken) {
+      await ChatMessage.create({
+        speaker: ChatMessage.getSpeaker({ actor: defender }),
+        content: `<div class="hkrpg-warn"><b>${t("HKRPG.Chat.Soak")}</b>: ${t("HKRPG.Errors.ArmorBrokenNoSoak")}</div>`
+      });
+    }
 
-  const baseDamage = Number(f.baseDamage ?? 0);
+    await createDefenseCard({
+      defender,
+      attackMsg,
+      defenseType: "soak",
+      successes: res.soakSuccesses,
+      armorName: res.armor?.name ?? "",
+      pu: res.pu
+    });
 
-  // Ограничение доп. урона по книге: максимум = max(базовый урон, вложенная выносливость)
-  const invest = Number(f.investStamina ?? 0);
-  const maxExtra = Math.max(baseDamage, invest);
-  const extraDamage = Math.min(netHits, maxExtra);
+    await attackMsg.update({
+      [`flags.${SYS_ID}.soak`]: {
+        actorId: defender.id,
+        armorId: res.armor?.id ?? null,
+        armorName: res.armor?.name ?? "",
+        successes: res.soakSuccesses,
+        pu: res.pu
+      }
+    });
 
-  let probableDamage = Math.max(0, baseDamage + extraDamage);
-
-  // ПУ применяется до Впитывания, но не может опустить урон ниже 1 (если урон > 0)
-  if (probableDamage > 0 && pu > 0) {
-    probableDamage = Math.max(1, probableDamage - pu);
+    ui.notifications.info(t("HKRPG.Chat.SoakSaved"));
+    return;
   }
 
-  // Впитывание: успехи уменьшают урон
-  const afterSoak = Math.max(0, probableDamage - soakSuccesses);
-
-  // Поглощение по книге
-  const absorptionValue = getAbsorptionValue(defender);
-  const absRes = applyAbsorption(afterSoak, absorptionValue);
-  const finalDamage = absRes.finalDamage;
-  const absorbedBy = absRes.reducedBy;
-
-  // списываем сердца
-  if (finalDamage > 0) {
-    const curHearts = Number(defender.system?.pools?.hearts?.value ?? 0);
-    const nextHearts = Math.max(0, curHearts - finalDamage);
-    await defender.update({ "system.pools.hearts.value": nextHearts });
+  if (action === "apply-damage") {
+    await applyDamageFromAttack(attackMsg);
   }
-
-  // поломка брони (наш текущий триггер)
-  await applyArmorBreakIfNeeded(f);
-
-  const report = await renderTemplate("systems/hollow-knight/chat/damage-report.html", {
-    attackerName: attacker.name,
-    defenderName: defender.name,
-    weaponName: f.weaponName,
-    attackSuccesses,
-    defenseSuccesses,
-    netHits,
-    baseDamage,
-    invest,
-    maxExtra,
-    extraDamage,
-    pu,
-    soakSuccesses,
-    absorptionValue,
-    absorbedBy,
-    finalDamage
-  });
-
-  await ChatMessage.create({
-    speaker: ChatMessage.getSpeaker({ actor: attacker }),
-    content: report
-  });
 }
 
 /* ---------- Sheets ---------- */
@@ -525,7 +692,6 @@ class HKRPGActorSheet extends ActorSheet {
     data.system = this.actor.system;
 
     data.equippedWeapons = getEquippedWeapons(this.actor);
-
     data.itemsByType = this.actor.items.reduce((acc, it) => {
       (acc[it.type] ??= []).push(it);
       return acc;
@@ -537,7 +703,6 @@ class HKRPGActorSheet extends ActorSheet {
   activateListeners(html) {
     super.activateListeners(html);
 
-    // клик по характеристике = быстрая проверка
     html.find(".characteristic input").on("click", async (ev) => {
       ev.preventDefault();
       const input = ev.currentTarget;
@@ -569,10 +734,16 @@ class HKRPGActorSheet extends ActorSheet {
       return attackWithWeapon(this.actor, weapon, invest);
     });
 
-    html.find("[data-action='dodge']").on("click", async () => rollDefense(this.actor, "dodge"));
-    html.find("[data-action='parry']").on("click", async () => rollDefense(this.actor, "parry"));
+    html.find("[data-action='dodge']").on("click", async () => {
+      const value = Number(this.actor.system?.characteristics?.grace?.value ?? 0);
+      await rollSuccessPool({ actor: this.actor, label: t("HKRPG.Chat.Dodge"), dice: Math.floor(value) });
+    });
 
-    // create item
+    html.find("[data-action='parry']").on("click", async () => {
+      const value = Number(this.actor.system?.characteristics?.might?.value ?? 0);
+      await rollSuccessPool({ actor: this.actor, label: t("HKRPG.Chat.Parry"), dice: Math.floor(value) });
+    });
+
     html.find("[data-action='item-create']").on("click", async (ev) => {
       const type = ev.currentTarget.dataset.type;
       await this.actor.createEmbeddedDocuments("Item", [{ name: t(`HKRPG.Item.Types.${type}`), type }]);
@@ -601,7 +772,6 @@ class HKRPGActorSheet extends ActorSheet {
       }
     });
 
-    // Быстрый ролл на строке предмета
     html.find(".item-roll").on("click", async ev => {
       const li = ev.currentTarget.closest("[data-item-id]");
       const item = this.actor.items.get(li.dataset.itemId);
@@ -612,13 +782,6 @@ class HKRPGActorSheet extends ActorSheet {
       if (item.type === "spell") {
         const insight = Number(this.actor.system?.characteristics?.insight?.value ?? 0);
         return rollSuccessPool({ actor: this.actor, label: t("HKRPG.Chat.SpellRoll", { spell: item.name }), dice: Math.floor(insight) });
-      }
-
-      if (item.type === "art") {
-        return ChatMessage.create({
-          speaker: ChatMessage.getSpeaker({ actor: this.actor }),
-          content: `<div><b>${t("HKRPG.Chat.ArtUsed")}</b>: ${item.name}</div>`
-        });
       }
     });
   }
@@ -647,7 +810,6 @@ class HKRPGItemSheet extends ItemSheet {
   activateListeners(html) {
     super.activateListeners(html);
 
-    // mods add/remove
     html.find("[data-action='add-mod']").on("click", async (ev) => {
       ev.preventDefault();
       const mods = foundry.utils.duplicate(this.item.system?.mods?.value ?? this.item.system?.mods ?? []);
@@ -666,7 +828,6 @@ class HKRPGItemSheet extends ItemSheet {
       else await this.item.update({ "system.mods": mods });
     });
 
-    // repair armor
     html.find("[data-action='repair-armor']").on("click", async (ev) => {
       ev.preventDefault();
       if (this.item.type !== "armor") return;
@@ -680,116 +841,16 @@ class HKRPGItemSheet extends ItemSheet {
   }
 }
 
-/* ---------- Chat card listeners ---------- */
+/* ---------- Chat listeners ---------- */
 
 Hooks.on("renderChatMessage", (message, html) => {
-  const root = html[0];
-  if (!root) return;
-
-  root.querySelectorAll("[data-hkrpg-action]").forEach(btn => {
-    btn.addEventListener("click", async (ev) => {
-      ev.preventDefault();
-
-      const action = btn.dataset.hkrpgAction;
-      const msgId = btn.dataset.messageId;
-      const attackMsg = game.messages.get(msgId);
-      if (!attackMsg) return;
-
-      const f = attackMsg.flags?.[SYS_ID];
-      if (!f || f.kind !== "attack") return;
-
-      const defender = game.actors.get(f.targetActorId);
-      if (!defender) return;
-
-      if (action === "dodge" || action === "parry") {
-        const roll = await rollDefense(defender, action);
-        const successes = Number(roll?.total ?? 0);
-
-        const defMsg = await ChatMessage.create({
-          speaker: ChatMessage.getSpeaker({ actor: defender }),
-          content: `<div class="hkrpg-defense-card">...</div>`,
-          flags: {
-            [SYS_ID]: {
-              kind: "defense",
-              attackMessageId: attackMsg.id,
-              defenseType: action,
-              defenderActorId: defender.id,
-              defenderName: defender.name,
-              successes
-            }
-          }
-        });
-
-        const defHtml = await renderTemplate("systems/hollow-knight/chat/defense-card.html", {
-          messageId: defMsg.id,
-          attackMessageId: attackMsg.id,
-          defenderName: defender.name,
-          defenseType: action,
-          successes
-        });
-        await defMsg.update({ content: defHtml });
-
-        await attackMsg.update({
-          [`flags.${SYS_ID}.defense`]: {
-            type: action,
-            actorId: defender.id,
-            successes
-          }
-        });
-
-        ui.notifications.info(t("HKRPG.Chat.DefenseSaved"));
-        return;
-      }
-
-      if (action === "soak") {
-        const res = await rollSoak(defender);
-
-        const defMsg = await ChatMessage.create({
-          speaker: ChatMessage.getSpeaker({ actor: defender }),
-          content: `<div class="hkrpg-defense-card">...</div>`,
-          flags: {
-            [SYS_ID]: {
-              kind: "soak",
-              attackMessageId: attackMsg.id,
-              defenderActorId: defender.id,
-              defenderName: defender.name,
-              armorName: res.armor?.name ?? "",
-              pu: res.pu,
-              successes: res.soakSuccesses
-            }
-          }
-        });
-
-        const defHtml = await renderTemplate("systems/hollow-knight/chat/defense-card.html", {
-          messageId: defMsg.id,
-          attackMessageId: attackMsg.id,
-          defenderName: defender.name,
-          defenseType: "soak",
-          successes: res.soakSuccesses,
-          armorName: res.armor?.name ?? "",
-          pu: res.pu
-        });
-        await defMsg.update({ content: defHtml });
-
-        await attackMsg.update({
-          [`flags.${SYS_ID}.soak`]: {
-            actorId: defender.id,
-            armorId: res.armor?.id ?? null,
-            armorName: res.armor?.name ?? "",
-            successes: res.soakSuccesses,
-            pu: res.pu
-          }
-        });
-
-        ui.notifications.info(t("HKRPG.Chat.SoakSaved"));
-        return;
-      }
-
-      if (action === "apply-damage") {
-        await applyDamageFromAttack(attackMsg);
-        return;
-      }
-    });
+  // клики по кнопкам атаки
+  html.find("[data-hkrpg-action]").on("click", async (ev) => {
+    ev.preventDefault();
+    const btn = ev.currentTarget;
+    const action = btn.dataset.hkrpgAction;
+    const msgId = btn.dataset.messageId;
+    await handleAttackCardAction(action, msgId);
   });
 });
 
@@ -802,7 +863,6 @@ Hooks.once("init", async () => {
   Items.unregisterSheet("core", ItemSheet);
   Items.registerSheet(SYS_ID, HKRPGItemSheet, { makeDefault: true });
 
-  // сброс счётчика атак и авто-восстановление выносливости в начале хода (временно)
   Hooks.on("combatTurn", async (combat) => {
     try {
       const actor = combat.combatant?.actor;
