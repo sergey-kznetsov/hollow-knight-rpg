@@ -15,10 +15,6 @@ async function postMisuse(actor, reasonKey, data) {
   });
 }
 
-function getControlledActor() {
-  return canvas?.tokens?.controlled?.[0]?.actor ?? null;
-}
-
 function isMyTurn(actor) {
   const combat = game.combat;
   if (!combat) return true;
@@ -57,10 +53,9 @@ async function rollSuccessPool({ actor, label, dice, rerolls = 0, flavor = "" })
     return null;
   }
 
-  // d6 successes on 5-6
   const roll = await new Roll(`${dice}d6cs>=5`).evaluate({ async: true });
 
-  // Minimal reroll implementation: reroll failures up to rerolls count
+  // Мини-перебросы: перебрасываем провалы
   let remaining = rerolls;
   if (remaining > 0) {
     const results = roll.dice[0]?.results ?? [];
@@ -98,7 +93,7 @@ async function rollInitiative(actor) {
   const grace = Number(actor.system?.characteristics?.grace?.value ?? 0);
   const bonus = getMaxWeaponInitiativeBonus(actor) + Number(actor.system?.combat?.initiativeBonus?.value ?? 0);
 
-  // Initiative = SUM of dice, not successes :contentReference[oaicite:3]{index=3}
+  // Инициатива = сумма, а не успехи
   const dice = Math.max(0, Math.floor(grace + bonus));
   if (dice <= 0) {
     await postMisuse(actor, "HKRPG.Errors.NoDice");
@@ -125,10 +120,6 @@ async function rollInitiative(actor) {
   return roll;
 }
 
-// --- Attack rules (core):
-// - вложить минимум 1 выносливости :contentReference[oaicite:4]{index=4}
-// - налог выносливости +1 за каждую уже совершённую атаку в этот ход :contentReference[oaicite:5]{index=5}
-// - восстановление выносливости в начале хода :contentReference[oaicite:6]{index=6}
 async function attackWithWeapon(actor, weapon, investStamina) {
   if (game.combat && !isMyTurn(actor)) {
     await postMisuse(actor, "HKRPG.Errors.NotYourTurn");
@@ -138,7 +129,7 @@ async function attackWithWeapon(actor, weapon, investStamina) {
   investStamina = Math.max(1, Math.floor(Number(investStamina ?? 1)));
 
   const attacksThisTurn = Number(actor.system?.turn?.attacksThisTurn ?? 0);
-  const staminaTax = Math.max(0, attacksThisTurn); // 0 / 1 / 2 ...
+  const staminaTax = Math.max(0, attacksThisTurn); // 0/1/2...
   const totalCost = investStamina + staminaTax;
 
   const ok = await spendResource(actor, "system.pools.stamina.value", totalCost, "HKRPG.Errors.NoStamina");
@@ -232,13 +223,12 @@ async function quickDefense(actor, kind) {
   return rollSuccessPool({ actor, label, dice: Math.floor(value) });
 }
 
-// ---------------- Sheets ----------------
 class HKRPGActorSheet extends ActorSheet {
   static get defaultOptions() {
     return foundry.utils.mergeObject(super.defaultOptions, {
       classes: ["hkrpg", "sheet", "actor"],
-      width: 760,
-      height: 720,
+      width: 780,
+      height: 740,
       tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "stats" }]
     });
   }
@@ -251,19 +241,33 @@ class HKRPGActorSheet extends ActorSheet {
   async getData(options) {
     const data = await super.getData(options);
     data.system = this.actor.system;
+
     data.equippedWeapons = getEquippedWeapons(this.actor);
+
     data.itemsByType = this.actor.items.reduce((acc, it) => {
       (acc[it.type] ??= []).push(it);
       return acc;
     }, {});
+
     return data;
   }
 
   activateListeners(html) {
     super.activateListeners(html);
 
+    // Нажатие по значению характеристики = проверка (быстрый ролл)
+    html.find(".characteristic input").on("click", async (ev) => {
+      ev.preventDefault();
+      const input = ev.currentTarget;
+      const key = input.name?.split(".")?.[2];
+      const value = parseFloat(input.value) || 0;
+      const label = game.i18n.localize(`HKRPG.Actor.Characteristics.${key}`);
+      await rollSuccessPool({ actor: this.actor, label: `Проверка: ${label}`, dice: Math.floor(value) });
+    });
+
     html.find("[data-action='roll-init']").on("click", async () => rollInitiative(this.actor));
 
+    // “Атака…” (диалог)
     html.find("[data-action='attack']").on("click", async () => {
       const res = await askAttackDialog(this.actor);
       if (!res) return;
@@ -272,9 +276,23 @@ class HKRPGActorSheet extends ActorSheet {
       return attackWithWeapon(this.actor, weapon, res.invest);
     });
 
+    // Быстрая атака конкретным оружием (на вкладке “Бой”)
+    html.find("[data-action='attack-weapon']").on("click", async (ev) => {
+      const itemId = ev.currentTarget.dataset.itemId;
+      const weapon = this.actor.items.get(itemId);
+      if (!weapon) return;
+
+      const wrap = ev.currentTarget.closest(".hkrpg-row") ?? ev.currentTarget.parentElement;
+      const input = wrap?.querySelector("input[data-role='invest']");
+      const invest = Number(input?.value ?? 1);
+
+      return attackWithWeapon(this.actor, weapon, invest);
+    });
+
     html.find("[data-action='dodge']").on("click", async () => quickDefense(this.actor, "dodge"));
     html.find("[data-action='parry']").on("click", async () => quickDefense(this.actor, "parry"));
 
+    // Создание предметов
     html.find("[data-action='item-create']").on("click", async (ev) => {
       const type = ev.currentTarget.dataset.type;
       await this.actor.createEmbeddedDocuments("Item", [{ name: t(`HKRPG.Item.Types.${type}`), type }]);
@@ -297,6 +315,7 @@ class HKRPGActorSheet extends ActorSheet {
       await item.update({ "system.equipped": !item.system.equipped });
     });
 
+    // Быстрый “кости” на строке предмета
     html.find(".item-roll").on("click", async ev => {
       const li = ev.currentTarget.closest("[data-item-id]");
       const item = this.actor.items.get(li.dataset.itemId);
@@ -304,7 +323,6 @@ class HKRPGActorSheet extends ActorSheet {
 
       if (item.type === "weapon") return attackWithWeapon(this.actor, item, 1);
       if (item.type === "spell") {
-        // пока просто кидаем проверку Проницательности (полная магия позже)
         const insight = Number(this.actor.system?.characteristics?.insight?.value ?? 0);
         return rollSuccessPool({ actor: this.actor, label: t("HKRPG.Chat.SpellRoll", { spell: item.name }), dice: Math.floor(insight) });
       }
@@ -339,22 +357,17 @@ class HKRPGItemSheet extends ItemSheet {
   }
 }
 
-// --- Combat hooks ---
-// Сброс атак в начале хода и восстановление выносливости в начале хода :contentReference[oaicite:7]{index=7}
 Hooks.once("init", async () => {
-  game.HKRPG = { SYS_ID };
-
   Actors.unregisterSheet("core", ActorSheet);
   Actors.registerSheet(SYS_ID, HKRPGActorSheet, { makeDefault: true });
 
   Items.unregisterSheet("core", ItemSheet);
   Items.registerSheet(SYS_ID, HKRPGItemSheet, { makeDefault: true });
 
-  Hooks.on("combatTurn", async (combat, turn, prior) => {
+  // Восстановление выносливости в начале хода и сброс счётчика атак
+  Hooks.on("combatTurn", async (combat) => {
     try {
-      // start of current turn
-      const c = combat.combatant;
-      const actor = c?.actor;
+      const actor = combat.combatant?.actor;
       if (!actor) return;
 
       await actor.update({ "system.turn.attacksThisTurn": 0 });
