@@ -483,4 +483,334 @@ async function applyDamageFromAttack(attackMsg) {
 
   await applyArmorBreakIfNeeded(f);
 
-  const report = awa
+  const report = await renderTemplate("systems/hollow-knight/chat/damage-report.html", {
+    attackerName: attacker.name,
+    defenderName: defender.name,
+    weaponName: f.weaponName,
+    attackSuccesses,
+    defenseSuccesses,
+    netHits,
+    baseDamage,
+    invest,
+    maxExtra,
+    extraDamage,
+    pu,
+    soakSuccesses,
+    absorptionValue,
+    absorbedBy,
+    finalDamage
+  });
+
+  await ChatMessage.create({
+    speaker: ChatMessage.getSpeaker({ actor: attacker }),
+    content: report
+  });
+}
+
+/* ---------- Sheets ---------- */
+
+class HKRPGActorSheet extends ActorSheet {
+  static get defaultOptions() {
+    return foundry.utils.mergeObject(super.defaultOptions, {
+      classes: ["hkrpg", "sheet", "actor"],
+      width: 780,
+      height: 740,
+      tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "stats" }]
+    });
+  }
+
+  get template() {
+    return `systems/hollow-knight/templates/actor/${this.actor.type}-sheet.html`;
+  }
+
+  async getData(options) {
+    const data = await super.getData(options);
+    data.system = this.actor.system;
+
+    data.equippedWeapons = getEquippedWeapons(this.actor);
+
+    data.itemsByType = this.actor.items.reduce((acc, it) => {
+      (acc[it.type] ??= []).push(it);
+      return acc;
+    }, {});
+
+    return data;
+  }
+
+  activateListeners(html) {
+    super.activateListeners(html);
+
+    html.find(".characteristic input").on("click", async (ev) => {
+      ev.preventDefault();
+      const input = ev.currentTarget;
+      const key = input.name?.split(".")?.[2];
+      const value = parseFloat(input.value) || 0;
+      const label = game.i18n.localize(`HKRPG.Actor.Characteristics.${key}`);
+      await rollSuccessPool({ actor: this.actor, label: `Проверка: ${label}`, dice: Math.floor(value) });
+    });
+
+    html.find("[data-action='roll-init']").on("click", async () => rollInitiative(this.actor));
+
+    html.find("[data-action='attack']").on("click", async () => {
+      const res = await askAttackDialog(this.actor);
+      if (!res) return;
+      const weapon = this.actor.items.get(res.weaponId);
+      if (!weapon) return postMisuse(this.actor, "HKRPG.Errors.WeaponNotSelected");
+      return attackWithWeapon(this.actor, weapon, res.invest);
+    });
+
+    html.find("[data-action='attack-weapon']").on("click", async (ev) => {
+      const itemId = ev.currentTarget.dataset.itemId;
+      const weapon = this.actor.items.get(itemId);
+      if (!weapon) return;
+
+      const wrap = ev.currentTarget.closest(".hkrpg-row") ?? ev.currentTarget.parentElement;
+      const input = wrap?.querySelector("input[data-role='invest']");
+      const invest = Number(input?.value ?? 1);
+
+      return attackWithWeapon(this.actor, weapon, invest);
+    });
+
+    html.find("[data-action='dodge']").on("click", async () => rollDefense(this.actor, "dodge"));
+    html.find("[data-action='parry']").on("click", async () => rollDefense(this.actor, "parry"));
+
+    html.find("[data-action='item-create']").on("click", async (ev) => {
+      const type = ev.currentTarget.dataset.type;
+      await this.actor.createEmbeddedDocuments("Item", [{ name: t(`HKRPG.Item.Types.${type}`), type }]);
+    });
+
+    html.find(".item-edit").on("click", ev => {
+      const li = ev.currentTarget.closest("[data-item-id]");
+      this.actor.items.get(li.dataset.itemId)?.sheet?.render(true);
+    });
+
+    html.find(".item-delete").on("click", async ev => {
+      const li = ev.currentTarget.closest("[data-item-id]");
+      await this.actor.deleteEmbeddedDocuments("Item", [li.dataset.itemId]);
+    });
+
+    html.find(".item-toggle-equipped").on("click", async ev => {
+      const li = ev.currentTarget.closest("[data-item-id]");
+      const item = this.actor.items.get(li.dataset.itemId);
+      if (!item) return;
+
+      const cur = Boolean(item.system?.equipped?.value ?? item.system?.equipped ?? false);
+      if (item.system?.equipped?.value !== undefined) {
+        await item.update({ "system.equipped.value": !cur });
+      } else {
+        await item.update({ "system.equipped": !cur });
+      }
+    });
+
+    html.find(".item-roll").on("click", async ev => {
+      const li = ev.currentTarget.closest("[data-item-id]");
+      const item = this.actor.items.get(li.dataset.itemId);
+      if (!item) return;
+
+      if (item.type === "weapon") return attackWithWeapon(this.actor, item, 1);
+      if (item.type === "spell") {
+        const insight = Number(this.actor.system?.characteristics?.insight?.value ?? 0);
+        return rollSuccessPool({ actor: this.actor, label: t("HKRPG.Chat.SpellRoll", { spell: item.name }), dice: Math.floor(insight) });
+      }
+      if (item.type === "art") {
+        return ChatMessage.create({
+          speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+          content: `<div><b>${t("HKRPG.Chat.ArtUsed")}</b>: ${item.name}</div>`
+        });
+      }
+    });
+  }
+}
+
+class HKRPGItemSheet extends ItemSheet {
+  static get defaultOptions() {
+    return foundry.utils.mergeObject(super.defaultOptions, {
+      classes: ["hkrpg", "sheet", "item"],
+      width: 560,
+      height: 620,
+      tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "details" }]
+    });
+  }
+
+  get template() {
+    return `systems/hollow-knight/templates/item/${this.item.type}-sheet.html`;
+  }
+
+  async getData(options) {
+    const data = await super.getData(options);
+    data.system = this.item.system;
+    return data;
+  }
+
+  activateListeners(html) {
+    super.activateListeners(html);
+
+    html.find("[data-action='add-mod']").on("click", async (ev) => {
+      ev.preventDefault();
+      const mods = foundry.utils.duplicate(this.item.system?.mods?.value ?? this.item.system?.mods ?? []);
+      mods.push({ name: "", effect: "", price: "", active: true });
+      if (this.item.system?.mods?.value !== undefined) await this.item.update({ "system.mods.value": mods });
+      else await this.item.update({ "system.mods": mods });
+    });
+
+    html.find("[data-action='remove-mod']").on("click", async (ev) => {
+      ev.preventDefault();
+      const idx = Number(ev.currentTarget.dataset.idx);
+      const mods = foundry.utils.duplicate(this.item.system?.mods?.value ?? this.item.system?.mods ?? []);
+      if (Number.isNaN(idx) || idx < 0 || idx >= mods.length) return;
+      mods.splice(idx, 1);
+      if (this.item.system?.mods?.value !== undefined) await this.item.update({ "system.mods.value": mods });
+      else await this.item.update({ "system.mods": mods });
+    });
+
+    html.find("[data-action='repair-armor']").on("click", async (ev) => {
+      ev.preventDefault();
+      if (this.item.type !== "armor") return;
+
+      const max = Number(this.item.system?.durability?.max ?? 0);
+      await this.item.update({
+        "system.durability.value": Math.max(0, max),
+        "system.broken.value": false
+      });
+    });
+  }
+}
+
+/* ---------- Chat card listeners ---------- */
+
+Hooks.on("renderChatMessage", (message, html) => {
+  const root = html[0];
+  if (!root) return;
+
+  root.querySelectorAll("[data-hkrpg-action]").forEach(btn => {
+    btn.addEventListener("click", async (ev) => {
+      ev.preventDefault();
+
+      const action = btn.dataset.hkrpgAction;
+      const msgId = btn.dataset.messageId;
+      const attackMsg = game.messages.get(msgId);
+      if (!attackMsg) return;
+
+      const f = attackMsg.flags?.[SYS_ID];
+      if (!f || f.kind !== "attack") return;
+
+      const defender = game.actors.get(f.targetActorId);
+      if (!defender) return;
+
+      if (action === "dodge" || action === "parry") {
+        const roll = await rollDefense(defender, action);
+        const successes = Number(roll?.total ?? 0);
+
+        const defMsg = await ChatMessage.create({
+          speaker: ChatMessage.getSpeaker({ actor: defender }),
+          content: `<div class="hkrpg-defense-card">...</div>`,
+          flags: {
+            [SYS_ID]: {
+              kind: "defense",
+              attackMessageId: attackMsg.id,
+              defenseType: action,
+              defenderActorId: defender.id,
+              defenderName: defender.name,
+              successes
+            }
+          }
+        });
+
+        const defHtml = await renderTemplate("systems/hollow-knight/chat/defense-card.html", {
+          messageId: defMsg.id,
+          attackMessageId: attackMsg.id,
+          defenderName: defender.name,
+          defenseType: action,
+          successes
+        });
+        await defMsg.update({ content: defHtml });
+
+        await attackMsg.update({
+          [`flags.${SYS_ID}.defense`]: {
+            type: action,
+            actorId: defender.id,
+            successes
+          }
+        });
+
+        ui.notifications.info(t("HKRPG.Chat.DefenseSaved"));
+        return;
+      }
+
+      if (action === "soak") {
+        const res = await rollSoak(defender);
+
+        const defMsg = await ChatMessage.create({
+          speaker: ChatMessage.getSpeaker({ actor: defender }),
+          content: `<div class="hkrpg-defense-card">...</div>`,
+          flags: {
+            [SYS_ID]: {
+              kind: "soak",
+              attackMessageId: attackMsg.id,
+              defenderActorId: defender.id,
+              defenderName: defender.name,
+              armorName: res.armor?.name ?? "",
+              pu: res.pu,
+              successes: res.soakSuccesses
+            }
+          }
+        });
+
+        const defHtml = await renderTemplate("systems/hollow-knight/chat/defense-card.html", {
+          messageId: defMsg.id,
+          attackMessageId: attackMsg.id,
+          defenderName: defender.name,
+          defenseType: "soak",
+          successes: res.soakSuccesses,
+          armorName: res.armor?.name ?? "",
+          pu: res.pu
+        });
+        await defMsg.update({ content: defHtml });
+
+        await attackMsg.update({
+          [`flags.${SYS_ID}.soak`]: {
+            actorId: defender.id,
+            armorId: res.armor?.id ?? null,
+            armorName: res.armor?.name ?? "",
+            successes: res.soakSuccesses,
+            pu: res.pu
+          }
+        });
+
+        ui.notifications.info(t("HKRPG.Chat.SoakSaved"));
+        return;
+      }
+
+      if (action === "apply-damage") {
+        await applyDamageFromAttack(attackMsg);
+        return;
+      }
+    });
+  });
+});
+
+/* ---------- Init ---------- */
+
+Hooks.once("init", async () => {
+  Actors.unregisterSheet("core", ActorSheet);
+  Actors.registerSheet(SYS_ID, HKRPGActorSheet, { makeDefault: true });
+
+  Items.unregisterSheet("core", ItemSheet);
+  Items.registerSheet(SYS_ID, HKRPGItemSheet, { makeDefault: true });
+
+  Hooks.on("combatTurn", async (combat) => {
+    try {
+      const actor = combat.combatant?.actor;
+      if (!actor) return;
+
+      await actor.update({ "system.turn.attacksThisTurn": 0 });
+
+      const maxSt = Number(actor.system?.pools?.stamina?.max ?? 0);
+      if (maxSt > 0) {
+        await actor.update({ "system.pools.stamina.value": maxSt });
+      }
+    } catch (e) {
+      console.error("HKRPG | combatTurn hook error", e);
+    }
+  });
+});
