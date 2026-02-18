@@ -1,0 +1,25 @@
+<div class="hkrpg-defense-card" data-message-id="{{messageId}}">
+  <h3 style="margin:0 0 6px;">
+    {{localize "HKRPG.Chat.DefenseCardTitle"}}
+  </h3>
+
+  <div style="color: var(--hk-muted); margin-bottom:6px;">
+    {{defenderName}}
+    · {{localize "HKRPG.Chat.LinkedAttack"}}: {{attackMessageId}}
+  </div>
+
+  {{#if (eq defenseType "dodge")}}
+    <div><b>{{localize "HKRPG.Chat.Dodge"}}</b>: {{successes}}</div>
+  {{/if}}
+
+  {{#if (eq defenseType "parry")}}
+    <div><b>{{localize "HKRPG.Chat.Parry"}}</b>: {{successes}}</div>
+  {{/if}}
+
+  {{#if (eq defenseType "soak")}}
+    <div><b>{{localize "HKRPG.Chat.Soak"}}</b>: {{successes}}</div>
+    <div style="color: var(--hk-muted); margin-top:4px;">
+      {{localize "HKRPG.Chat.SoakArmor"}}: {{armorName}} · {{localize "HKRPG.Chat.PU"}}: {{pu}}
+    </div>
+  {{/if}}
+</div>
